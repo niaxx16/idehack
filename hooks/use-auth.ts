@@ -1,11 +1,10 @@
-import { useEffect } from 'react'
+import { useEffect, useMemo } from 'react'
 import { useAuthStore } from '@/stores/auth-store'
 import { createClient } from '@/lib/supabase/client'
 
-const supabase = createClient()
-
 export function useAuth() {
   const { user, profile, isLoading, setUser, setProfile, setLoading } = useAuthStore()
+  const supabase = useMemo(() => createClient(), [])
 
   useEffect(() => {
     // Get initial session
@@ -31,27 +30,6 @@ export function useAuth() {
     }
 
     initSession()
-
-    // Listen for auth changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
-      setUser(session?.user ?? null)
-
-      if (session?.user && event !== 'INITIAL_SESSION') {
-        // Fetch profile when user signs in (but not on initial session)
-        const { data } = await supabase
-          .from('profiles')
-          .select('*')
-          .eq('id', session.user.id)
-          .single()
-        setProfile(data)
-      } else if (!session?.user) {
-        setProfile(null)
-      }
-    })
-
-    return () => {
-      subscription.unsubscribe()
-    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 

@@ -26,15 +26,25 @@ export default function AdminPage() {
   useRealtimeEvent(currentEvent?.id || null)
 
   useEffect(() => {
-    if (!isLoading && profile?.role !== 'admin') {
+    // Wait for loading to finish
+    if (isLoading) return
+
+    // If not loading and no profile, redirect to login
+    if (!profile) {
       router.push('/login')
       return
     }
 
-    if (profile?.role === 'admin') {
-      loadData()
+    // If profile exists but not admin, redirect to login
+    if (profile.role !== 'admin') {
+      router.push('/login')
+      return
     }
-  }, [profile, isLoading, router])
+
+    // If admin, load data
+    loadData()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [profile, isLoading])
 
   const loadData = async () => {
     setIsLoadingData(true)

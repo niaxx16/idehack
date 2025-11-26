@@ -23,11 +23,11 @@ export default function LoginPage() {
 
     try {
       await signInWithEmail(email, password)
-      router.push('/admin')
+      // Redirect will be handled by middleware
+      window.location.href = '/admin'
     } catch (err) {
       console.error('Login error:', err)
       setError('Invalid email or password')
-    } finally {
       setIsLoading(false)
     }
   }
