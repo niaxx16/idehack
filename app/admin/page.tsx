@@ -21,6 +21,7 @@ export default function AdminPage() {
   const [currentEvent, setCurrentEvent] = useState<Event | null>(null)
   const [teams, setTeams] = useState<Team[]>([])
   const [isLoadingData, setIsLoadingData] = useState(true)
+  const [activeTab, setActiveTab] = useState('control')
   const supabase = createClient()
 
   useRealtimeEvent(currentEvent?.id || null)
@@ -107,7 +108,7 @@ export default function AdminPage() {
           </Button>
         </div>
 
-        <Tabs defaultValue="control" className="space-y-4">
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
           <TabsList className="grid w-full grid-cols-4">
             <TabsTrigger value="control">Event Control</TabsTrigger>
             <TabsTrigger value="teams">Teams</TabsTrigger>
