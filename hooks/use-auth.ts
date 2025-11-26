@@ -10,19 +10,24 @@ export function useAuth() {
   useEffect(() => {
     // Get initial session
     const initSession = async () => {
-      const { data: { session } } = await supabase.auth.getSession()
-      setUser(session?.user ?? null)
+      try {
+        const { data: { session } } = await supabase.auth.getSession()
+        setUser(session?.user ?? null)
 
-      if (session?.user) {
-        // Fetch profile
-        const { data } = await supabase
-          .from('profiles')
-          .select('*')
-          .eq('id', session.user.id)
-          .single()
-        setProfile(data)
+        if (session?.user) {
+          // Fetch profile
+          const { data } = await supabase
+            .from('profiles')
+            .select('*')
+            .eq('id', session.user.id)
+            .single()
+          setProfile(data)
+        }
+      } catch (error) {
+        console.error('Error loading session:', error)
+      } finally {
+        setLoading(false)
       }
-      setLoading(false)
     }
 
     initSession()
@@ -95,8 +100,17 @@ export function useAuth() {
   }
 
   const signOut = async () => {
-    const { error } = await supabase.auth.signOut()
-    if (error) throw error
+    try {
+      const { error } = await supabase.auth.signOut()
+      if (error) throw error
+
+      // Clear store
+      setUser(null)
+      setProfile(null)
+    } catch (error) {
+      console.error('Sign out error:', error)
+      throw error
+    }
   }
 
   const joinTeam = async (accessToken: string) => {
