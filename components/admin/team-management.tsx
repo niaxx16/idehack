@@ -9,7 +9,7 @@ import { Label } from '@/components/ui/label'
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import { createClient } from '@/lib/supabase/client'
 import { Plus, Users, FileText } from 'lucide-react'
-import QRCode from 'qrcode.react'
+import { QRCodeSVG } from 'qrcode.react'
 
 interface TeamManagementProps {
   event: Event | null
@@ -142,7 +142,7 @@ export function TeamManagement({ event, teams, onUpdate }: TeamManagementProps) 
                         {selectedTeam?.id === team.id && (
                           <>
                             <div className="p-4 bg-white rounded-lg">
-                              <QRCode
+                              <QRCodeSVG
                                 value={joinUrl}
                                 size={256}
                                 level="H"

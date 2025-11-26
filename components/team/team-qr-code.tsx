@@ -3,7 +3,7 @@
 import { Team } from '@/types'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import QRCode from 'qrcode.react'
+import { QRCodeSVG } from 'qrcode.react'
 import { Download } from 'lucide-react'
 
 interface TeamQRCodeProps {
@@ -35,7 +35,7 @@ export function TeamQRCode({ team }: TeamQRCodeProps) {
       <CardContent className="space-y-6">
         <div className="flex flex-col items-center space-y-4">
           <div className="p-6 bg-white rounded-lg shadow-lg">
-            <QRCode
+            <QRCodeSVG
               id="team-qr-code"
               value={joinUrl}
               size={300}
