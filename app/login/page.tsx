@@ -25,6 +25,7 @@ export default function LoginPage() {
       await signInWithEmail(email, password)
       router.push('/admin')
     } catch (err) {
+      console.error('Login error:', err)
       setError('Invalid email or password')
     } finally {
       setIsLoading(false)
