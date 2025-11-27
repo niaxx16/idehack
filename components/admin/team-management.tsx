@@ -37,16 +37,30 @@ export function TeamManagement({ event, teams, onUpdate }: TeamManagementProps) 
       return
     }
 
+    // Check if teams already exist
+    if (teams.length > 0) {
+      const confirm = window.confirm(
+        `This event already has ${teams.length} teams. Creating ${count} more teams will add to the existing ones. Continue?`
+      )
+      if (!confirm) return
+    }
+
     setIsBulkCreating(true)
     try {
+      // Find the highest table number
+      const maxTableNumber = teams.length > 0
+        ? Math.max(...teams.map(t => t.table_number))
+        : 0
+
       // Generate activation codes and create teams
       const teamsToCreate = []
       for (let i = 1; i <= count; i++) {
         const activationCode = generateActivationCode()
+        const tableNumber = maxTableNumber + i
         teamsToCreate.push({
           event_id: event.id,
-          name: `Masa ${i}`,
-          table_number: i,
+          name: `Masa ${tableNumber}`,
+          table_number: tableNumber,
           activation_code: activationCode,
           is_activated: false,
           team_members: [],
