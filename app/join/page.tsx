@@ -1,138 +1,118 @@
 'use client'
 
-import { useEffect, useState, Suspense } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { useAuth } from '@/hooks/use-auth'
-import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { createClient } from '@/lib/supabase/client'
 import { Loader2 } from 'lucide-react'
 
-function JoinPageContent() {
+export default function JoinPage() {
   const router = useRouter()
   const searchParams = useSearchParams()
-  const { user, profile, joinTeam, signInAnonymously } = useAuth()
-  const [displayName, setDisplayName] = useState('')
-  const [isJoining, setIsJoining] = useState(false)
-  const [error, setError] = useState<string | null>(null)
-  const [teamInfo, setTeamInfo] = useState<{ name: string } | null>(null)
+  const supabase = createClient()
 
-  const token = searchParams.get('token')
+  const [activationCode, setActivationCode] = useState('')
+  const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
-    if (!token) {
-      router.push('/login')
+    // Check if code is in URL (from QR scan)
+    const codeFromUrl = searchParams.get('code')
+    if (codeFromUrl) {
+      setActivationCode(codeFromUrl.toUpperCase())
     }
-  }, [token, router])
+  }, [searchParams])
 
   const handleJoin = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (!token) return
+    if (!activationCode) return
 
-    setIsJoining(true)
+    setIsLoading(true)
     setError(null)
 
     try {
-      // Sign in anonymously if not already signed in
-      if (!user) {
-        await signInAnonymously(displayName || 'Anonymous User')
-      }
+      // First, sign in anonymously
+      const { data: authData, error: authError } = await supabase.auth.signInAnonymously()
 
-      // Join the team
-      const result = await joinTeam(token)
+      if (authError) throw authError
 
-      if (result.success) {
-        setTeamInfo({ name: result.team_name })
-        // Redirect to student view after 2 seconds
-        setTimeout(() => {
-          router.push('/student')
-        }, 2000)
-      } else {
-        setError(result.error || 'Failed to join team')
-        setIsJoining(false)
-      }
+      // Store activation code in session for next step
+      sessionStorage.setItem('pending_activation_code', activationCode.toUpperCase())
+      sessionStorage.setItem('pending_user_id', authData.user.id)
+
+      // Redirect to team setup page
+      router.push('/join/setup')
     } catch (err: any) {
-      setError(err.message || 'Failed to join team')
-      setIsJoining(false)
+      console.error('Join error:', err)
+      setError(err.message || 'Failed to join. Please check the code and try again.')
+    } finally {
+      setIsLoading(false)
     }
   }
 
-  if (!token) {
-    return null
-  }
-
-  if (teamInfo) {
-    return (
-      <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-green-50 to-emerald-100">
-        <Card className="w-full max-w-md text-center">
-          <CardHeader>
-            <CardTitle className="text-2xl">Success!</CardTitle>
-            <CardDescription>
-              You&apos;ve joined team <strong>{teamInfo.name}</strong>
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <p className="text-sm text-muted-foreground">Redirecting to your dashboard...</p>
-          </CardContent>
-        </Card>
-      </div>
-    )
-  }
-
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-blue-50 to-indigo-100">
+    <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-purple-50 via-blue-50 to-indigo-100">
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
-          <CardTitle className="text-2xl font-bold">Join Team</CardTitle>
-          <CardDescription>Enter your name to join the hackathon team</CardDescription>
+          <CardTitle className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
+            Join Your Team
+          </CardTitle>
+          <CardDescription>
+            Enter your table's activation code or scan the QR code
+          </CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleJoin} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="displayName">Your Name</Label>
+              <Label htmlFor="code">Activation Code</Label>
               <Input
-                id="displayName"
-                type="text"
-                placeholder="Enter your name"
-                value={displayName}
-                onChange={(e) => setDisplayName(e.target.value)}
+                id="code"
+                placeholder="e.g., ABC12345"
+                value={activationCode}
+                onChange={(e) => setActivationCode(e.target.value.toUpperCase())}
+                className="text-center text-2xl font-mono tracking-wider"
+                maxLength={8}
                 required
-                disabled={isJoining}
+                autoFocus
               />
+              <p className="text-xs text-muted-foreground text-center">
+                Find this code on your table
+              </p>
             </div>
 
             {error && (
-              <div className="p-3 rounded-lg bg-red-50 border border-red-200">
+              <div className="p-3 bg-red-50 border border-red-200 rounded-md">
                 <p className="text-sm text-red-600">{error}</p>
               </div>
             )}
 
-            <Button type="submit" className="w-full" disabled={isJoining}>
-              {isJoining ? (
+            <Button
+              type="submit"
+              className="w-full"
+              size="lg"
+              disabled={isLoading || !activationCode}
+            >
+              {isLoading ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                   Joining...
                 </>
               ) : (
-                'Join Team'
+                'Continue'
               )}
             </Button>
           </form>
+
+          <div className="mt-6 pt-6 border-t">
+            <p className="text-xs text-center text-muted-foreground">
+              Don't have a code? Ask your event organizer or scan the QR code on your table.
+            </p>
+          </div>
         </CardContent>
       </Card>
     </div>
-  )
-}
-
-export default function JoinPage() {
-  return (
-    <Suspense fallback={
-      <div className="min-h-screen flex items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin" />
-      </div>
-    }>
-      <JoinPageContent />
-    </Suspense>
   )
 }
