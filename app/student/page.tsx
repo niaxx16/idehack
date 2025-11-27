@@ -211,7 +211,8 @@ export default function StudentPage() {
 
   const isPitching = currentEvent?.status === 'PITCHING'
   const canVote = currentEvent?.status === 'VOTING'
-  const isIdeation = currentEvent?.status === 'IDEATION' || currentEvent?.status === 'WAITING'
+  const isIdeation = currentEvent?.status === 'IDEATION'
+  const isWaiting = currentEvent?.status === 'WAITING'
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 via-blue-50 to-indigo-100 p-4">
@@ -231,7 +232,24 @@ export default function StudentPage() {
         </div>
 
         {/* Phase-based content */}
-        {isIdeation ? (
+        {isWaiting ? (
+          <Card>
+            <CardHeader>
+              <CardTitle>Welcome to {team.name}!</CardTitle>
+              <CardDescription>
+                Waiting for the event to start...
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="text-center py-8">
+                <Loader2 className="h-12 w-12 mx-auto mb-4 animate-spin text-purple-600" />
+                <p className="text-muted-foreground">
+                  The admin will start the ideation phase soon. Get ready to work on your canvas!
+                </p>
+              </div>
+            </CardContent>
+          </Card>
+        ) : isIdeation ? (
           <Tabs defaultValue="canvas" className="space-y-4">
             <TabsList className="grid w-full grid-cols-3">
               <TabsTrigger value="canvas">Canvas</TabsTrigger>
