@@ -102,7 +102,7 @@ export default function HomePage() {
             </div>
 
             <Button
-              onClick={() => router.push('/login')}
+              onClick={() => router.push('/join')}
               variant="outline"
               className="w-full"
               size="lg"
