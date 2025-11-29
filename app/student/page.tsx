@@ -49,6 +49,7 @@ export default function StudentPage() {
   // Presentation upload state
   const [presentationFile, setPresentationFile] = useState<File | null>(null)
   const [isUploadingPresentation, setIsUploadingPresentation] = useState(false)
+  const [presentationSignedUrl, setPresentationSignedUrl] = useState<string | null>(null)
 
   useRealtimeEvent(currentEvent?.id || null)
 
@@ -119,6 +120,17 @@ export default function StudentPage() {
 
       // Check if current user is captain
       setIsCaptain(teamData.captain_id === user.id)
+
+      // Generate signed URL for presentation if exists
+      if (teamData.presentation_url) {
+        const { data: signedUrlData } = await supabase.storage
+          .from('team-presentations')
+          .createSignedUrl(teamData.presentation_url, 3600) // 1 hour expiry
+
+        if (signedUrlData) {
+          setPresentationSignedUrl(signedUrlData.signedUrl)
+        }
+      }
     } catch (error) {
       console.error('Load data error:', error)
     } finally {
@@ -190,35 +202,41 @@ export default function StudentPage() {
     setIsUploadingPresentation(true)
     try {
       const fileExt = presentationFile.name.split('.').pop()
-      const fileName = `${team.id}-${Date.now()}.${fileExt}`
-      const filePath = `presentations/${fileName}`
+      const fileName = `presentation-${Date.now()}.${fileExt}`
+      // File path format: {team_id}/{filename} for RLS policy
+      const filePath = `${team.id}/${fileName}`
 
       // Upload file
       const { error: uploadError } = await supabase.storage
         .from('team-presentations')
-        .upload(filePath, presentationFile)
+        .upload(filePath, presentationFile, {
+          upsert: true // Allow replacing existing file
+        })
 
       if (uploadError) throw uploadError
 
-      // Get public URL
-      const { data: { publicUrl } } = supabase.storage
-        .from('team-presentations')
-        .getPublicUrl(filePath)
-
-      // Update team
+      // Update team with file path (not public URL, will generate signed URL when viewing)
       const { error: updateError } = await supabase
         .from('teams')
-        .update({ presentation_url: publicUrl })
+        .update({ presentation_url: filePath })
         .eq('id', team.id)
 
       if (updateError) throw updateError
 
-      setTeam({ ...team, presentation_url: publicUrl })
+      // Generate signed URL for viewing
+      const { data: signedUrlData } = await supabase.storage
+        .from('team-presentations')
+        .createSignedUrl(filePath, 3600) // 1 hour expiry
+
+      setTeam({ ...team, presentation_url: filePath })
+      if (signedUrlData) {
+        setPresentationSignedUrl(signedUrlData.signedUrl)
+      }
       setPresentationFile(null)
       alert('Presentation uploaded successfully!')
-    } catch (error) {
+    } catch (error: any) {
       console.error('Upload presentation error:', error)
-      alert('Failed to upload presentation. Please try again.')
+      alert(error.message || 'Failed to upload presentation. Please try again.')
     } finally {
       setIsUploadingPresentation(false)
     }
@@ -596,14 +614,18 @@ export default function StudentPage() {
                         <FileText className="h-5 w-5" />
                         <span className="font-semibold">Presentation uploaded!</span>
                       </div>
-                      <a
-                        href={team.presentation_url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-sm text-blue-600 hover:underline"
-                      >
-                        View presentation
-                      </a>
+                      {presentationSignedUrl ? (
+                        <a
+                          href={presentationSignedUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-sm text-blue-600 hover:underline"
+                        >
+                          View presentation
+                        </a>
+                      ) : (
+                        <p className="text-sm text-muted-foreground">Loading preview...</p>
+                      )}
                     </div>
                   ) : (
                     <div className="text-center py-8 text-muted-foreground">
