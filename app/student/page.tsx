@@ -14,7 +14,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { PitchViewer } from '@/components/student/pitch-viewer'
 import { NotesManager } from '@/components/student/notes-manager'
 import { PortfolioVoting } from '@/components/student/portfolio-voting'
-import { Loader2, Users, Crown, FileText, Upload, LogOut } from 'lucide-react'
+import { Loader2, Users, Crown, FileText, Upload, LogOut, AlertCircle, Lightbulb, Target, Star, Zap, DollarSign, Save, CheckCircle } from 'lucide-react'
 
 interface TeamMember {
   user_id: string
@@ -39,8 +39,12 @@ export default function StudentPage() {
   const [problem, setProblem] = useState('')
   const [solution, setSolution] = useState('')
   const [targetAudience, setTargetAudience] = useState('')
+  const [valueProposition, setValueProposition] = useState('')
+  const [keyFeatures, setKeyFeatures] = useState('')
   const [revenueModel, setRevenueModel] = useState('')
   const [isSavingCanvas, setIsSavingCanvas] = useState(false)
+  const [lastSaved, setLastSaved] = useState<Date | null>(null)
+  const [autoSaveTimer, setAutoSaveTimer] = useState<NodeJS.Timeout | null>(null)
 
   // Presentation upload state
   const [presentationFile, setPresentationFile] = useState<File | null>(null)
@@ -105,6 +109,8 @@ export default function StudentPage() {
         setProblem(teamData.canvas_data.problem || '')
         setSolution(teamData.canvas_data.solution || '')
         setTargetAudience(teamData.canvas_data.target_audience || '')
+        setValueProposition(teamData.canvas_data.value_proposition || '')
+        setKeyFeatures(teamData.canvas_data.key_features || '')
         setRevenueModel(teamData.canvas_data.revenue_model || '')
       }
 
@@ -120,7 +126,7 @@ export default function StudentPage() {
     }
   }
 
-  const handleSaveCanvas = async () => {
+  const handleSaveCanvas = async (showAlert = true) => {
     if (!team) return
 
     setIsSavingCanvas(true)
@@ -132,6 +138,8 @@ export default function StudentPage() {
             problem,
             solution,
             target_audience: targetAudience,
+            value_proposition: valueProposition,
+            key_features: keyFeatures,
             revenue_model: revenueModel,
           },
         })
@@ -139,14 +147,42 @@ export default function StudentPage() {
 
       if (error) throw error
 
-      alert('Canvas saved successfully!')
+      setLastSaved(new Date())
+      if (showAlert) {
+        alert('Canvas saved successfully!')
+      }
     } catch (error) {
       console.error('Save canvas error:', error)
-      alert('Failed to save canvas. Please try again.')
+      if (showAlert) {
+        alert('Failed to save canvas. Please try again.')
+      }
     } finally {
       setIsSavingCanvas(false)
     }
   }
+
+  // Auto-save effect
+  useEffect(() => {
+    if (!team || !isIdeation) return
+
+    // Clear existing timer
+    if (autoSaveTimer) {
+      clearTimeout(autoSaveTimer)
+    }
+
+    // Set new timer for auto-save after 3 seconds of inactivity
+    const timer = setTimeout(() => {
+      handleSaveCanvas(false)
+    }, 3000)
+
+    setAutoSaveTimer(timer)
+
+    // Cleanup
+    return () => {
+      if (timer) clearTimeout(timer)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [problem, solution, targetAudience, valueProposition, keyFeatures, revenueModel])
 
   const handlePresentationUpload = async () => {
     if (!presentationFile || !team) return
@@ -259,70 +295,233 @@ export default function StudentPage() {
 
             {/* Canvas Tab */}
             <TabsContent value="canvas">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Business Model Canvas</CardTitle>
-                  <CardDescription>
-                    Work together to define your project
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="problem">Problem</Label>
-                    <Textarea
-                      id="problem"
-                      placeholder="What problem are you solving?"
-                      value={problem}
-                      onChange={(e) => setProblem(e.target.value)}
-                      rows={4}
-                    />
-                  </div>
+              <div className="space-y-4">
+                {/* Header with save indicator */}
+                <Card className="bg-gradient-to-r from-purple-50 to-blue-50 border-purple-200">
+                  <CardContent className="pt-6">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <h3 className="text-xl font-bold text-purple-900">Lean Canvas</h3>
+                        <p className="text-sm text-purple-700">Develop your winning idea together</p>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        {isSavingCanvas ? (
+                          <div className="flex items-center gap-2 text-sm text-blue-600">
+                            <Loader2 className="h-4 w-4 animate-spin" />
+                            <span>Saving...</span>
+                          </div>
+                        ) : lastSaved ? (
+                          <div className="flex items-center gap-2 text-sm text-green-600">
+                            <CheckCircle className="h-4 w-4" />
+                            <span>Saved {lastSaved.toLocaleTimeString()}</span>
+                          </div>
+                        ) : null}
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
 
-                  <div className="space-y-2">
-                    <Label htmlFor="solution">Solution</Label>
-                    <Textarea
-                      id="solution"
-                      placeholder="How does your solution work?"
-                      value={solution}
-                      onChange={(e) => setSolution(e.target.value)}
-                      rows={4}
-                    />
-                  </div>
+                {/* Canvas Grid */}
+                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {/* Problem */}
+                  <Card className="border-l-4 border-red-400 hover:shadow-lg transition-shadow">
+                    <CardHeader className="pb-3">
+                      <div className="flex items-center gap-2">
+                        <div className="p-2 bg-red-100 rounded-lg">
+                          <AlertCircle className="h-5 w-5 text-red-600" />
+                        </div>
+                        <div>
+                          <CardTitle className="text-lg">Problem</CardTitle>
+                          <CardDescription className="text-xs">What problem are you solving?</CardDescription>
+                        </div>
+                      </div>
+                    </CardHeader>
+                    <CardContent>
+                      <Textarea
+                        placeholder="Describe the main problem your target audience faces..."
+                        value={problem}
+                        onChange={(e) => setProblem(e.target.value)}
+                        rows={5}
+                        className="resize-none"
+                        maxLength={500}
+                      />
+                      <p className="text-xs text-right text-muted-foreground mt-1">
+                        {problem.length}/500
+                      </p>
+                    </CardContent>
+                  </Card>
 
-                  <div className="space-y-2">
-                    <Label htmlFor="targetAudience">Target Audience</Label>
-                    <Textarea
-                      id="targetAudience"
-                      placeholder="Who are your customers?"
-                      value={targetAudience}
-                      onChange={(e) => setTargetAudience(e.target.value)}
-                      rows={4}
-                    />
-                  </div>
+                  {/* Solution */}
+                  <Card className="border-l-4 border-yellow-400 hover:shadow-lg transition-shadow">
+                    <CardHeader className="pb-3">
+                      <div className="flex items-center gap-2">
+                        <div className="p-2 bg-yellow-100 rounded-lg">
+                          <Lightbulb className="h-5 w-5 text-yellow-600" />
+                        </div>
+                        <div>
+                          <CardTitle className="text-lg">Solution</CardTitle>
+                          <CardDescription className="text-xs">How does it work?</CardDescription>
+                        </div>
+                      </div>
+                    </CardHeader>
+                    <CardContent>
+                      <Textarea
+                        placeholder="Explain your solution and how it addresses the problem..."
+                        value={solution}
+                        onChange={(e) => setSolution(e.target.value)}
+                        rows={5}
+                        className="resize-none"
+                        maxLength={500}
+                      />
+                      <p className="text-xs text-right text-muted-foreground mt-1">
+                        {solution.length}/500
+                      </p>
+                    </CardContent>
+                  </Card>
 
-                  <div className="space-y-2">
-                    <Label htmlFor="revenueModel">Revenue Model</Label>
-                    <Textarea
-                      id="revenueModel"
-                      placeholder="How will you make money?"
-                      value={revenueModel}
-                      onChange={(e) => setRevenueModel(e.target.value)}
-                      rows={4}
-                    />
-                  </div>
+                  {/* Unique Value Proposition */}
+                  <Card className="border-l-4 border-purple-400 hover:shadow-lg transition-shadow">
+                    <CardHeader className="pb-3">
+                      <div className="flex items-center gap-2">
+                        <div className="p-2 bg-purple-100 rounded-lg">
+                          <Star className="h-5 w-5 text-purple-600" />
+                        </div>
+                        <div>
+                          <CardTitle className="text-lg">Unique Value</CardTitle>
+                          <CardDescription className="text-xs">Why choose you?</CardDescription>
+                        </div>
+                      </div>
+                    </CardHeader>
+                    <CardContent>
+                      <Textarea
+                        placeholder="What makes your solution unique and better than alternatives?"
+                        value={valueProposition}
+                        onChange={(e) => setValueProposition(e.target.value)}
+                        rows={5}
+                        className="resize-none"
+                        maxLength={500}
+                      />
+                      <p className="text-xs text-right text-muted-foreground mt-1">
+                        {valueProposition.length}/500
+                      </p>
+                    </CardContent>
+                  </Card>
 
-                  <Button onClick={handleSaveCanvas} disabled={isSavingCanvas} size="lg" className="w-full">
-                    {isSavingCanvas ? (
-                      <>
-                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                        Saving...
-                      </>
-                    ) : (
-                      'Save Canvas'
-                    )}
-                  </Button>
-                </CardContent>
-              </Card>
+                  {/* Target Customers */}
+                  <Card className="border-l-4 border-blue-400 hover:shadow-lg transition-shadow">
+                    <CardHeader className="pb-3">
+                      <div className="flex items-center gap-2">
+                        <div className="p-2 bg-blue-100 rounded-lg">
+                          <Target className="h-5 w-5 text-blue-600" />
+                        </div>
+                        <div>
+                          <CardTitle className="text-lg">Target Customers</CardTitle>
+                          <CardDescription className="text-xs">Who are they?</CardDescription>
+                        </div>
+                      </div>
+                    </CardHeader>
+                    <CardContent>
+                      <Textarea
+                        placeholder="Describe your ideal customers, their demographics, and behaviors..."
+                        value={targetAudience}
+                        onChange={(e) => setTargetAudience(e.target.value)}
+                        rows={5}
+                        className="resize-none"
+                        maxLength={500}
+                      />
+                      <p className="text-xs text-right text-muted-foreground mt-1">
+                        {targetAudience.length}/500
+                      </p>
+                    </CardContent>
+                  </Card>
+
+                  {/* Key Features */}
+                  <Card className="border-l-4 border-green-400 hover:shadow-lg transition-shadow">
+                    <CardHeader className="pb-3">
+                      <div className="flex items-center gap-2">
+                        <div className="p-2 bg-green-100 rounded-lg">
+                          <Zap className="h-5 w-5 text-green-600" />
+                        </div>
+                        <div>
+                          <CardTitle className="text-lg">Key Features</CardTitle>
+                          <CardDescription className="text-xs">Top 3 features</CardDescription>
+                        </div>
+                      </div>
+                    </CardHeader>
+                    <CardContent>
+                      <Textarea
+                        placeholder="List your top 3 key features that deliver the most value..."
+                        value={keyFeatures}
+                        onChange={(e) => setKeyFeatures(e.target.value)}
+                        rows={5}
+                        className="resize-none"
+                        maxLength={500}
+                      />
+                      <p className="text-xs text-right text-muted-foreground mt-1">
+                        {keyFeatures.length}/500
+                      </p>
+                    </CardContent>
+                  </Card>
+
+                  {/* Revenue Model */}
+                  <Card className="border-l-4 border-emerald-400 hover:shadow-lg transition-shadow">
+                    <CardHeader className="pb-3">
+                      <div className="flex items-center gap-2">
+                        <div className="p-2 bg-emerald-100 rounded-lg">
+                          <DollarSign className="h-5 w-5 text-emerald-600" />
+                        </div>
+                        <div>
+                          <CardTitle className="text-lg">Revenue Model</CardTitle>
+                          <CardDescription className="text-xs">How to monetize?</CardDescription>
+                        </div>
+                      </div>
+                    </CardHeader>
+                    <CardContent>
+                      <Textarea
+                        placeholder="Explain how you will make money from your solution..."
+                        value={revenueModel}
+                        onChange={(e) => setRevenueModel(e.target.value)}
+                        rows={5}
+                        className="resize-none"
+                        maxLength={500}
+                      />
+                      <p className="text-xs text-right text-muted-foreground mt-1">
+                        {revenueModel.length}/500
+                      </p>
+                    </CardContent>
+                  </Card>
+                </div>
+
+                {/* Manual Save Button */}
+                <Card className="bg-gradient-to-r from-green-50 to-emerald-50 border-green-200">
+                  <CardContent className="pt-6">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2 text-sm text-green-700">
+                        <Save className="h-4 w-4" />
+                        <span>Auto-save enabled • Changes save automatically</span>
+                      </div>
+                      <Button
+                        onClick={() => handleSaveCanvas(true)}
+                        disabled={isSavingCanvas}
+                        variant="outline"
+                        className="border-green-600 text-green-700 hover:bg-green-50"
+                      >
+                        {isSavingCanvas ? (
+                          <>
+                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                            Saving...
+                          </>
+                        ) : (
+                          <>
+                            <Save className="mr-2 h-4 w-4" />
+                            Save Now
+                          </>
+                        )}
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
             </TabsContent>
 
             {/* Team Tab */}
