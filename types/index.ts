@@ -17,7 +17,39 @@ export interface CanvasData {
   problem: string
   solution: string
   target_audience: string
+  value_proposition: string
+  key_features: string
   revenue_model: string
+}
+
+// Mentor types
+export interface MentorAssignment {
+  id: string
+  mentor_id: string
+  team_id: string
+  assigned_at: string
+  created_at: string
+  updated_at: string
+}
+
+export interface MentorFeedback {
+  id: string
+  team_id: string
+  mentor_id: string
+  canvas_section: 'problem' | 'solution' | 'value_proposition' | 'target_audience' | 'key_features' | 'revenue_model'
+  feedback_text: string
+  is_read: boolean
+  created_at: string
+  updated_at: string
+}
+
+export interface MentorFeedbackWithMentor extends MentorFeedback {
+  mentor?: Profile
+}
+
+export interface MentorAssignmentWithDetails extends MentorAssignment {
+  mentor?: Profile
+  team?: Team
 }
 
 // Jury scoring structure
