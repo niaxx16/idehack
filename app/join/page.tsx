@@ -15,8 +15,12 @@ function JoinFormContent() {
   const supabase = createClient()
 
   const [activationCode, setActivationCode] = useState('')
-  const [isLoading, setIsLoading] = useState(false)
+  const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+
+  useEffect(() => {
+    checkExistingSession()
+  }, [])
 
   useEffect(() => {
     // Check if code is in URL (from QR scan)
@@ -26,6 +30,32 @@ function JoinFormContent() {
     }
   }, [searchParams])
 
+  const checkExistingSession = async () => {
+    try {
+      // Check if user is already logged in
+      const { data: { session } } = await supabase.auth.getSession()
+
+      if (session?.user) {
+        // User has a session, check if they're already in a team
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('team_id')
+          .eq('id', session.user.id)
+          .single()
+
+        if (profile?.team_id) {
+          // User is already in a team, redirect to student dashboard
+          router.push('/student')
+          return
+        }
+      }
+    } catch (error) {
+      console.error('Session check error:', error)
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
   const handleJoin = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!activationCode) return
@@ -34,14 +64,24 @@ function JoinFormContent() {
     setError(null)
 
     try {
-      // First, sign in anonymously
-      const { data: authData, error: authError } = await supabase.auth.signInAnonymously()
+      // Check if user already has a session
+      const { data: { session } } = await supabase.auth.getSession()
 
-      if (authError) throw authError
+      let userId: string
+
+      if (session?.user) {
+        // User already has a session, reuse it
+        userId = session.user.id
+      } else {
+        // No session, create anonymous user
+        const { data: authData, error: authError } = await supabase.auth.signInAnonymously()
+        if (authError) throw authError
+        userId = authData.user.id
+      }
 
       // Store activation code in session for next step
       sessionStorage.setItem('pending_activation_code', activationCode.toUpperCase())
-      sessionStorage.setItem('pending_user_id', authData.user.id)
+      sessionStorage.setItem('pending_user_id', userId)
 
       // Redirect to team setup page
       router.push('/join/setup')

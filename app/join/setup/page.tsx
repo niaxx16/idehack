@@ -44,6 +44,23 @@ export default function TeamSetupPage() {
 
   const checkTeamStatus = async (code: string) => {
     try {
+      // First, check if user is already in a team
+      const { data: { user } } = await supabase.auth.getUser()
+      if (user) {
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('team_id')
+          .eq('id', user.id)
+          .single()
+
+        if (profile?.team_id) {
+          // User is already in a team, redirect to dashboard
+          router.push('/student')
+          return
+        }
+      }
+
+      // Check team status
       const { data: team, error } = await supabase
         .from('teams')
         .select('captain_id, team_members')
