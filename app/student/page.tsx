@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { useRealtimeEvent } from '@/hooks/use-realtime-event'
+import { useEventStore } from '@/stores/event-store'
 import { Event, Team, Profile, MentorFeedbackWithMentor } from '@/types'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -28,9 +29,9 @@ interface TeamMember {
 export default function StudentPage() {
   const router = useRouter()
   const supabase = createClient()
+  const { currentEvent, setCurrentEvent } = useEventStore()
 
   const [isLoading, setIsLoading] = useState(true)
-  const [currentEvent, setCurrentEvent] = useState<Event | null>(null)
   const [team, setTeam] = useState<Team | null>(null)
   const [profile, setProfile] = useState<Profile | null>(null)
   const [members, setMembers] = useState<TeamMember[]>([])
