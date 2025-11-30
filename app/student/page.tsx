@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { useRealtimeEvent } from '@/hooks/use-realtime-event'
-import { Event, Team, Profile } from '@/types'
+import { Event, Team, Profile, MentorFeedbackWithMentor } from '@/types'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -14,6 +14,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { PitchViewer } from '@/components/student/pitch-viewer'
 import { NotesManager } from '@/components/student/notes-manager'
 import { PortfolioVoting } from '@/components/student/portfolio-voting'
+import { FeedbackDialog } from '@/components/student/feedback-dialog'
 import { Loader2, Users, Crown, FileText, Upload, LogOut, AlertCircle, Lightbulb, Target, Star, Zap, DollarSign, Save, CheckCircle } from 'lucide-react'
 
 interface TeamMember {
@@ -51,11 +52,40 @@ export default function StudentPage() {
   const [isUploadingPresentation, setIsUploadingPresentation] = useState(false)
   const [presentationSignedUrl, setPresentationSignedUrl] = useState<string | null>(null)
 
+  // Feedback state
+  const [feedbacks, setFeedbacks] = useState<MentorFeedbackWithMentor[]>([])
+
   useRealtimeEvent(currentEvent?.id || null)
 
   useEffect(() => {
     loadData()
   }, [])
+
+  // Real-time feedback subscription
+  useEffect(() => {
+    if (!team?.id) return
+
+    const channel = supabase
+      .channel(`student-feedback-${team.id}`)
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'mentor_feedback',
+          filter: `team_id=eq.${team.id}`,
+        },
+        (payload) => {
+          console.log('Feedback updated:', payload)
+          loadFeedback()
+        }
+      )
+      .subscribe()
+
+    return () => {
+      supabase.removeChannel(channel)
+    }
+  }, [team?.id, supabase])
 
   const loadData = async () => {
     try {
@@ -131,11 +161,60 @@ export default function StudentPage() {
           setPresentationSignedUrl(signedUrlData.signedUrl)
         }
       }
+
+      // Load feedback
+      await loadFeedback()
     } catch (error) {
       console.error('Load data error:', error)
     } finally {
       setIsLoading(false)
     }
+  }
+
+  const loadFeedback = async () => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) return
+
+      const { data: profileData } = await supabase
+        .from('profiles')
+        .select('team_id')
+        .eq('id', user.id)
+        .single()
+
+      if (!profileData?.team_id) return
+
+      const { data, error } = await supabase
+        .from('mentor_feedback')
+        .select('*, mentor:profiles(*)')
+        .eq('team_id', profileData.team_id)
+        .order('created_at', { ascending: false })
+
+      if (error) throw error
+
+      setFeedbacks(data || [])
+    } catch (error) {
+      console.error('Failed to load feedback:', error)
+    }
+  }
+
+  const markFeedbackAsRead = async (feedbackId: string) => {
+    try {
+      const { error } = await supabase
+        .from('mentor_feedback')
+        .update({ is_read: true })
+        .eq('id', feedbackId)
+
+      if (error) throw error
+
+      loadFeedback()
+    } catch (error) {
+      console.error('Failed to mark as read:', error)
+    }
+  }
+
+  const getFeedbackForSection = (section: string) => {
+    return feedbacks.filter((f) => f.canvas_section === section)
   }
 
   const handleSaveCanvas = async (showAlert = true) => {
@@ -366,6 +445,13 @@ export default function StudentPage() {
                       <p className="text-xs text-right text-muted-foreground mt-1">
                         {problem.length}/500
                       </p>
+                      <FeedbackDialog
+                        sectionKey="problem"
+                        sectionTitle="Problem"
+                        sectionColor="red"
+                        feedbacks={getFeedbackForSection('problem')}
+                        onMarkAsRead={markFeedbackAsRead}
+                      />
                     </CardContent>
                   </Card>
 
@@ -394,6 +480,13 @@ export default function StudentPage() {
                       <p className="text-xs text-right text-muted-foreground mt-1">
                         {solution.length}/500
                       </p>
+                      <FeedbackDialog
+                        sectionKey="solution"
+                        sectionTitle="Solution"
+                        sectionColor="yellow"
+                        feedbacks={getFeedbackForSection('solution')}
+                        onMarkAsRead={markFeedbackAsRead}
+                      />
                     </CardContent>
                   </Card>
 
@@ -422,6 +515,13 @@ export default function StudentPage() {
                       <p className="text-xs text-right text-muted-foreground mt-1">
                         {valueProposition.length}/500
                       </p>
+                      <FeedbackDialog
+                        sectionKey="value_proposition"
+                        sectionTitle="Unique Value"
+                        sectionColor="purple"
+                        feedbacks={getFeedbackForSection('value_proposition')}
+                        onMarkAsRead={markFeedbackAsRead}
+                      />
                     </CardContent>
                   </Card>
 
@@ -450,6 +550,13 @@ export default function StudentPage() {
                       <p className="text-xs text-right text-muted-foreground mt-1">
                         {targetAudience.length}/500
                       </p>
+                      <FeedbackDialog
+                        sectionKey="target_audience"
+                        sectionTitle="Target Customers"
+                        sectionColor="blue"
+                        feedbacks={getFeedbackForSection('target_audience')}
+                        onMarkAsRead={markFeedbackAsRead}
+                      />
                     </CardContent>
                   </Card>
 
@@ -478,6 +585,13 @@ export default function StudentPage() {
                       <p className="text-xs text-right text-muted-foreground mt-1">
                         {keyFeatures.length}/500
                       </p>
+                      <FeedbackDialog
+                        sectionKey="key_features"
+                        sectionTitle="Key Features"
+                        sectionColor="green"
+                        feedbacks={getFeedbackForSection('key_features')}
+                        onMarkAsRead={markFeedbackAsRead}
+                      />
                     </CardContent>
                   </Card>
 
@@ -506,6 +620,13 @@ export default function StudentPage() {
                       <p className="text-xs text-right text-muted-foreground mt-1">
                         {revenueModel.length}/500
                       </p>
+                      <FeedbackDialog
+                        sectionKey="revenue_model"
+                        sectionTitle="Revenue Model"
+                        sectionColor="emerald"
+                        feedbacks={getFeedbackForSection('revenue_model')}
+                        onMarkAsRead={markFeedbackAsRead}
+                      />
                     </CardContent>
                   </Card>
                 </div>
