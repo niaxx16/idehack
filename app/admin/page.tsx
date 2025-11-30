@@ -12,6 +12,7 @@ import { TeamManagement } from '@/components/admin/team-management'
 import { PitchControl } from '@/components/admin/pitch-control'
 import { Leaderboard } from '@/components/admin/leaderboard'
 import { MentorManagement } from '@/components/admin/mentor-management'
+import { JuryManagement } from '@/components/admin/jury-management'
 import { Button } from '@/components/ui/button'
 import { useRouter } from 'next/navigation'
 import { Loader2 } from 'lucide-react'
@@ -110,10 +111,11 @@ export default function AdminPage() {
         </div>
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
-          <TabsList className="grid w-full grid-cols-5">
+          <TabsList className="grid w-full grid-cols-6">
             <TabsTrigger value="control">Event Control</TabsTrigger>
             <TabsTrigger value="teams">Teams</TabsTrigger>
             <TabsTrigger value="mentors">Mentors</TabsTrigger>
+            <TabsTrigger value="jury">Jury</TabsTrigger>
             <TabsTrigger value="pitch">Pitch Control</TabsTrigger>
             <TabsTrigger value="leaderboard">Leaderboard</TabsTrigger>
           </TabsList>
@@ -128,6 +130,10 @@ export default function AdminPage() {
 
           <TabsContent value="mentors">
             <MentorManagement event={currentEvent} teams={teams} onUpdate={loadData} />
+          </TabsContent>
+
+          <TabsContent value="jury">
+            <JuryManagement onUpdate={loadData} />
           </TabsContent>
 
           <TabsContent value="pitch">
