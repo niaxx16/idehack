@@ -42,7 +42,7 @@ export default function HomePage() {
             InovaSprint
           </h1>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-            A comprehensive platform for managing high school hackathons with hybrid support
+            A comprehensive platform for managing high school ideathons/hackathons with hybrid support
           </p>
         </div>
 
