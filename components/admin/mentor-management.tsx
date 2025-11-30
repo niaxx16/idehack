@@ -131,21 +131,23 @@ export function MentorManagement({ event, teams, onUpdate }: MentorManagementPro
 
       if (authError) throw authError
 
-      // The trigger function handle_new_user will create the profile automatically
-      // Wait a bit for the trigger to complete
-      await new Promise((resolve) => setTimeout(resolve, 500))
-
-      // Update the profile to ensure role and full_name are set
+      // Manually create the profile (trigger is disabled)
       if (authData.user) {
-        const { error: updateError } = await supabase
+        const { error: insertError } = await supabase
           .from('profiles')
-          .update({
+          .insert({
+            id: authData.user.id,
             role: 'mentor',
-            full_name: mentorName
+            full_name: mentorName,
+            email: mentorEmail,
+            display_name: mentorName,
+            wallet_balance: 1000
           })
-          .eq('id', authData.user.id)
 
-        if (updateError) throw updateError
+        if (insertError) {
+          console.error('Profile insert error:', insertError)
+          throw insertError
+        }
       }
 
       // Show password to admin in a copyable dialog
