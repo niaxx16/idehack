@@ -18,6 +18,8 @@ export default function HomePage() {
         router.push('/admin')
       } else if (profile.role === 'jury') {
         router.push('/jury')
+      } else if (profile.role === 'mentor') {
+        router.push('/mentor')
       } else if (profile.team_id) {
         router.push('/student')
       }
@@ -89,7 +91,7 @@ export default function HomePage() {
               className="w-full"
               size="lg"
             >
-              Admin / Jury Login
+              Admin / Jury / Mentor Login
             </Button>
 
             <div className="relative">
