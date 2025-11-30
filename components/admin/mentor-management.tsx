@@ -135,11 +135,14 @@ export function MentorManagement({ event, teams, onUpdate }: MentorManagementPro
       // Wait a bit for the trigger to complete
       await new Promise((resolve) => setTimeout(resolve, 500))
 
-      // Update the profile to ensure role is set to mentor
+      // Update the profile to ensure role and full_name are set
       if (authData.user) {
         const { error: updateError } = await supabase
           .from('profiles')
-          .update({ role: 'mentor' })
+          .update({
+            role: 'mentor',
+            full_name: mentorName
+          })
           .eq('id', authData.user.id)
 
         if (updateError) throw updateError
