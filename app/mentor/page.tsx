@@ -49,6 +49,35 @@ export default function MentorPage() {
     }
   }, [supabase])
 
+  // Real-time subscription for teams (canvas updates)
+  useEffect(() => {
+    const channel = supabase
+      .channel('teams-updates')
+      .on(
+        'postgres_changes',
+        {
+          event: 'UPDATE',
+          schema: 'public',
+          table: 'teams',
+        },
+        (payload) => {
+          console.log('Team updated:', payload)
+          // Reload all data to refresh assignments with latest team data
+          loadData()
+
+          // If this is the selected team, update it specifically
+          if (selectedTeam && payload.new && payload.new.id === selectedTeam.id) {
+            setSelectedTeam(payload.new as Team)
+          }
+        }
+      )
+      .subscribe()
+
+    return () => {
+      supabase.removeChannel(channel)
+    }
+  }, [supabase, selectedTeam])
+
   const loadData = async () => {
     try {
       // Get current user
