@@ -283,7 +283,7 @@ export function TeamManagement({ event, teams, onUpdate }: TeamManagementProps) 
                             <p className="text-2xl font-bold font-mono tracking-wider">{team.activation_code}</p>
                           </div>
                           <p className="text-xs text-center text-muted-foreground">
-                            Scan QR or visit idehack.com/join
+                            Scan QR or visit idehack-bursaarge.vercel.app/join
                           </p>
                         </div>
                       )
