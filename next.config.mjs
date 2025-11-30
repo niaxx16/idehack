@@ -8,11 +8,16 @@ const nextConfig = {
   typescript: {
     ignoreBuildErrors: true,
   },
+  // Force disable caching during build issues
+  generateBuildId: async () => {
+    return `build-${Date.now()}`
+  },
 };
 
 export default withPWA({
   dest: 'public',
   register: true,
   skipWaiting: true,
-  disable: process.env.NODE_ENV === 'development',
+  // Temporarily disable PWA to fix cache issues
+  disable: true,
 })(nextConfig);
