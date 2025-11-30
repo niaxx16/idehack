@@ -9,7 +9,7 @@ import { Label } from '@/components/ui/label'
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { createClient } from '@/lib/supabase/client'
-import { Plus, Users, Loader2, UserCheck, Mail } from 'lucide-react'
+import { Plus, Users, Loader2, UserCheck, Mail, Copy, Check } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 
 interface MentorManagementProps {
@@ -28,12 +28,17 @@ export function MentorManagement({ event, teams, onUpdate }: MentorManagementPro
   const [isLoading, setIsLoading] = useState(true)
   const [isCreating, setIsCreating] = useState(false)
   const [showCreateDialog, setShowCreateDialog] = useState(false)
+  const [showCredentialsDialog, setShowCredentialsDialog] = useState(false)
   const supabase = createClient()
 
   // Form fields
   const [mentorName, setMentorName] = useState('')
   const [mentorEmail, setMentorEmail] = useState('')
   const [error, setError] = useState<string | null>(null)
+
+  // Credentials to show after creation
+  const [createdEmail, setCreatedEmail] = useState('')
+  const [createdPassword, setCreatedPassword] = useState('')
 
   useEffect(() => {
     loadMentors()
@@ -140,10 +145,10 @@ export function MentorManagement({ event, teams, onUpdate }: MentorManagementPro
         if (updateError) throw updateError
       }
 
-      // Show password to admin (in production, send via email)
-      alert(
-        `Mentor created successfully!\n\nEmail: ${mentorEmail}\nPassword: ${randomPassword}\n\nPlease save this password and share it with the mentor.`
-      )
+      // Show password to admin in a copyable dialog
+      setCreatedEmail(mentorEmail)
+      setCreatedPassword(randomPassword)
+      setShowCredentialsDialog(true)
 
       setMentorName('')
       setMentorEmail('')
@@ -353,6 +358,64 @@ export function MentorManagement({ event, teams, onUpdate }: MentorManagementPro
           )}
         </CardContent>
       </Card>
+
+      {/* Credentials Dialog */}
+      <Dialog open={showCredentialsDialog} onOpenChange={setShowCredentialsDialog}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Mentor Created Successfully!</DialogTitle>
+            <DialogDescription>
+              Save these credentials and share them with the mentor securely.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <Label>Email</Label>
+              <div className="flex gap-2">
+                <Input value={createdEmail} readOnly className="font-mono" />
+                <Button
+                  size="icon"
+                  variant="outline"
+                  onClick={() => {
+                    navigator.clipboard.writeText(createdEmail)
+                  }}
+                >
+                  <Copy className="h-4 w-4" />
+                </Button>
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label>Password (Save this!)</Label>
+              <div className="flex gap-2">
+                <Input value={createdPassword} readOnly className="font-mono" />
+                <Button
+                  size="icon"
+                  variant="outline"
+                  onClick={() => {
+                    navigator.clipboard.writeText(createdPassword)
+                  }}
+                >
+                  <Copy className="h-4 w-4" />
+                </Button>
+              </div>
+            </div>
+
+            <div className="p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+              <p className="text-sm text-yellow-800">
+                ⚠️ <strong>Important:</strong> This password will not be shown again. Copy it now and share it with the mentor securely.
+              </p>
+            </div>
+
+            <Button
+              onClick={() => setShowCredentialsDialog(false)}
+              className="w-full"
+            >
+              I've Saved the Credentials
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }
