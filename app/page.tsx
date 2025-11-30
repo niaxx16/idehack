@@ -45,7 +45,7 @@ export default function HomePage() {
               InovaSprint
             </h1>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              Lise düzeyinde fikir maratonları ve hackathonlar için kapsamlı yönetim platformu
+              Comprehensive platform for managing high school ideathons and hackathons
             </p>
           </div>
 
@@ -57,7 +57,7 @@ export default function HomePage() {
                 <CardHeader className="pb-3">
                   <Sparkles className="h-8 w-8 mb-2 text-blue-600" />
                   <CardTitle className="text-base">Multi-Event</CardTitle>
-                  <CardDescription className="text-xs">Birden fazla etkinlik yönetimi</CardDescription>
+                  <CardDescription className="text-xs">Manage multiple events seamlessly</CardDescription>
                 </CardHeader>
               </Card>
 
@@ -65,15 +65,15 @@ export default function HomePage() {
                 <CardHeader className="pb-3">
                   <Lightbulb className="h-8 w-8 mb-2 text-yellow-600" />
                   <CardTitle className="text-base">Lean Canvas</CardTitle>
-                  <CardDescription className="text-xs">Gerçek zamanlı fikir geliştirme</CardDescription>
+                  <CardDescription className="text-xs">Real-time idea development</CardDescription>
                 </CardHeader>
               </Card>
 
               <Card className="hover:shadow-lg transition-all hover:scale-105">
                 <CardHeader className="pb-3">
                   <Users className="h-8 w-8 mb-2 text-purple-600" />
-                  <CardTitle className="text-base">Mentor Sistemi</CardTitle>
-                  <CardDescription className="text-xs">Anlık geri bildirim ve destek</CardDescription>
+                  <CardTitle className="text-base">Mentor System</CardTitle>
+                  <CardDescription className="text-xs">Instant feedback and support</CardDescription>
                 </CardHeader>
               </Card>
 
@@ -81,7 +81,7 @@ export default function HomePage() {
                 <CardHeader className="pb-3">
                   <Vote className="h-8 w-8 mb-2 text-green-600" />
                   <CardTitle className="text-base">Portfolio Voting</CardTitle>
-                  <CardDescription className="text-xs">Yatırım simülasyonu ile oylama</CardDescription>
+                  <CardDescription className="text-xs">Investment simulation voting</CardDescription>
                 </CardHeader>
               </Card>
             </div>
@@ -89,8 +89,8 @@ export default function HomePage() {
             {/* Login Card */}
             <Card className="shadow-xl border-2">
               <CardHeader className="text-center pb-4">
-                <CardTitle className="text-xl">Başlayın</CardTitle>
-                <CardDescription>Rolünüze göre giriş yapın</CardDescription>
+                <CardTitle className="text-xl">Get Started</CardTitle>
+                <CardDescription>Sign in according to your role</CardDescription>
               </CardHeader>
               <CardContent className="space-y-3">
                 <Button
@@ -98,7 +98,7 @@ export default function HomePage() {
                   className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
                   size="lg"
                 >
-                  Admin / Jüri / Mentor Girişi
+                  Admin / Jury / Mentor Login
                 </Button>
 
                 <div className="relative">
@@ -106,7 +106,7 @@ export default function HomePage() {
                     <span className="w-full border-t" />
                   </div>
                   <div className="relative flex justify-center text-xs uppercase">
-                    <span className="bg-background px-2 text-muted-foreground">veya</span>
+                    <span className="bg-background px-2 text-muted-foreground">or</span>
                   </div>
                 </div>
 
@@ -116,11 +116,11 @@ export default function HomePage() {
                   className="w-full border-2"
                   size="lg"
                 >
-                  Öğrenci Olarak Katıl
+                  Join as Student
                 </Button>
 
                 <p className="text-xs text-center text-muted-foreground pt-2">
-                  Öğrenciler: Takımınızın QR kodunu tarayarak doğrudan katılabilirsiniz
+                  Students: Scan your team&apos;s QR code to join directly
                 </p>
               </CardContent>
             </Card>
@@ -138,8 +138,8 @@ export default function HomePage() {
                 <span className="text-white font-bold text-xl">MEM</span>
               </div>
               <div className="text-left">
-                <p className="font-semibold text-gray-700">Bu uygulama Bursa İl Milli Eğitim Müdürlüğü</p>
-                <p className="text-xs">Ar-Ge Birimi tarafından geliştirildi.</p>
+                <p className="font-semibold text-gray-700">Developed by Bursa Provincial Directorate of National Education</p>
+                <p className="text-xs">Research and Development Unit</p>
               </div>
             </div>
           </div>
