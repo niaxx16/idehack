@@ -71,7 +71,7 @@ export function Leaderboard({ event }: LeaderboardProps) {
       <CardHeader>
         <CardTitle>Leaderboard</CardTitle>
         <CardDescription>
-          Final scores combine jury scores (60%) and student investments (40%)
+          Final scores combine jury scores (70%) and student investments (30%)
         </CardDescription>
       </CardHeader>
       <CardContent>
