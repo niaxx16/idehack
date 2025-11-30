@@ -8,6 +8,7 @@ import { Event, Team } from '@/types'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { EventControl } from '@/components/admin/event-control'
+import { EventManagement } from '@/components/admin/event-management'
 import { TeamManagement } from '@/components/admin/team-management'
 import { PitchControl } from '@/components/admin/pitch-control'
 import { Leaderboard } from '@/components/admin/leaderboard'
@@ -84,6 +85,11 @@ export default function AdminPage() {
     router.push('/')
   }
 
+  const handleEventSelect = (event: Event) => {
+    setCurrentEvent(event)
+    loadData()
+  }
+
   if (isLoading || isLoadingData) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -112,7 +118,8 @@ export default function AdminPage() {
         </div>
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
-          <TabsList className="grid w-full grid-cols-6">
+          <TabsList className="grid w-full grid-cols-7">
+            <TabsTrigger value="events">Events</TabsTrigger>
             <TabsTrigger value="control">Event Control</TabsTrigger>
             <TabsTrigger value="teams">Teams</TabsTrigger>
             <TabsTrigger value="mentors">Mentors</TabsTrigger>
@@ -120,6 +127,14 @@ export default function AdminPage() {
             <TabsTrigger value="pitch">Pitch Control</TabsTrigger>
             <TabsTrigger value="leaderboard">Leaderboard</TabsTrigger>
           </TabsList>
+
+          <TabsContent value="events">
+            <EventManagement
+              currentEvent={currentEvent}
+              onEventSelect={handleEventSelect}
+              onUpdate={loadData}
+            />
+          </TabsContent>
 
           <TabsContent value="control">
             <EventControl event={currentEvent} onUpdate={loadData} />
