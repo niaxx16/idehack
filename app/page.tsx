@@ -132,14 +132,14 @@ export default function HomePage() {
       <footer className="border-t bg-white/50 backdrop-blur-sm py-4 px-4">
         <div className="container mx-auto max-w-6xl">
           <div className="flex items-center justify-center gap-4 text-sm text-muted-foreground">
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-4">
               {/* MEM Logo */}
-              <div className="relative w-12 h-12 flex-shrink-0">
+              <div className="relative w-20 h-20 flex-shrink-0">
                 <Image
                   src="/images/mem-logo.png"
                   alt="Bursa MEM Logo"
-                  width={48}
-                  height={48}
+                  width={80}
+                  height={80}
                   className="object-contain"
                 />
               </div>
