@@ -70,7 +70,7 @@ export default function TeamPage() {
 
   const handleSignOut = async () => {
     await signOut()
-    router.push('/login')
+    router.push('/')
   }
 
   if (authLoading || isLoading) {
