@@ -14,6 +14,7 @@ import { PitchControl } from '@/components/admin/pitch-control'
 import { Leaderboard } from '@/components/admin/leaderboard'
 import { MentorManagement } from '@/components/admin/mentor-management'
 import { JuryManagement } from '@/components/admin/jury-management'
+import { AdminManagement } from '@/components/admin/admin-management'
 import { TopInvestors } from '@/components/admin/top-investors'
 import { Button } from '@/components/ui/button'
 import { useRouter } from 'next/navigation'
@@ -118,12 +119,13 @@ export default function AdminPage() {
         </div>
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
-          <TabsList className="grid w-full grid-cols-7">
+          <TabsList className="grid w-full grid-cols-8">
             <TabsTrigger value="events">Events</TabsTrigger>
             <TabsTrigger value="control">Event Control</TabsTrigger>
             <TabsTrigger value="teams">Teams</TabsTrigger>
             <TabsTrigger value="mentors">Mentors</TabsTrigger>
             <TabsTrigger value="jury">Jury</TabsTrigger>
+            <TabsTrigger value="admins">Admins</TabsTrigger>
             <TabsTrigger value="pitch">Pitch Control</TabsTrigger>
             <TabsTrigger value="leaderboard">Leaderboard</TabsTrigger>
           </TabsList>
@@ -150,6 +152,10 @@ export default function AdminPage() {
 
           <TabsContent value="jury">
             <JuryManagement onUpdate={loadData} />
+          </TabsContent>
+
+          <TabsContent value="admins">
+            <AdminManagement currentUser={profile} onUpdate={loadData} />
           </TabsContent>
 
           <TabsContent value="pitch">

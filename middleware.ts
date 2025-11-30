@@ -44,12 +44,26 @@ export async function middleware(request: NextRequest) {
     // Check if user is admin
     const { data: profile } = await supabase
       .from('profiles')
-      .select('role')
+      .select('role, expiration_date, is_super_admin')
       .eq('id', user.id)
       .single()
 
     if (profile?.role !== 'admin') {
       return NextResponse.redirect(new URL('/', request.url))
+    }
+
+    // Check if admin access has expired (skip for super admins)
+    if (!profile.is_super_admin && profile.expiration_date) {
+      const expirationDate = new Date(profile.expiration_date)
+      const now = new Date()
+      if (expirationDate < now) {
+        // Admin access expired, sign out and redirect to login
+        await supabase.auth.signOut()
+        const redirectUrl = request.nextUrl.clone()
+        redirectUrl.pathname = '/login'
+        redirectUrl.searchParams.set('error', 'expired')
+        return NextResponse.redirect(redirectUrl)
+      }
     }
   }
 
