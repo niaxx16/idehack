@@ -120,15 +120,19 @@ export default function AdminPage() {
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
           <TabsList className="grid w-full grid-cols-8">
+            <TabsTrigger value="admins">Admins</TabsTrigger>
             <TabsTrigger value="events">Events</TabsTrigger>
             <TabsTrigger value="control">Event Control</TabsTrigger>
             <TabsTrigger value="teams">Teams</TabsTrigger>
             <TabsTrigger value="mentors">Mentors</TabsTrigger>
             <TabsTrigger value="jury">Jury</TabsTrigger>
-            <TabsTrigger value="admins">Admins</TabsTrigger>
             <TabsTrigger value="pitch">Pitch Control</TabsTrigger>
             <TabsTrigger value="leaderboard">Leaderboard</TabsTrigger>
           </TabsList>
+
+          <TabsContent value="admins">
+            <AdminManagement currentUser={profile} onUpdate={loadData} />
+          </TabsContent>
 
           <TabsContent value="events">
             <EventManagement
@@ -152,10 +156,6 @@ export default function AdminPage() {
 
           <TabsContent value="jury">
             <JuryManagement onUpdate={loadData} />
-          </TabsContent>
-
-          <TabsContent value="admins">
-            <AdminManagement currentUser={profile} onUpdate={loadData} />
           </TabsContent>
 
           <TabsContent value="pitch">
