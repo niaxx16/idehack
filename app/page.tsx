@@ -133,9 +133,15 @@ export default function HomePage() {
         <div className="container mx-auto max-w-6xl">
           <div className="flex items-center justify-center gap-4 text-sm text-muted-foreground">
             <div className="flex items-center gap-3">
-              {/* Logo placeholder */}
-              <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-500 rounded-lg flex items-center justify-center">
-                <span className="text-white font-bold text-xl">MEM</span>
+              {/* MEM Logo */}
+              <div className="relative w-12 h-12 flex-shrink-0">
+                <Image
+                  src="/images/mem-logo.png"
+                  alt="Bursa MEM Logo"
+                  width={48}
+                  height={48}
+                  className="object-contain"
+                />
               </div>
               <div className="text-left">
                 <p className="font-semibold text-gray-700">Developed by Bursa Provincial Directorate of National Education</p>
