@@ -75,6 +75,25 @@ export interface LeaderboardEntry {
   final_score: number
 }
 
+// Top Investor entry
+export interface WinningInvestment {
+  team_id: string
+  team_name: string
+  amount: number
+  rank: number
+  multiplier: number
+}
+
+export interface TopInvestorEntry {
+  investor_id: string
+  investor_name: string
+  investor_team_id: string
+  investor_team_name: string
+  total_invested: number
+  roi_score: number
+  winning_investments: WinningInvestment[]
+}
+
 // Extended types with relations
 export interface TeamWithDetails extends Team {
   event?: Event

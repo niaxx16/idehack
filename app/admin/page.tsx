@@ -13,6 +13,7 @@ import { PitchControl } from '@/components/admin/pitch-control'
 import { Leaderboard } from '@/components/admin/leaderboard'
 import { MentorManagement } from '@/components/admin/mentor-management'
 import { JuryManagement } from '@/components/admin/jury-management'
+import { TopInvestors } from '@/components/admin/top-investors'
 import { Button } from '@/components/ui/button'
 import { useRouter } from 'next/navigation'
 import { Loader2 } from 'lucide-react'
@@ -141,7 +142,10 @@ export default function AdminPage() {
           </TabsContent>
 
           <TabsContent value="leaderboard">
-            <Leaderboard event={currentEvent} />
+            <div className="space-y-6">
+              <Leaderboard event={currentEvent} />
+              <TopInvestors event={currentEvent} />
+            </div>
           </TabsContent>
         </Tabs>
       </div>
