@@ -56,7 +56,7 @@ export function PresentationUpload({ team, isLocked, onUpdate }: PresentationUpl
 
       // Upload to Supabase Storage
       const { error: uploadError } = await supabase.storage
-        .from('presentations')
+        .from('team-presentations')
         .upload(fileName, file, {
           cacheControl: '3600',
           upsert: false,
@@ -66,7 +66,7 @@ export function PresentationUpload({ team, isLocked, onUpdate }: PresentationUpl
 
       // Get public URL
       const { data: urlData } = supabase.storage
-        .from('presentations')
+        .from('team-presentations')
         .getPublicUrl(fileName)
 
       // Update team record with presentation URL
