@@ -41,9 +41,11 @@ export function MentorManagement({ event, teams, onUpdate }: MentorManagementPro
   const [createdPassword, setCreatedPassword] = useState('')
 
   useEffect(() => {
-    loadMentors()
+    if (event?.id) {
+      loadMentors()
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  }, [event?.id])
 
   // Real-time subscription for mentor assignments
   useEffect(() => {
@@ -71,11 +73,12 @@ export function MentorManagement({ event, teams, onUpdate }: MentorManagementPro
   const loadMentors = async () => {
     setIsLoading(true)
     try {
-      // Get all mentors
+      // Get mentors for this event only
       const { data: mentorProfiles, error: mentorError } = await supabase
         .from('profiles')
         .select('*')
         .eq('role', 'mentor')
+        .eq('event_id', event?.id)
         .order('created_at', { ascending: false })
 
       if (mentorError) throw mentorError
@@ -108,7 +111,7 @@ export function MentorManagement({ event, teams, onUpdate }: MentorManagementPro
 
   const createMentor = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (!mentorName || !mentorEmail) return
+    if (!mentorName || !mentorEmail || !event?.id) return
 
     setIsCreating(true)
     setError(null)
@@ -141,7 +144,8 @@ export function MentorManagement({ event, teams, onUpdate }: MentorManagementPro
             full_name: mentorName,
             email: mentorEmail,
             display_name: mentorName,
-            wallet_balance: 1000
+            wallet_balance: 1000,
+            event_id: event.id
           })
 
         if (insertError) {

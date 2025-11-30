@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Profile } from '@/types'
+import { Profile, Event } from '@/types'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -12,10 +12,11 @@ import { Plus, UserCheck, Loader2, Copy, Gavel } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 
 interface JuryManagementProps {
+  event: Event | null
   onUpdate: () => void
 }
 
-export function JuryManagement({ onUpdate }: JuryManagementProps) {
+export function JuryManagement({ event, onUpdate }: JuryManagementProps) {
   const [juryMembers, setJuryMembers] = useState<Profile[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [isCreating, setIsCreating] = useState(false)
@@ -33,9 +34,11 @@ export function JuryManagement({ onUpdate }: JuryManagementProps) {
   const [createdPassword, setCreatedPassword] = useState('')
 
   useEffect(() => {
-    loadJuryMembers()
+    if (event?.id) {
+      loadJuryMembers()
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  }, [event?.id])
 
   // Real-time subscription for jury updates
   useEffect(() => {
@@ -68,6 +71,7 @@ export function JuryManagement({ onUpdate }: JuryManagementProps) {
         .from('profiles')
         .select('*')
         .eq('role', 'jury')
+        .eq('event_id', event?.id)
         .order('created_at', { ascending: false })
 
       if (juryError) throw juryError
@@ -83,7 +87,7 @@ export function JuryManagement({ onUpdate }: JuryManagementProps) {
 
   const createJury = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (!juryName || !juryEmail) return
+    if (!juryName || !juryEmail || !event?.id) return
 
     setIsCreating(true)
     setError(null)
@@ -116,7 +120,8 @@ export function JuryManagement({ onUpdate }: JuryManagementProps) {
             full_name: juryName,
             email: juryEmail,
             display_name: juryName,
-            wallet_balance: 1000
+            wallet_balance: 1000,
+            event_id: event.id
           })
 
         if (insertError) {

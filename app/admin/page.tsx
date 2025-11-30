@@ -155,7 +155,7 @@ export default function AdminPage() {
           </TabsContent>
 
           <TabsContent value="jury">
-            <JuryManagement onUpdate={loadData} />
+            <JuryManagement event={currentEvent} onUpdate={loadData} />
           </TabsContent>
 
           <TabsContent value="pitch">
