@@ -105,7 +105,7 @@ export function TeamManagement({ event, teams, onUpdate }: TeamManagementProps) 
         const tableNumber = maxTableNumber + i
         teamsToCreate.push({
           event_id: event.id,
-          name: `Masa ${tableNumber}`,
+          name: `Table ${tableNumber}`,
           table_number: tableNumber,
           activation_code: activationCode,
           is_activated: false,
@@ -192,7 +192,7 @@ export function TeamManagement({ event, teams, onUpdate }: TeamManagementProps) 
                   required
                 />
                 <p className="text-xs text-muted-foreground">
-                  Teams will be named "Masa 1", "Masa 2", etc. Students will choose their own team names.
+                  Teams will be named "Table 1", "Table 2", etc. Students will choose their own team names.
                 </p>
               </div>
               <Button type="submit" disabled={isBulkCreating || !event} size="lg">
