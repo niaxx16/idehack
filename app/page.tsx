@@ -5,7 +5,8 @@ import { useRouter } from 'next/navigation'
 import { useAuth } from '@/hooks/use-auth'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { Loader2, Users, Trophy, BarChart3, Presentation } from 'lucide-react'
+import { Loader2, Sparkles, Users, Vote, Lightbulb } from 'lucide-react'
+import Image from 'next/image'
 
 export default function HomePage() {
   const router = useRouter()
@@ -35,93 +36,115 @@ export default function HomePage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
-      <div className="container mx-auto px-4 py-16">
-        <div className="text-center mb-12">
-          <h1 className="text-5xl font-bold mb-4 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-            InovaSprint
-          </h1>
-          <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-            A comprehensive platform for managing high school ideathons/hackathons with hybrid support
-          </p>
-        </div>
+    <div className="h-screen flex flex-col bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 overflow-hidden">
+      <div className="flex-1 flex flex-col justify-center py-8 px-4">
+        <div className="container mx-auto max-w-6xl">
+          {/* Header */}
+          <div className="text-center mb-8">
+            <h1 className="text-6xl font-bold mb-3 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+              InovaSprint
+            </h1>
+            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+              Lise düzeyinde fikir maratonları ve hackathonlar için kapsamlı yönetim platformu
+            </p>
+          </div>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto mb-12">
-          <Card className="hover:shadow-lg transition-shadow">
-            <CardHeader>
-              <BarChart3 className="h-10 w-10 mb-2 text-blue-600" />
-              <CardTitle>Admin Dashboard</CardTitle>
-              <CardDescription>Control event phases and manage teams</CardDescription>
-            </CardHeader>
-          </Card>
+          {/* Main Content Grid */}
+          <div className="grid lg:grid-cols-2 gap-8 items-start mb-8">
+            {/* Features */}
+            <div className="grid grid-cols-2 gap-4">
+              <Card className="hover:shadow-lg transition-all hover:scale-105">
+                <CardHeader className="pb-3">
+                  <Sparkles className="h-8 w-8 mb-2 text-blue-600" />
+                  <CardTitle className="text-base">Multi-Event</CardTitle>
+                  <CardDescription className="text-xs">Birden fazla etkinlik yönetimi</CardDescription>
+                </CardHeader>
+              </Card>
 
-          <Card className="hover:shadow-lg transition-shadow">
-            <CardHeader>
-              <Presentation className="h-10 w-10 mb-2 text-green-600" />
-              <CardTitle>Team View</CardTitle>
-              <CardDescription>Project canvas and file uploads</CardDescription>
-            </CardHeader>
-          </Card>
+              <Card className="hover:shadow-lg transition-all hover:scale-105">
+                <CardHeader className="pb-3">
+                  <Lightbulb className="h-8 w-8 mb-2 text-yellow-600" />
+                  <CardTitle className="text-base">Lean Canvas</CardTitle>
+                  <CardDescription className="text-xs">Gerçek zamanlı fikir geliştirme</CardDescription>
+                </CardHeader>
+              </Card>
 
-          <Card className="hover:shadow-lg transition-shadow">
-            <CardHeader>
-              <Users className="h-10 w-10 mb-2 text-purple-600" />
-              <CardTitle>Student View</CardTitle>
-              <CardDescription>Watch pitches, take notes, vote</CardDescription>
-            </CardHeader>
-          </Card>
+              <Card className="hover:shadow-lg transition-all hover:scale-105">
+                <CardHeader className="pb-3">
+                  <Users className="h-8 w-8 mb-2 text-purple-600" />
+                  <CardTitle className="text-base">Mentor Sistemi</CardTitle>
+                  <CardDescription className="text-xs">Anlık geri bildirim ve destek</CardDescription>
+                </CardHeader>
+              </Card>
 
-          <Card className="hover:shadow-lg transition-shadow">
-            <CardHeader>
-              <Trophy className="h-10 w-10 mb-2 text-yellow-600" />
-              <CardTitle>Jury Dashboard</CardTitle>
-              <CardDescription>Remote scoring and evaluation</CardDescription>
-            </CardHeader>
-          </Card>
-        </div>
-
-        <Card className="max-w-md mx-auto">
-          <CardHeader className="text-center">
-            <CardTitle>Get Started</CardTitle>
-            <CardDescription>Choose your role to begin</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-3">
-            <Button
-              onClick={() => router.push('/login')}
-              className="w-full"
-              size="lg"
-            >
-              Admin / Jury / Mentor Login
-            </Button>
-
-            <div className="relative">
-              <div className="absolute inset-0 flex items-center">
-                <span className="w-full border-t" />
-              </div>
-              <div className="relative flex justify-center text-xs uppercase">
-                <span className="bg-background px-2 text-muted-foreground">Or</span>
-              </div>
+              <Card className="hover:shadow-lg transition-all hover:scale-105">
+                <CardHeader className="pb-3">
+                  <Vote className="h-8 w-8 mb-2 text-green-600" />
+                  <CardTitle className="text-base">Portfolio Voting</CardTitle>
+                  <CardDescription className="text-xs">Yatırım simülasyonu ile oylama</CardDescription>
+                </CardHeader>
+              </Card>
             </div>
 
-            <Button
-              onClick={() => router.push('/join')}
-              variant="outline"
-              className="w-full"
-              size="lg"
-            >
-              Join as Student
-            </Button>
+            {/* Login Card */}
+            <Card className="shadow-xl border-2">
+              <CardHeader className="text-center pb-4">
+                <CardTitle className="text-xl">Başlayın</CardTitle>
+                <CardDescription>Rolünüze göre giriş yapın</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                <Button
+                  onClick={() => router.push('/login')}
+                  className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
+                  size="lg"
+                >
+                  Admin / Jüri / Mentor Girişi
+                </Button>
 
-            <p className="text-xs text-center text-muted-foreground mt-4">
-              Students: Scan your team&apos;s QR code to join directly
-            </p>
-          </CardContent>
-        </Card>
+                <div className="relative">
+                  <div className="absolute inset-0 flex items-center">
+                    <span className="w-full border-t" />
+                  </div>
+                  <div className="relative flex justify-center text-xs uppercase">
+                    <span className="bg-background px-2 text-muted-foreground">veya</span>
+                  </div>
+                </div>
 
-        <div className="text-center mt-12 text-sm text-muted-foreground">
-          <p>Built with Next.js, Supabase, and TypeScript</p>
+                <Button
+                  onClick={() => router.push('/join')}
+                  variant="outline"
+                  className="w-full border-2"
+                  size="lg"
+                >
+                  Öğrenci Olarak Katıl
+                </Button>
+
+                <p className="text-xs text-center text-muted-foreground pt-2">
+                  Öğrenciler: Takımınızın QR kodunu tarayarak doğrudan katılabilirsiniz
+                </p>
+              </CardContent>
+            </Card>
+          </div>
         </div>
       </div>
+
+      {/* Footer */}
+      <footer className="border-t bg-white/50 backdrop-blur-sm py-4 px-4">
+        <div className="container mx-auto max-w-6xl">
+          <div className="flex items-center justify-center gap-4 text-sm text-muted-foreground">
+            <div className="flex items-center gap-3">
+              {/* Logo placeholder */}
+              <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-500 rounded-lg flex items-center justify-center">
+                <span className="text-white font-bold text-xl">MEM</span>
+              </div>
+              <div className="text-left">
+                <p className="font-semibold text-gray-700">Bu uygulama Bursa İl Milli Eğitim Müdürlüğü</p>
+                <p className="text-xs">Ar-Ge Birimi tarafından geliştirildi.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </footer>
     </div>
   )
 }
