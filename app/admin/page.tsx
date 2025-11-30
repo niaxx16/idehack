@@ -52,25 +52,32 @@ export default function AdminPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [profile, isLoading])
 
-  const loadData = async () => {
+  const loadData = async (selectedEvent?: Event) => {
     setIsLoadingData(true)
 
-    // Load the first event (in production, you might want to select from multiple events)
-    const { data: eventData } = await supabase
-      .from('events')
-      .select('*')
-      .order('created_at', { ascending: false })
-      .limit(1)
-      .single()
+    // Use provided event or current event, or load the first event
+    let eventToUse = selectedEvent || currentEvent
 
-    if (eventData) {
-      setCurrentEvent(eventData)
+    if (!eventToUse) {
+      const { data: eventData } = await supabase
+        .from('events')
+        .select('*')
+        .order('created_at', { ascending: false })
+        .limit(1)
+        .single()
 
+      if (eventData) {
+        eventToUse = eventData
+        setCurrentEvent(eventData)
+      }
+    }
+
+    if (eventToUse) {
       // Load teams for this event
       const { data: teamsData } = await supabase
         .from('teams')
         .select('*')
-        .eq('event_id', eventData.id)
+        .eq('event_id', eventToUse.id)
         .order('table_number', { ascending: true })
 
       if (teamsData) {
@@ -88,7 +95,7 @@ export default function AdminPage() {
 
   const handleEventSelect = (event: Event) => {
     setCurrentEvent(event)
-    loadData()
+    loadData(event)
   }
 
   if (isLoading || isLoadingData) {
