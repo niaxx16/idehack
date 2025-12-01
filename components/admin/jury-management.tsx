@@ -67,11 +67,12 @@ export function JuryManagement({ event, onUpdate }: JuryManagementProps) {
   const loadJuryMembers = async () => {
     setIsLoading(true)
     try {
+      // Get all jury members (event_id NULL or matching current event)
       const { data: juryProfiles, error: juryError } = await supabase
         .from('profiles')
         .select('*')
         .eq('role', 'jury')
-        .eq('event_id', event?.id)
+        .or(`event_id.is.null,event_id.eq.${event?.id}`)
         .order('created_at', { ascending: false })
 
       if (juryError) throw juryError

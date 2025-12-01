@@ -73,12 +73,12 @@ export function MentorManagement({ event, teams, onUpdate }: MentorManagementPro
   const loadMentors = async () => {
     setIsLoading(true)
     try {
-      // Get mentors for this event only
+      // Get all mentors (event_id NULL or matching current event)
       const { data: mentorProfiles, error: mentorError } = await supabase
         .from('profiles')
         .select('*')
         .eq('role', 'mentor')
-        .eq('event_id', event?.id)
+        .or(`event_id.is.null,event_id.eq.${event?.id}`)
         .order('created_at', { ascending: false })
 
       if (mentorError) throw mentorError
