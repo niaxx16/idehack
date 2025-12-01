@@ -134,11 +134,24 @@ export default function JuryPage() {
                 <CardHeader>
                   <CardTitle>No Active Pitch</CardTitle>
                   <CardDescription>
-                    {currentEvent
-                      ? 'Waiting for a team to start pitching...'
+                    {currentEvent?.status === 'PITCHING'
+                      ? 'The admin needs to select a team and start their pitch timer in the Pitch Control panel.'
+                      : currentEvent
+                      ? 'Waiting for the pitching phase to begin...'
                       : 'No active event found'}
                   </CardDescription>
                 </CardHeader>
+                <CardContent>
+                  {currentEvent?.status === 'PITCHING' && (
+                    <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 text-sm text-blue-800">
+                      <p className="font-medium mb-1">Status: PITCHING phase active</p>
+                      <p className="text-xs">
+                        The event is in pitching phase but no team is currently presenting.
+                        The admin can select a team from the Pitch Control panel to begin.
+                      </p>
+                    </div>
+                  )}
+                </CardContent>
               </Card>
             </div>
           )}
