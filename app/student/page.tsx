@@ -3,8 +3,6 @@
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
-import { useRealtimeEvent } from '@/hooks/use-realtime-event'
-import { useEventStore } from '@/stores/event-store'
 import { Event, Team, Profile, MentorFeedbackWithMentor } from '@/types'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -29,9 +27,9 @@ interface TeamMember {
 export default function StudentPage() {
   const router = useRouter()
   const supabase = createClient()
-  const { currentEvent, setCurrentEvent } = useEventStore()
 
   const [isLoading, setIsLoading] = useState(true)
+  const [currentEvent, setCurrentEvent] = useState<Event | null>(null)
   const [team, setTeam] = useState<Team | null>(null)
   const [profile, setProfile] = useState<Profile | null>(null)
   const [members, setMembers] = useState<TeamMember[]>([])
@@ -56,11 +54,37 @@ export default function StudentPage() {
   // Feedback state
   const [feedbacks, setFeedbacks] = useState<MentorFeedbackWithMentor[]>([])
 
-  useRealtimeEvent(currentEvent?.id || null)
-
   useEffect(() => {
     loadData()
   }, [])
+
+  // Real-time event subscription
+  useEffect(() => {
+    if (!currentEvent?.id) return
+
+    const channel = supabase
+      .channel(`student-event-${currentEvent.id}`)
+      .on(
+        'postgres_changes',
+        {
+          event: 'UPDATE',
+          schema: 'public',
+          table: 'events',
+          filter: `id=eq.${currentEvent.id}`,
+        },
+        (payload) => {
+          console.log('Event updated:', payload)
+          if (payload.new) {
+            setCurrentEvent(payload.new as Event)
+          }
+        }
+      )
+      .subscribe()
+
+    return () => {
+      supabase.removeChannel(channel)
+    }
+  }, [currentEvent?.id, supabase])
 
   // Real-time feedback subscription
   useEffect(() => {
