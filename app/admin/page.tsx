@@ -70,6 +70,18 @@ export default function AdminPage() {
         eventToUse = eventData
         setCurrentEvent(eventData)
       }
+    } else {
+      // Refresh the event from database to get latest status
+      const { data: refreshedEvent } = await supabase
+        .from('events')
+        .select('*')
+        .eq('id', eventToUse.id)
+        .single()
+
+      if (refreshedEvent) {
+        eventToUse = refreshedEvent
+        setCurrentEvent(refreshedEvent)
+      }
     }
 
     if (eventToUse) {
