@@ -279,7 +279,7 @@ export default function StudentPage() {
 
   // Auto-save effect
   useEffect(() => {
-    if (!team || !isIdeation) return
+    if (!team || currentEvent?.status !== 'IDEATION') return
 
     // Clear existing timer
     if (autoSaveTimer) {
@@ -298,7 +298,7 @@ export default function StudentPage() {
       if (timer) clearTimeout(timer)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [problem, solution, targetAudience, valueProposition, keyFeatures, revenueModel])
+  }, [problem, solution, targetAudience, valueProposition, keyFeatures, revenueModel, currentEvent?.status])
 
   const handlePresentationUpload = async () => {
     if (!presentationFile || !team) return
