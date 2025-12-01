@@ -9,6 +9,7 @@ import { Progress } from '@/components/ui/progress'
 import { createClient } from '@/lib/supabase/client'
 import { Play, Pause, ExternalLink, Clock } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
+import { useHype } from '@/hooks/use-hype'
 
 interface PitchControlProps {
   event: Event | null
@@ -24,6 +25,7 @@ export function PitchControl({ event, teams, onUpdate }: PitchControlProps) {
   const [timeRemaining, setTimeRemaining] = useState<number>(0)
   const [isTimerActive, setIsTimerActive] = useState(false)
   const supabase = createClient()
+  const { hypeEvents } = useHype(event?.id || null)
 
   const currentTeam = teams.find((t) => t.id === event?.current_team_id)
 
@@ -124,7 +126,41 @@ export function PitchControl({ event, teams, onUpdate }: PitchControlProps) {
   const progressPercentage = (timeRemaining / PITCH_DURATION) * 100
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 relative">
+      {/* Emoji Animations */}
+      <div className="fixed inset-0 pointer-events-none overflow-hidden z-50">
+        {hypeEvents.map((hype) => (
+          <div
+            key={hype.timestamp}
+            className="absolute animate-float"
+            style={{
+              left: `${Math.random() * 80 + 10}%`,
+              top: '100%',
+              fontSize: '4rem',
+              animation: 'float 3s ease-out forwards',
+            }}
+          >
+            {hype.type === 'clap' ? '👏' : '🔥'}
+          </div>
+        ))}
+      </div>
+
+      <style jsx>{`
+        @keyframes float {
+          from {
+            transform: translateY(0) scale(1);
+            opacity: 1;
+          }
+          to {
+            transform: translateY(-100vh) scale(1.5);
+            opacity: 0;
+          }
+        }
+        .animate-float {
+          animation: float 3s ease-out forwards;
+        }
+      `}</style>
+
       <Card>
         <CardHeader>
           <CardTitle>Pitch Control</CardTitle>
