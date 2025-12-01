@@ -8,7 +8,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { createClient } from '@/lib/supabase/client'
 import { useVotingStore } from '@/stores/voting-store'
-import { DollarSign, Loader2, CheckCircle } from 'lucide-react'
+import { Coins, Loader2, CheckCircle } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { Progress } from '@/components/ui/progress'
 
@@ -88,7 +88,7 @@ export function PortfolioVoting({ event, profile }: PortfolioVotingProps) {
     const totalAllocated = getTotalAllocated()
 
     if (totalAllocated > WALLET_BALANCE) {
-      setError(`You can't allocate more than $${WALLET_BALANCE}`)
+      setError(`You can't allocate more than ${WALLET_BALANCE} idecoin`)
       return
     }
 
@@ -149,7 +149,7 @@ export function PortfolioVoting({ event, profile }: PortfolioVotingProps) {
         <CardHeader>
           <CardTitle>Portfolio Voting</CardTitle>
           <CardDescription>
-            Distribute your ${WALLET_BALANCE} among the teams you believe in
+            Distribute your {WALLET_BALANCE} idecoin among the teams you believe in
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -157,7 +157,7 @@ export function PortfolioVoting({ event, profile }: PortfolioVotingProps) {
             <div className="flex justify-between items-center">
               <span className="text-sm font-medium">Allocated</span>
               <Badge variant={remaining < 0 ? 'destructive' : 'default'}>
-                <DollarSign className="h-3 w-3" />
+                <Coins className="h-3 w-3 mr-1" />
                 {totalAllocated} / {WALLET_BALANCE}
               </Badge>
             </div>
@@ -166,7 +166,7 @@ export function PortfolioVoting({ event, profile }: PortfolioVotingProps) {
               className={`h-3 ${remaining < 0 ? 'bg-red-200' : ''}`}
             />
             <p className="text-xs text-muted-foreground text-right">
-              Remaining: ${remaining}
+              Remaining: {remaining} idecoin
             </p>
           </div>
 
@@ -215,7 +215,7 @@ export function PortfolioVoting({ event, profile }: PortfolioVotingProps) {
                         Investment Amount
                       </Label>
                       <div className="relative">
-                        <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                        <Coins className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                         <Input
                           id={`invest-${team.id}`}
                           type="number"
@@ -250,7 +250,7 @@ export function PortfolioVoting({ event, profile }: PortfolioVotingProps) {
             ) : (
               <>
                 <CheckCircle className="mr-2 h-5 w-5" />
-                Submit Portfolio (${totalAllocated})
+                Submit Portfolio ({totalAllocated} idecoin)
               </>
             )}
           </Button>
