@@ -11,16 +11,26 @@ import { StreamViewer } from '@/components/jury/stream-viewer'
 import { ScoringForm } from '@/components/jury/scoring-form'
 import { Loader2 } from 'lucide-react'
 import { useRouter } from 'next/navigation'
+import { useLanguage } from '@/lib/i18n/language-provider'
+import { Locale } from '@/lib/i18n/config'
 
 export default function JuryPage() {
   const router = useRouter()
   const { profile, signOut, isLoading: authLoading } = useAuth()
+  const { setLocale } = useLanguage()
   const [currentEvent, setCurrentEvent] = useState<Event | null>(null)
   const [currentTeam, setCurrentTeam] = useState<Team | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const supabase = createClient()
 
   useRealtimeEvent(currentEvent?.id || null)
+
+  // Update language when event changes
+  useEffect(() => {
+    if (currentEvent?.language) {
+      setLocale(currentEvent.language as Locale)
+    }
+  }, [currentEvent?.language, setLocale])
 
   useEffect(() => {
     if (!authLoading && profile?.role !== 'jury') {

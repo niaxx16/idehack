@@ -19,10 +19,13 @@ import { TopInvestors } from '@/components/admin/top-investors'
 import { Button } from '@/components/ui/button'
 import { useRouter } from 'next/navigation'
 import { Loader2 } from 'lucide-react'
+import { useLanguage } from '@/lib/i18n/language-provider'
+import { Locale } from '@/lib/i18n/config'
 
 export default function AdminPage() {
   const router = useRouter()
   const { profile, signOut, isLoading } = useAuth()
+  const { setLocale } = useLanguage()
   const [currentEvent, setCurrentEvent] = useState<Event | null>(null)
   const [teams, setTeams] = useState<Team[]>([])
   const [isLoadingData, setIsLoadingData] = useState(true)
@@ -30,6 +33,13 @@ export default function AdminPage() {
   const supabase = createClient()
 
   useRealtimeEvent(currentEvent?.id || null)
+
+  // Update language when event changes
+  useEffect(() => {
+    if (currentEvent?.language) {
+      setLocale(currentEvent.language as Locale)
+    }
+  }, [currentEvent?.language, setLocale])
 
   useEffect(() => {
     // Wait for loading to finish

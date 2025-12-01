@@ -9,10 +9,13 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button'
 import { Loader2, LogOut, Users, FileText, MessageSquare } from 'lucide-react'
 import { TeamCanvasView } from '@/components/mentor/team-canvas-view'
+import { useLanguage } from '@/lib/i18n/language-provider'
+import { Locale } from '@/lib/i18n/config'
 
 export default function MentorPage() {
   const router = useRouter()
   const supabase = createClient()
+  const { setLocale } = useLanguage()
 
   const [isLoading, setIsLoading] = useState(true)
   const [currentEvent, setCurrentEvent] = useState<Event | null>(null)
@@ -21,6 +24,13 @@ export default function MentorPage() {
   const [selectedTeam, setSelectedTeam] = useState<Team | null>(null)
 
   useRealtimeEvent(currentEvent?.id || null)
+
+  // Update language when event changes
+  useEffect(() => {
+    if (currentEvent?.language) {
+      setLocale(currentEvent.language as Locale)
+    }
+  }, [currentEvent?.language, setLocale])
 
   useEffect(() => {
     loadData()

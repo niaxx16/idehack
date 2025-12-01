@@ -15,6 +15,8 @@ import { NotesManager } from '@/components/student/notes-manager'
 import { PortfolioVoting } from '@/components/student/portfolio-voting'
 import { FeedbackDialog } from '@/components/student/feedback-dialog'
 import { Loader2, Users, Crown, FileText, Upload, LogOut, AlertCircle, Lightbulb, Target, Star, Zap, DollarSign, Save, CheckCircle } from 'lucide-react'
+import { useLanguage } from '@/lib/i18n/language-provider'
+import { Locale } from '@/lib/i18n/config'
 
 interface TeamMember {
   user_id: string
@@ -27,6 +29,7 @@ interface TeamMember {
 export default function StudentPage() {
   const router = useRouter()
   const supabase = createClient()
+  const { setLocale } = useLanguage()
 
   const [isLoading, setIsLoading] = useState(true)
   const [currentEvent, setCurrentEvent] = useState<Event | null>(null)
@@ -34,6 +37,13 @@ export default function StudentPage() {
   const [profile, setProfile] = useState<Profile | null>(null)
   const [members, setMembers] = useState<TeamMember[]>([])
   const [isCaptain, setIsCaptain] = useState(false)
+
+  // Update language when event changes
+  useEffect(() => {
+    if (currentEvent?.language) {
+      setLocale(currentEvent.language as Locale)
+    }
+  }, [currentEvent?.language, setLocale])
 
   // Canvas form state
   const [problem, setProblem] = useState('')
