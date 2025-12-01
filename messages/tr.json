@@ -1,0 +1,235 @@
+{
+  "common": {
+    "signOut": "Çıkış Yap",
+    "loading": "Yükleniyor...",
+    "save": "Kaydet",
+    "cancel": "İptal",
+    "delete": "Sil",
+    "edit": "Düzenle",
+    "create": "Oluştur",
+    "update": "Güncelle",
+    "submit": "Gönder",
+    "close": "Kapat",
+    "confirm": "Onayla",
+    "back": "Geri",
+    "next": "İleri",
+    "search": "Ara",
+    "filter": "Filtrele",
+    "reset": "Sıfırla",
+    "noData": "Veri bulunamadı"
+  },
+  "auth": {
+    "login": "Giriş Yap",
+    "logout": "Çıkış Yap",
+    "email": "E-posta",
+    "password": "Şifre",
+    "forgotPassword": "Şifremi Unuttum?",
+    "signIn": "Giriş Yap",
+    "signUp": "Kayıt Ol",
+    "welcomeBack": "Tekrar Hoşgeldiniz",
+    "loginDescription": "Hesabınıza erişmek için bilgilerinizi girin"
+  },
+  "home": {
+    "title": "InovaSprint",
+    "subtitle": "Lise ideathon ve hackathon'larını yönetmek için kapsamlı platform",
+    "getStarted": "Başlayın",
+    "signInDescription": "Rolünüze göre giriş yapın",
+    "adminJuryMentorLogin": "Admin / Jüri / Mentor Girişi",
+    "or": "veya",
+    "joinAsStudent": "Öğrenci Olarak Katıl",
+    "studentInfo": "Öğrenciler: Doğrudan katılmak için takımınızın QR kodunu taratın",
+    "footer": "Bu uygulama Bursa İl Milli Eğitim Müdürlüğü Ar-Ge Birimi tarafından vibe coding yöntemiyle geliştirildi.",
+    "features": {
+      "multiEvent": {
+        "title": "Çoklu Etkinlik",
+        "description": "Birden fazla etkinliği sorunsuzca yönetin"
+      },
+      "leanCanvas": {
+        "title": "Lean Canvas",
+        "description": "Gerçek zamanlı fikir geliştirme"
+      },
+      "mentorSystem": {
+        "title": "Mentor Sistemi",
+        "description": "Anında geri bildirim ve destek"
+      },
+      "portfolioVoting": {
+        "title": "Portföy Oylaması",
+        "description": "Yatırım simülasyonu oylaması"
+      }
+    }
+  },
+  "admin": {
+    "dashboard": "Admin Paneli",
+    "eventManagement": "Etkinlik Yönetimi",
+    "teamManagement": "Takım Yönetimi",
+    "noEventSelected": "Etkinlik seçilmedi",
+    "tabs": {
+      "admins": "Adminler",
+      "events": "Etkinlikler",
+      "control": "Etkinlik Kontrolü",
+      "teams": "Takımlar",
+      "mentors": "Mentorlar",
+      "jury": "Jüri",
+      "pitch": "Sunum Kontrolü",
+      "leaderboard": "Sıralama"
+    },
+    "eventControl": {
+      "title": "Etkinlik Kontrolü",
+      "description": "Etkinlik durumunu ve aşamalarını yönetin",
+      "currentStatus": "Mevcut Durum",
+      "changeStatus": "Durumu Değiştir",
+      "statuses": {
+        "WAITING": "Bekliyor",
+        "IDEATION": "Fikir Geliştirme",
+        "PITCHING": "Sunum",
+        "VOTING": "Oylama",
+        "ENDED": "Bitti"
+      }
+    },
+    "eventForm": {
+      "createEvent": "Yeni Etkinlik Oluştur",
+      "editEvent": "Etkinliği Düzenle",
+      "eventName": "Etkinlik Adı",
+      "eventDescription": "Etkinlik Açıklaması",
+      "eventLanguage": "Etkinlik Dili",
+      "selectLanguage": "Dil Seçin"
+    },
+    "teamForm": {
+      "createTeam": "Takım Oluştur",
+      "teamName": "Takım Adı",
+      "tableNumber": "Masa Numarası"
+    },
+    "pitchControl": {
+      "title": "Sunum Kontrolü",
+      "description": "Bir takım seçin ve sunum zamanlayıcısını başlatın",
+      "selectTeam": "Sunum Yapacak Takımı Seçin",
+      "chooseTeam": "Bir takım seçin...",
+      "startPitch": "Sunum Zamanlayıcısını Başlat",
+      "nowPitching": "Şimdi Sunum Yapıyor",
+      "timeRemaining": "Kalan Süre",
+      "openPresentation": "Sunumu Aç",
+      "stopPitch": "Sunumu Durdur",
+      "projectDetails": "Proje Detayları",
+      "problem": "Problem",
+      "solution": "Çözüm",
+      "targetAudience": "Hedef Kitle",
+      "revenueModel": "Gelir Modeli",
+      "notSpecified": "Belirtilmedi"
+    },
+    "leaderboard": {
+      "title": "Sıralama",
+      "description": "Final skorları jüri puanlarını (%70) ve öğrenci yatırımlarını (%30) birleştirir",
+      "noScores": "Henüz skor yok. Jüri puanlaması ve öğrenci oylamasını bekleyin.",
+      "jury": "Jüri",
+      "investment": "Yatırım",
+      "finalScore": "Final Skoru"
+    },
+    "mentorManagement": {
+      "title": "Mentor Yönetimi",
+      "description": "Mentor oluşturun ve takımlara atayın",
+      "createMentor": "Mentor Oluştur",
+      "fullName": "Ad Soyad",
+      "assignedTeams": "Atanan Takımlar",
+      "noTeamsAvailable": "Takım bulunamadı. Önce takım oluşturun.",
+      "credentialsTitle": "Mentor Başarıyla Oluşturuldu!",
+      "credentialsDescription": "Bu bilgileri kaydedin ve mentor ile güvenli bir şekilde paylaşın.",
+      "credentialsWarning": "⚠️ Önemli: Bu şifre bir daha gösterilmeyecek. Şimdi kopyalayın ve mentor ile güvenli bir şekilde paylaşın.",
+      "savedCredentials": "Bilgileri Kaydettim"
+    },
+    "juryManagement": {
+      "title": "Jüri Yönetimi",
+      "description": "Değerlendirme için jüri üyeleri oluşturun",
+      "createJury": "Jüri Üyesi Oluştur"
+    }
+  },
+  "student": {
+    "dashboard": "Öğrenci Paneli",
+    "myTeam": "Takımım",
+    "leanCanvas": "Lean Canvas",
+    "mentorFeedback": "Mentor Geri Bildirimleri",
+    "portfolio": "Portföy Oylaması",
+    "portfolioVoting": {
+      "title": "Portföy Oylaması",
+      "distribute": "{amount} idecoin'inizi inandığınız takımlara dağıtın",
+      "allocated": "Ayrılan",
+      "remaining": "Kalan",
+      "investmentAmount": "Yatırım Miktarı",
+      "submitPortfolio": "Portföyü Gönder ({amount} idecoin)",
+      "submitting": "Gönderiliyor...",
+      "submitted": "Portföy Gönderildi!",
+      "thankYou": "Oyunuz için teşekkürler. Yatırımlarınız kaydedildi.",
+      "errorMax": "{amount} idecoin'den fazla ayıramazsınız",
+      "errorMin": "Lütfen biraz yatırım ayırın"
+    },
+    "canvas": {
+      "problem": "Problem",
+      "solution": "Çözüm",
+      "keyMetrics": "Anahtar Metrikler",
+      "uniqueValue": "Benzersiz Değer Önerisi",
+      "advantage": "Haksız Avantaj",
+      "channels": "Kanallar",
+      "customerSegments": "Müşteri Segmentleri",
+      "costStructure": "Maliyet Yapısı",
+      "revenueStreams": "Gelir Akışları",
+      "targetAudience": "Hedef Kitle",
+      "revenueModel": "Gelir Modeli",
+      "saveCanvas": "Canvas'ı Kaydet",
+      "saving": "Kaydediliyor...",
+      "saved": "Canvas başarıyla kaydedildi!",
+      "error": "Canvas kaydedilemedi"
+    },
+    "notes": {
+      "title": "Notlarım",
+      "description": "Diğer takımları değerlendirirken not alın",
+      "quickRating": "Hızlı Değerlendirme",
+      "noteText": "Notlarınız",
+      "saveNote": "Notu Kaydet",
+      "table": "Masa"
+    }
+  },
+  "jury": {
+    "dashboard": "Jüri Paneli",
+    "noActivePitch": "Aktif Sunum Yok",
+    "waitingForPitch": "Adminin Sunum Kontrolü panelinden bir takım seçip sunum zamanlayıcısını başlatması gerekiyor.",
+    "waitingForPhase": "Sunum aşamasının başlaması bekleniyor...",
+    "noActiveEvent": "Aktif etkinlik bulunamadı",
+    "pitchingPhaseActive": "Durum: SUNUM aşaması aktif",
+    "pitchingPhaseInfo": "Etkinlik sunum aşamasında ancak şu anda hiçbir takım sunum yapmıyor. Admin Sunum Kontrolü panelinden bir takım seçebilir.",
+    "scoring": {
+      "title": "Takımı Puanla",
+      "innovation": "Yenilikçilik",
+      "innovationDesc": "Fikir ne kadar yenilikçi ve yaratıcı?",
+      "presentation": "Sunum",
+      "presentationDesc": "Sunum ve iletişim kalitesi",
+      "feasibility": "Uygulanabilirlik",
+      "feasibilityDesc": "Çözüm ne kadar gerçekçi ve uygulanabilir?",
+      "impact": "Etki",
+      "impactDesc": "Potansiyel sosyal ve ekonomik etki",
+      "submitScore": "Puanı Gönder",
+      "submitting": "Gönderiliyor...",
+      "alreadyScored": "Zaten Puanlandı",
+      "viewScore": "Puanınızı Görüntüleyin",
+      "successTitle": "Puan Gönderildi!",
+      "successMessage": "Değerlendirmeniz kaydedildi."
+    }
+  },
+  "mentor": {
+    "dashboard": "Mentor Paneli",
+    "myTeams": "Takımlarım",
+    "noTeams": "Henüz atanmış takım yok",
+    "waitForAssignment": "Adminin sizi takımlara atamasını bekleyin",
+    "provideFeedback": "Geri Bildirim Ver",
+    "feedbackPlaceholder": "Geri bildiriminizi buraya yazın...",
+    "submitFeedback": "Geri Bildirimi Gönder",
+    "submitting": "Gönderiliyor...",
+    "feedbackSubmitted": "Geri bildirim başarıyla gönderildi!",
+    "viewCanvas": "Canvas'ı Görüntüle"
+  },
+  "errors": {
+    "generic": "Bir şeyler yanlış gitti",
+    "networkError": "Ağ hatası. Lütfen bağlantınızı kontrol edin.",
+    "unauthorized": "Bu işlemi yapmaya yetkiniz yok",
+    "notFound": "Kaynak bulunamadı",
+    "validationError": "Lütfen girişinizi kontrol edin"
+  }
+}

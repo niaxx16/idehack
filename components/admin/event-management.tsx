@@ -8,9 +8,11 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { createClient } from '@/lib/supabase/client'
-import { Plus, Calendar, Trash2, CheckCircle, Circle, Loader2 } from 'lucide-react'
+import { Plus, Calendar, Trash2, CheckCircle, Circle, Loader2, Globe } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
+import { locales, localeNames, localeFlags, defaultLocale } from '@/lib/i18n/config'
 
 interface EventManagementProps {
   currentEvent: Event | null
@@ -28,6 +30,7 @@ export function EventManagement({ currentEvent, onEventSelect, onUpdate }: Event
   // Form fields
   const [eventName, setEventName] = useState('')
   const [eventDescription, setEventDescription] = useState('')
+  const [eventLanguage, setEventLanguage] = useState(defaultLocale)
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
@@ -65,6 +68,7 @@ export function EventManagement({ currentEvent, onEventSelect, onUpdate }: Event
         .insert({
           name: eventName.trim(),
           description: eventDescription.trim() || null,
+          language: eventLanguage,
           status: 'WAITING',
           current_team_id: null,
         })
@@ -75,6 +79,7 @@ export function EventManagement({ currentEvent, onEventSelect, onUpdate }: Event
 
       setEventName('')
       setEventDescription('')
+      setEventLanguage(defaultLocale)
       setShowCreateDialog(false)
       await loadEvents()
 
@@ -179,6 +184,27 @@ export function EventManagement({ currentEvent, onEventSelect, onUpdate }: Event
                       rows={3}
                     />
                   </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="eventLanguage">
+                      <Globe className="h-4 w-4 inline mr-1" />
+                      Event Language *
+                    </Label>
+                    <Select value={eventLanguage} onValueChange={setEventLanguage}>
+                      <SelectTrigger id="eventLanguage">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {locales.map((locale) => (
+                          <SelectItem key={locale} value={locale}>
+                            {localeFlags[locale]} {localeNames[locale]}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <p className="text-xs text-muted-foreground">
+                      All users will see the event in this language
+                    </p>
+                  </div>
                   {error && (
                     <p className="text-sm text-red-600">{error}</p>
                   )}
@@ -265,6 +291,16 @@ export function EventManagement({ currentEvent, onEventSelect, onUpdate }: Event
                             <Badge variant="outline" className="text-xs">
                               {event.status}
                             </Badge>
+                            {event.language && (
+                              <div className="flex items-center gap-1">
+                                <Globe className="h-3 w-3" />
+                                <span>
+                                  {localeFlags[event.language as keyof typeof localeFlags] || ''}
+                                  {' '}
+                                  {localeNames[event.language as keyof typeof localeNames] || event.language}
+                                </span>
+                              </div>
+                            )}
                           </div>
                         </div>
                       </div>

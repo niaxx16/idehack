@@ -1,0 +1,235 @@
+{
+  "common": {
+    "signOut": "Sign Out",
+    "loading": "Loading...",
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "create": "Create",
+    "update": "Update",
+    "submit": "Submit",
+    "close": "Close",
+    "confirm": "Confirm",
+    "back": "Back",
+    "next": "Next",
+    "search": "Search",
+    "filter": "Filter",
+    "reset": "Reset",
+    "noData": "No data available"
+  },
+  "auth": {
+    "login": "Login",
+    "logout": "Logout",
+    "email": "Email",
+    "password": "Password",
+    "forgotPassword": "Forgot Password?",
+    "signIn": "Sign In",
+    "signUp": "Sign Up",
+    "welcomeBack": "Welcome Back",
+    "loginDescription": "Enter your credentials to access your account"
+  },
+  "home": {
+    "title": "InovaSprint",
+    "subtitle": "Comprehensive platform for managing high school ideathons and hackathons",
+    "getStarted": "Get Started",
+    "signInDescription": "Sign in according to your role",
+    "adminJuryMentorLogin": "Admin / Jury / Mentor Login",
+    "or": "or",
+    "joinAsStudent": "Join as Student",
+    "studentInfo": "Students: Scan your team's QR code to join directly",
+    "footer": "This application was developed by the R&D Unit of Bursa Provincial Directorate of National Education using the vibe coding method.",
+    "features": {
+      "multiEvent": {
+        "title": "Multi-Event",
+        "description": "Manage multiple events seamlessly"
+      },
+      "leanCanvas": {
+        "title": "Lean Canvas",
+        "description": "Real-time idea development"
+      },
+      "mentorSystem": {
+        "title": "Mentor System",
+        "description": "Instant feedback and support"
+      },
+      "portfolioVoting": {
+        "title": "Portfolio Voting",
+        "description": "Investment simulation voting"
+      }
+    }
+  },
+  "admin": {
+    "dashboard": "Admin Dashboard",
+    "eventManagement": "Event Management",
+    "teamManagement": "Team Management",
+    "noEventSelected": "No event selected",
+    "tabs": {
+      "admins": "Admins",
+      "events": "Events",
+      "control": "Event Control",
+      "teams": "Teams",
+      "mentors": "Mentors",
+      "jury": "Jury",
+      "pitch": "Pitch Control",
+      "leaderboard": "Leaderboard"
+    },
+    "eventControl": {
+      "title": "Event Control",
+      "description": "Manage event status and phases",
+      "currentStatus": "Current Status",
+      "changeStatus": "Change Status",
+      "statuses": {
+        "WAITING": "Waiting",
+        "IDEATION": "Ideation",
+        "PITCHING": "Pitching",
+        "VOTING": "Voting",
+        "ENDED": "Ended"
+      }
+    },
+    "eventForm": {
+      "createEvent": "Create New Event",
+      "editEvent": "Edit Event",
+      "eventName": "Event Name",
+      "eventDescription": "Event Description",
+      "eventLanguage": "Event Language",
+      "selectLanguage": "Select Language"
+    },
+    "teamForm": {
+      "createTeam": "Create Team",
+      "teamName": "Team Name",
+      "tableNumber": "Table Number"
+    },
+    "pitchControl": {
+      "title": "Pitch Control",
+      "description": "Select a team and start their pitch timer",
+      "selectTeam": "Select Team to Pitch",
+      "chooseTeam": "Choose a team...",
+      "startPitch": "Start Pitch Timer",
+      "nowPitching": "Now Pitching",
+      "timeRemaining": "Time Remaining",
+      "openPresentation": "Open Presentation",
+      "stopPitch": "Stop Pitch",
+      "projectDetails": "Project Details",
+      "problem": "Problem",
+      "solution": "Solution",
+      "targetAudience": "Target Audience",
+      "revenueModel": "Revenue Model",
+      "notSpecified": "Not specified"
+    },
+    "leaderboard": {
+      "title": "Leaderboard",
+      "description": "Final scores combine jury scores (70%) and student investments (30%)",
+      "noScores": "No scores yet. Wait for jury scoring and student voting.",
+      "jury": "Jury",
+      "investment": "Investment",
+      "finalScore": "Final Score"
+    },
+    "mentorManagement": {
+      "title": "Mentor Management",
+      "description": "Create mentors and assign them to teams",
+      "createMentor": "Create Mentor",
+      "fullName": "Full Name",
+      "assignedTeams": "Assigned Teams",
+      "noTeamsAvailable": "No teams available. Create teams first.",
+      "credentialsTitle": "Mentor Created Successfully!",
+      "credentialsDescription": "Save these credentials and share them with the mentor securely.",
+      "credentialsWarning": "⚠️ Important: This password will not be shown again. Copy it now and share it with the mentor securely.",
+      "savedCredentials": "I've Saved the Credentials"
+    },
+    "juryManagement": {
+      "title": "Jury Management",
+      "description": "Create jury members for evaluation",
+      "createJury": "Create Jury Member"
+    }
+  },
+  "student": {
+    "dashboard": "Student Dashboard",
+    "myTeam": "My Team",
+    "leanCanvas": "Lean Canvas",
+    "mentorFeedback": "Mentor Feedback",
+    "portfolio": "Portfolio Voting",
+    "portfolioVoting": {
+      "title": "Portfolio Voting",
+      "distribute": "Distribute your {amount} idecoin among the teams you believe in",
+      "allocated": "Allocated",
+      "remaining": "Remaining",
+      "investmentAmount": "Investment Amount",
+      "submitPortfolio": "Submit Portfolio ({amount} idecoin)",
+      "submitting": "Submitting...",
+      "submitted": "Portfolio Submitted!",
+      "thankYou": "Thank you for voting. Your investments have been recorded.",
+      "errorMax": "You can't allocate more than {amount} idecoin",
+      "errorMin": "Please allocate some investment"
+    },
+    "canvas": {
+      "problem": "Problem",
+      "solution": "Solution",
+      "keyMetrics": "Key Metrics",
+      "uniqueValue": "Unique Value Proposition",
+      "advantage": "Unfair Advantage",
+      "channels": "Channels",
+      "customerSegments": "Customer Segments",
+      "costStructure": "Cost Structure",
+      "revenueStreams": "Revenue Streams",
+      "targetAudience": "Target Audience",
+      "revenueModel": "Revenue Model",
+      "saveCanvas": "Save Canvas",
+      "saving": "Saving...",
+      "saved": "Canvas saved successfully!",
+      "error": "Failed to save canvas"
+    },
+    "notes": {
+      "title": "My Notes",
+      "description": "Take notes while evaluating other teams",
+      "quickRating": "Quick Rating",
+      "noteText": "Your Notes",
+      "saveNote": "Save Note",
+      "table": "Table"
+    }
+  },
+  "jury": {
+    "dashboard": "Jury Dashboard",
+    "noActivePitch": "No Active Pitch",
+    "waitingForPitch": "The admin needs to select a team and start their pitch timer in the Pitch Control panel.",
+    "waitingForPhase": "Waiting for the pitching phase to begin...",
+    "noActiveEvent": "No active event found",
+    "pitchingPhaseActive": "Status: PITCHING phase active",
+    "pitchingPhaseInfo": "The event is in pitching phase but no team is currently presenting. The admin can select a team from the Pitch Control panel to begin.",
+    "scoring": {
+      "title": "Score Team",
+      "innovation": "Innovation",
+      "innovationDesc": "How innovative and creative is the idea?",
+      "presentation": "Presentation",
+      "presentationDesc": "Quality of presentation and communication",
+      "feasibility": "Feasibility",
+      "feasibilityDesc": "How realistic and implementable is the solution?",
+      "impact": "Impact",
+      "impactDesc": "Potential social and economic impact",
+      "submitScore": "Submit Score",
+      "submitting": "Submitting...",
+      "alreadyScored": "Already Scored",
+      "viewScore": "View Your Score",
+      "successTitle": "Score Submitted!",
+      "successMessage": "Your evaluation has been recorded."
+    }
+  },
+  "mentor": {
+    "dashboard": "Mentor Dashboard",
+    "myTeams": "My Teams",
+    "noTeams": "No teams assigned yet",
+    "waitForAssignment": "Wait for admin to assign you to teams",
+    "provideFeedback": "Provide Feedback",
+    "feedbackPlaceholder": "Write your feedback here...",
+    "submitFeedback": "Submit Feedback",
+    "submitting": "Submitting...",
+    "feedbackSubmitted": "Feedback submitted successfully!",
+    "viewCanvas": "View Canvas"
+  },
+  "errors": {
+    "generic": "Something went wrong",
+    "networkError": "Network error. Please check your connection.",
+    "unauthorized": "You are not authorized to perform this action",
+    "notFound": "Resource not found",
+    "validationError": "Please check your input"
+  }
+}

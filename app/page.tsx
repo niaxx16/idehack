@@ -7,10 +7,12 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button'
 import { Loader2, Sparkles, Users, Vote, Lightbulb } from 'lucide-react'
 import Image from 'next/image'
+import { useTranslations } from 'next-intl'
 
 export default function HomePage() {
   const router = useRouter()
   const { profile, isLoading } = useAuth()
+  const t = useTranslations('home')
 
   useEffect(() => {
     if (!isLoading && profile) {
@@ -42,10 +44,10 @@ export default function HomePage() {
           {/* Header */}
           <div className="text-center mb-8">
             <h1 className="text-6xl font-bold mb-3 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-              InovaSprint
+              {t('title')}
             </h1>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              Comprehensive platform for managing high school ideathons and hackathons
+              {t('subtitle')}
             </p>
           </div>
 
@@ -56,32 +58,32 @@ export default function HomePage() {
               <Card className="hover:shadow-lg transition-all hover:scale-105">
                 <CardHeader className="pb-3">
                   <Sparkles className="h-8 w-8 mb-2 text-blue-600" />
-                  <CardTitle className="text-base">Multi-Event</CardTitle>
-                  <CardDescription className="text-xs">Manage multiple events seamlessly</CardDescription>
+                  <CardTitle className="text-base">{t('features.multiEvent.title')}</CardTitle>
+                  <CardDescription className="text-xs">{t('features.multiEvent.description')}</CardDescription>
                 </CardHeader>
               </Card>
 
               <Card className="hover:shadow-lg transition-all hover:scale-105">
                 <CardHeader className="pb-3">
                   <Lightbulb className="h-8 w-8 mb-2 text-yellow-600" />
-                  <CardTitle className="text-base">Lean Canvas</CardTitle>
-                  <CardDescription className="text-xs">Real-time idea development</CardDescription>
+                  <CardTitle className="text-base">{t('features.leanCanvas.title')}</CardTitle>
+                  <CardDescription className="text-xs">{t('features.leanCanvas.description')}</CardDescription>
                 </CardHeader>
               </Card>
 
               <Card className="hover:shadow-lg transition-all hover:scale-105">
                 <CardHeader className="pb-3">
                   <Users className="h-8 w-8 mb-2 text-purple-600" />
-                  <CardTitle className="text-base">Mentor System</CardTitle>
-                  <CardDescription className="text-xs">Instant feedback and support</CardDescription>
+                  <CardTitle className="text-base">{t('features.mentorSystem.title')}</CardTitle>
+                  <CardDescription className="text-xs">{t('features.mentorSystem.description')}</CardDescription>
                 </CardHeader>
               </Card>
 
               <Card className="hover:shadow-lg transition-all hover:scale-105">
                 <CardHeader className="pb-3">
                   <Vote className="h-8 w-8 mb-2 text-green-600" />
-                  <CardTitle className="text-base">Portfolio Voting</CardTitle>
-                  <CardDescription className="text-xs">Investment simulation voting</CardDescription>
+                  <CardTitle className="text-base">{t('features.portfolioVoting.title')}</CardTitle>
+                  <CardDescription className="text-xs">{t('features.portfolioVoting.description')}</CardDescription>
                 </CardHeader>
               </Card>
             </div>
@@ -89,8 +91,8 @@ export default function HomePage() {
             {/* Login Card */}
             <Card className="shadow-xl border-2">
               <CardHeader className="text-center pb-4">
-                <CardTitle className="text-xl">Get Started</CardTitle>
-                <CardDescription>Sign in according to your role</CardDescription>
+                <CardTitle className="text-xl">{t('getStarted')}</CardTitle>
+                <CardDescription>{t('signInDescription')}</CardDescription>
               </CardHeader>
               <CardContent className="space-y-3">
                 <Button
@@ -98,7 +100,7 @@ export default function HomePage() {
                   className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
                   size="lg"
                 >
-                  Admin / Jury / Mentor Login
+                  {t('adminJuryMentorLogin')}
                 </Button>
 
                 <div className="relative">
@@ -106,7 +108,7 @@ export default function HomePage() {
                     <span className="w-full border-t" />
                   </div>
                   <div className="relative flex justify-center text-xs uppercase">
-                    <span className="bg-background px-2 text-muted-foreground">or</span>
+                    <span className="bg-background px-2 text-muted-foreground">{t('or')}</span>
                   </div>
                 </div>
 
@@ -116,11 +118,11 @@ export default function HomePage() {
                   className="w-full border-2"
                   size="lg"
                 >
-                  Join as Student
+                  {t('joinAsStudent')}
                 </Button>
 
                 <p className="text-xs text-center text-muted-foreground pt-2">
-                  Students: Scan your team&apos;s QR code to join directly
+                  {t('studentInfo')}
                 </p>
               </CardContent>
             </Card>
@@ -144,7 +146,7 @@ export default function HomePage() {
               </div>
               <div className="text-left">
                 <p className="font-semibold text-gray-700">
-                  This application was developed by the R&D Unit of Bursa Provincial Directorate of National Education using the vibe coding method.
+                  {t('footer')}
                 </p>
               </div>
             </div>
