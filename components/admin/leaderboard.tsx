@@ -4,8 +4,9 @@ import { useEffect, useState } from 'react'
 import { Event, LeaderboardEntry } from '@/types'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { createClient } from '@/lib/supabase/client'
-import { Trophy, Medal, Award, DollarSign, Star } from 'lucide-react'
+import { Trophy, Medal, Award, Coins, Star } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
+import { useTranslations } from 'next-intl'
 
 interface LeaderboardProps {
   event: Event | null
@@ -15,6 +16,7 @@ export function Leaderboard({ event }: LeaderboardProps) {
   const [entries, setEntries] = useState<LeaderboardEntry[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const supabase = createClient()
+  const t = useTranslations('admin.leaderboard')
 
   useEffect(() => {
     if (!event) return
@@ -69,17 +71,17 @@ export function Leaderboard({ event }: LeaderboardProps) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Leaderboard</CardTitle>
+        <CardTitle>{t('title')}</CardTitle>
         <CardDescription>
-          Final scores combine jury scores (70%) and student investments (30%)
+          {t('description')}
         </CardDescription>
       </CardHeader>
       <CardContent>
         {isLoading ? (
-          <div className="text-center py-8 text-muted-foreground">Loading...</div>
+          <div className="text-center py-8 text-muted-foreground">{t('noScores')}</div>
         ) : entries.length === 0 ? (
           <div className="text-center py-8 text-muted-foreground">
-            No scores yet. Wait for jury scoring and student voting.
+            {t('noScores')}
           </div>
         ) : (
           <div className="space-y-3">
@@ -107,11 +109,11 @@ export function Leaderboard({ event }: LeaderboardProps) {
                   <div className="flex flex-wrap gap-3 mt-1 text-sm text-muted-foreground">
                     <div className="flex items-center gap-1">
                       <Star className="h-4 w-4" />
-                      <span>Jury: {entry.jury_avg_score.toFixed(1)}/40</span>
+                      <span>{t('jury')}: {entry.jury_avg_score.toFixed(1)}/40</span>
                     </div>
                     <div className="flex items-center gap-1">
-                      <DollarSign className="h-4 w-4" />
-                      <span>Investment: ${entry.total_investment}</span>
+                      <Coins className="h-4 w-4" />
+                      <span>{t('investment')}: {entry.total_investment} idecoin</span>
                     </div>
                   </div>
                 </div>
@@ -120,7 +122,7 @@ export function Leaderboard({ event }: LeaderboardProps) {
                   <Badge variant="outline" className="text-lg font-bold">
                     {entry.final_score.toFixed(2)}
                   </Badge>
-                  <p className="text-xs text-muted-foreground mt-1">Final Score</p>
+                  <p className="text-xs text-muted-foreground mt-1">{t('finalScore')}</p>
                 </div>
               </div>
             ))}

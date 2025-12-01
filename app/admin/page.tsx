@@ -21,11 +21,14 @@ import { useRouter } from 'next/navigation'
 import { Loader2 } from 'lucide-react'
 import { useLanguage } from '@/lib/i18n/language-provider'
 import { Locale } from '@/lib/i18n/config'
+import { useTranslations } from 'next-intl'
 
 export default function AdminPage() {
   const router = useRouter()
   const { profile, signOut, isLoading } = useAuth()
   const { setLocale } = useLanguage()
+  const t = useTranslations('admin')
+  const tCommon = useTranslations('common')
   const [currentEvent, setCurrentEvent] = useState<Event | null>(null)
   const [teams, setTeams] = useState<Team[]>([])
   const [isLoadingData, setIsLoadingData] = useState(true)
@@ -137,26 +140,26 @@ export default function AdminPage() {
       <div className="max-w-7xl mx-auto space-y-6">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold">Admin Dashboard</h1>
+            <h1 className="text-3xl font-bold">{t('dashboard')}</h1>
             <p className="text-muted-foreground">
-              {currentEvent?.name || 'No event selected'}
+              {currentEvent?.name || t('noEventSelected')}
             </p>
           </div>
           <Button variant="outline" onClick={handleSignOut}>
-            Sign Out
+            {tCommon('signOut')}
           </Button>
         </div>
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
           <TabsList className="grid w-full grid-cols-8">
-            <TabsTrigger value="admins">Admins</TabsTrigger>
-            <TabsTrigger value="events">Events</TabsTrigger>
-            <TabsTrigger value="control">Event Control</TabsTrigger>
-            <TabsTrigger value="teams">Teams</TabsTrigger>
-            <TabsTrigger value="mentors">Mentors</TabsTrigger>
-            <TabsTrigger value="jury">Jury</TabsTrigger>
-            <TabsTrigger value="pitch">Pitch Control</TabsTrigger>
-            <TabsTrigger value="leaderboard">Leaderboard</TabsTrigger>
+            <TabsTrigger value="admins">{t('tabs.admins')}</TabsTrigger>
+            <TabsTrigger value="events">{t('tabs.events')}</TabsTrigger>
+            <TabsTrigger value="control">{t('tabs.control')}</TabsTrigger>
+            <TabsTrigger value="teams">{t('tabs.teams')}</TabsTrigger>
+            <TabsTrigger value="mentors">{t('tabs.mentors')}</TabsTrigger>
+            <TabsTrigger value="jury">{t('tabs.jury')}</TabsTrigger>
+            <TabsTrigger value="pitch">{t('tabs.pitch')}</TabsTrigger>
+            <TabsTrigger value="leaderboard">{t('tabs.leaderboard')}</TabsTrigger>
           </TabsList>
 
           <TabsContent value="admins">

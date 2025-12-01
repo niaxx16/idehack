@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { createClient } from '@/lib/supabase/client'
 import { Loader2 } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 
 interface EventControlProps {
   event: Event | null
@@ -22,18 +23,10 @@ const statusColors: Record<EventStatus, string> = {
   COMPLETED: 'bg-red-500',
 }
 
-const statusLabels: Record<EventStatus, string> = {
-  WAITING: 'Waiting',
-  IDEATION: 'Ideation Phase',
-  LOCKED: 'Locked',
-  PITCHING: 'Pitching Phase',
-  VOTING: 'Voting Phase',
-  COMPLETED: 'Completed',
-}
-
 export function EventControl({ event, onUpdate }: EventControlProps) {
   const [isUpdating, setIsUpdating] = useState(false)
   const supabase = createClient()
+  const t = useTranslations('admin.eventControl')
 
   const updateStatus = async (newStatus: EventStatus) => {
     if (!event) return
@@ -68,14 +61,14 @@ export function EventControl({ event, onUpdate }: EventControlProps) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Event Status Control</CardTitle>
-        <CardDescription>Control the current phase of the hackathon</CardDescription>
+        <CardTitle>{t('title')}</CardTitle>
+        <CardDescription>{t('description')}</CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
         <div>
-          <p className="text-sm font-medium mb-2">Current Status:</p>
+          <p className="text-sm font-medium mb-2">{t('currentStatus')}</p>
           <Badge className={statusColors[event.status]}>
-            {statusLabels[event.status]}
+            {t(`statuses.${event.status}`)}
           </Badge>
         </div>
 
@@ -85,7 +78,7 @@ export function EventControl({ event, onUpdate }: EventControlProps) {
             onClick={() => updateStatus('WAITING')}
             disabled={isUpdating || event.status === 'WAITING'}
           >
-            {isUpdating ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Waiting'}
+            {isUpdating ? <Loader2 className="h-4 w-4 animate-spin" /> : t('statuses.WAITING')}
           </Button>
 
           <Button
@@ -93,7 +86,7 @@ export function EventControl({ event, onUpdate }: EventControlProps) {
             onClick={() => updateStatus('IDEATION')}
             disabled={isUpdating || event.status === 'IDEATION'}
           >
-            {isUpdating ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Start Ideation'}
+            {isUpdating ? <Loader2 className="h-4 w-4 animate-spin" /> : t('statuses.IDEATION')}
           </Button>
 
           <Button
@@ -109,7 +102,7 @@ export function EventControl({ event, onUpdate }: EventControlProps) {
             onClick={() => updateStatus('PITCHING')}
             disabled={isUpdating || event.status === 'PITCHING'}
           >
-            {isUpdating ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Start Pitching'}
+            {isUpdating ? <Loader2 className="h-4 w-4 animate-spin" /> : t('statuses.PITCHING')}
           </Button>
 
           <Button
@@ -117,7 +110,7 @@ export function EventControl({ event, onUpdate }: EventControlProps) {
             onClick={() => updateStatus('VOTING')}
             disabled={isUpdating || event.status === 'VOTING'}
           >
-            {isUpdating ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Start Voting'}
+            {isUpdating ? <Loader2 className="h-4 w-4 animate-spin" /> : t('statuses.VOTING')}
           </Button>
 
           <Button
