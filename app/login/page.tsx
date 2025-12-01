@@ -7,10 +7,14 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Label } from '@/components/ui/label'
+import { useTranslations } from 'next-intl'
 
 export default function LoginPage() {
   const router = useRouter()
   const { signInWithEmail, signInAnonymously } = useAuth()
+  const t = useTranslations('auth')
+  const tCommon = useTranslations('common')
+  const tHome = useTranslations('home')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [isLoading, setIsLoading] = useState(false)
@@ -50,13 +54,13 @@ export default function LoginPage() {
     <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-blue-50 to-indigo-100">
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
-          <CardTitle className="text-3xl font-bold">InovaSprint</CardTitle>
-          <CardDescription>Hackathon Management Platform</CardDescription>
+          <CardTitle className="text-3xl font-bold">{tHome('title')}</CardTitle>
+          <CardDescription>{tHome('subtitle')}</CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
           <form onSubmit={handleEmailLogin} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
+              <Label htmlFor="email">{t('email')}</Label>
               <Input
                 id="email"
                 type="email"
@@ -67,7 +71,7 @@ export default function LoginPage() {
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
+              <Label htmlFor="password">{t('password')}</Label>
               <Input
                 id="password"
                 type="password"
@@ -78,7 +82,7 @@ export default function LoginPage() {
             </div>
             {error && <p className="text-sm text-red-600">{error}</p>}
             <Button type="submit" className="w-full" disabled={isLoading}>
-              {isLoading ? 'Signing in...' : 'Sign In'}
+              {isLoading ? `${t('signIn')}...` : t('signIn')}
             </Button>
           </form>
 
@@ -87,7 +91,7 @@ export default function LoginPage() {
               <span className="w-full border-t" />
             </div>
             <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-card px-2 text-muted-foreground">Or</span>
+              <span className="bg-card px-2 text-muted-foreground">{tHome('or')}</span>
             </div>
           </div>
 
