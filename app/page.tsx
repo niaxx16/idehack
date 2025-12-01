@@ -6,7 +6,6 @@ import { useAuth } from '@/hooks/use-auth'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Loader2, Sparkles, Users, Vote, Lightbulb } from 'lucide-react'
-import Image from 'next/image'
 
 export default function HomePage() {
   const router = useRouter()
@@ -131,23 +130,8 @@ export default function HomePage() {
       {/* Footer */}
       <footer className="border-t bg-white/50 backdrop-blur-sm py-4 px-4">
         <div className="container mx-auto max-w-6xl">
-          <div className="flex items-center justify-center gap-4 text-sm text-muted-foreground">
-            <div className="flex items-center gap-6">
-              {/* MEM Logo */}
-              <div className="relative flex-shrink-0" style={{ width: '250px', height: '100px' }}>
-                <Image
-                  src="/images/mem-logo.png"
-                  alt="Bursa MEM Logo"
-                  width={250}
-                  height={100}
-                  className="object-contain"
-                />
-              </div>
-              <div className="text-left">
-                <p className="font-semibold text-gray-700">Developed by Bursa Provincial Directorate of National Education</p>
-                <p className="text-xs">Research and Development Unit</p>
-              </div>
-            </div>
+          <div className="flex items-center justify-center text-sm text-muted-foreground">
+            <p>Bu uygulama Ahmet ATASAYAR tarafından geliştirildi.</p>
           </div>
         </div>
       </footer>
