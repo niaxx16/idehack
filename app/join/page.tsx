@@ -147,16 +147,33 @@ function JoinFormContent() {
             </Button>
           </form>
 
-          <div className="mt-6 pt-6 border-t space-y-3">
+          <div className="mt-6 pt-6 border-t space-y-4">
             <p className="text-xs text-center text-muted-foreground">
               Don't have a code? Ask your event organizer or scan the QR code on your table.
             </p>
-            <Link href="/rejoin">
-              <Button variant="ghost" className="w-full" size="sm">
-                <Key className="mr-2 h-4 w-4" />
-                Already have a personal code? Rejoin here
-              </Button>
-            </Link>
+
+            {/* Rejoin Card - More Prominent */}
+            <div className="p-4 bg-gradient-to-r from-purple-50 to-blue-50 border-2 border-purple-200 rounded-lg">
+              <div className="flex items-center justify-center gap-2 mb-2">
+                <Key className="h-5 w-5 text-purple-600" />
+                <p className="text-sm font-semibold text-purple-900">
+                  Already Joined Before?
+                </p>
+              </div>
+              <p className="text-xs text-center text-purple-700 mb-3">
+                Use your personal code to return to your team
+              </p>
+              <Link href="/rejoin" className="block">
+                <Button
+                  variant="default"
+                  className="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700"
+                  size="lg"
+                >
+                  <Key className="mr-2 h-5 w-5" />
+                  Rejoin with Personal Code
+                </Button>
+              </Link>
+            </div>
           </div>
         </CardContent>
       </Card>
