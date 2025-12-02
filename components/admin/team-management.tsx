@@ -274,6 +274,32 @@ export function TeamManagement({ event, teams, onUpdate }: TeamManagementProps) 
                         margin: 1cm;
                       }
 
+                      /* Hide everything except dialog content */
+                      body > :not([data-radix-portal]) {
+                        display: none !important;
+                      }
+
+                      /* Show only the dialog content */
+                      [data-radix-portal] {
+                        position: static !important;
+                        display: block !important;
+                      }
+
+                      /* Hide overlay and ensure single render */
+                      [data-radix-dialog-overlay] {
+                        display: none !important;
+                      }
+
+                      [data-radix-dialog-content] {
+                        position: static !important;
+                        max-width: 100% !important;
+                        max-height: 100% !important;
+                        margin: 0 !important;
+                        padding: 0 !important;
+                        box-shadow: none !important;
+                        border: none !important;
+                      }
+
                       .qr-card {
                         page-break-inside: avoid;
                         break-inside: avoid;
@@ -306,9 +332,9 @@ export function TeamManagement({ event, teams, onUpdate }: TeamManagementProps) 
                             <p className="text-xs text-muted-foreground print:text-black">{t('teamsList.activationCode')}</p>
                             <p className="text-2xl font-bold font-mono tracking-wider print:text-xl break-all">{team.activation_code}</p>
                           </div>
-                          <p className="text-xs text-center text-muted-foreground print:text-black print:text-[10px] w-full break-words">
-                            {t('qrDialog.scanInstruction')}
-                          </p>
+                          <div className="text-xs text-center text-muted-foreground print:text-black print:text-[9px] w-full">
+                            <p className="whitespace-nowrap">idehack-bursaarge.vercel.app/join</p>
+                          </div>
                         </div>
                       )
                     })}
