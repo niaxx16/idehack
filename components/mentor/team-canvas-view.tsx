@@ -255,7 +255,12 @@ export function TeamCanvasView({ team, onClose }: TeamCanvasViewProps) {
                 </div>
 
                 {/* Feedback button */}
-                <Dialog>
+                <Dialog open={selectedSection === config.key} onOpenChange={(open) => {
+                  if (!open) {
+                    setSelectedSection(null)
+                    setFeedbackText('')
+                  }
+                }}>
                   <DialogTrigger asChild>
                     <Button
                       variant="outline"
