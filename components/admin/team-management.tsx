@@ -9,7 +9,7 @@ import { Label } from '@/components/ui/label'
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible'
 import { createClient } from '@/lib/supabase/client'
-import { Plus, Users, FileText, ChevronDown, Crown, UserCircle, Clock } from 'lucide-react'
+import { Plus, Users, FileText, ChevronDown, Crown, UserCircle, Clock, Eye, EyeOff, Key } from 'lucide-react'
 import { QRCodeSVG } from 'qrcode.react'
 import { useTranslations } from 'next-intl'
 
@@ -39,6 +39,8 @@ export function TeamManagement({ event, teams, onUpdate }: TeamManagementProps) 
   const [bulkCount, setBulkCount] = useState('')
   const [isBulkCreating, setIsBulkCreating] = useState(false)
   const [expandedTeams, setExpandedTeams] = useState<Set<string>>(new Set())
+  const [personalCodes, setPersonalCodes] = useState<Record<string, Record<string, string>>>({}) // teamId -> userId -> code
+  const [visibleCodes, setVisibleCodes] = useState<Set<string>>(new Set()) // Set of userId's whose codes are visible
   const supabase = createClient()
 
   // Real-time subscription for team updates
@@ -66,14 +68,63 @@ export function TeamManagement({ event, teams, onUpdate }: TeamManagementProps) 
     }
   }, [event?.id, onUpdate, supabase])
 
-  const toggleTeamExpanded = (teamId: string) => {
+  const toggleTeamExpanded = async (teamId: string) => {
     const newExpanded = new Set(expandedTeams)
     if (newExpanded.has(teamId)) {
       newExpanded.delete(teamId)
     } else {
       newExpanded.add(teamId)
+      // Fetch personal codes for this team if not already loaded
+      if (!personalCodes[teamId]) {
+        await loadPersonalCodes(teamId)
+      }
     }
     setExpandedTeams(newExpanded)
+  }
+
+  const loadPersonalCodes = async (teamId: string) => {
+    try {
+      const team = teams.find(t => t.id === teamId)
+      if (!team) return
+
+      const members = (team.team_members as TeamMember[]) || []
+      const userIds = members.map(m => m.user_id)
+
+      if (userIds.length === 0) return
+
+      // Fetch personal codes from profiles
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('id, personal_code')
+        .in('id', userIds)
+
+      if (error) throw error
+
+      // Build mapping: userId -> personal_code
+      const codeMap: Record<string, string> = {}
+      data?.forEach(profile => {
+        if (profile.personal_code) {
+          codeMap[profile.id] = profile.personal_code
+        }
+      })
+
+      setPersonalCodes(prev => ({
+        ...prev,
+        [teamId]: codeMap
+      }))
+    } catch (error) {
+      console.error('Failed to load personal codes:', error)
+    }
+  }
+
+  const toggleCodeVisibility = (userId: string) => {
+    const newVisible = new Set(visibleCodes)
+    if (newVisible.has(userId)) {
+      newVisible.delete(userId)
+    } else {
+      newVisible.add(userId)
+    }
+    setVisibleCodes(newVisible)
   }
 
   const createBulkTeams = async (e: React.FormEvent) => {
@@ -427,6 +478,34 @@ export function TeamManagement({ event, teams, onUpdate }: TeamManagementProps) 
                                     minute: '2-digit'
                                   })}</span>
                                 </div>
+                                {/* Personal Code */}
+                                {personalCodes[team.id]?.[member.user_id] && (
+                                  <div className="flex items-center gap-2 mt-2 pt-2 border-t border-slate-200">
+                                    <Key className="h-3 w-3 text-purple-600 flex-shrink-0" />
+                                    <span className="text-[10px] text-slate-600 font-medium">Code:</span>
+                                    <code className="text-[10px] font-mono font-bold text-purple-900 flex-1">
+                                      {visibleCodes.has(member.user_id)
+                                        ? personalCodes[team.id][member.user_id]
+                                        : '••••••'}
+                                    </code>
+                                    <Button
+                                      variant="ghost"
+                                      size="icon"
+                                      className="h-5 w-5 hover:bg-purple-100"
+                                      onClick={(e) => {
+                                        e.stopPropagation()
+                                        toggleCodeVisibility(member.user_id)
+                                      }}
+                                      title={visibleCodes.has(member.user_id) ? 'Hide code' : 'Show code'}
+                                    >
+                                      {visibleCodes.has(member.user_id) ? (
+                                        <EyeOff className="h-3 w-3 text-purple-600" />
+                                      ) : (
+                                        <Eye className="h-3 w-3 text-purple-600" />
+                                      )}
+                                    </Button>
+                                  </div>
+                                )}
                               </div>
                             ))}
                           </div>
