@@ -86,6 +86,29 @@ export function JuryManagement({ event, onUpdate }: JuryManagementProps) {
     }
   }
 
+  const generatePassword = () => {
+    const uppercase = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+    const lowercase = 'abcdefghijklmnopqrstuvwxyz'
+    const numbers = '0123456789'
+    const allChars = uppercase + lowercase + numbers
+
+    let password = ''
+    // Ensure at least one uppercase letter
+    password += uppercase[Math.floor(Math.random() * uppercase.length)]
+    // Ensure at least one lowercase letter
+    password += lowercase[Math.floor(Math.random() * lowercase.length)]
+    // Ensure at least one number
+    password += numbers[Math.floor(Math.random() * numbers.length)]
+
+    // Fill remaining 5 characters randomly
+    for (let i = 0; i < 5; i++) {
+      password += allChars[Math.floor(Math.random() * allChars.length)]
+    }
+
+    // Shuffle the password characters
+    return password.split('').sort(() => Math.random() - 0.5).join('')
+  }
+
   const createJury = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!juryName || !juryEmail || !event?.id) return
@@ -94,8 +117,8 @@ export function JuryManagement({ event, onUpdate }: JuryManagementProps) {
     setError(null)
 
     try {
-      // Generate a random password
-      const randomPassword = Math.random().toString(36).slice(-8) + Math.random().toString(36).slice(-8)
+      // Generate a random 8-character password with uppercase, lowercase, and numbers
+      const randomPassword = generatePassword()
 
       // Create auth user via Supabase Admin API (sign up)
       const { data: authData, error: authError } = await supabase.auth.signUp({
