@@ -12,7 +12,7 @@ export type JuryScore = Database['public']['Tables']['jury_scores']['Row']
 export type EventStatus = Database['public']['Enums']['event_status']
 export type UserRole = Database['public']['Enums']['user_role']
 
-// Canvas data structure
+// Canvas data structure (legacy - keeping for backward compatibility)
 export interface CanvasData {
   problem: string
   solution: string
@@ -20,6 +20,30 @@ export interface CanvasData {
   value_proposition: string
   key_features: string
   revenue_model: string
+}
+
+// Canvas contribution (new collaborative system)
+export interface CanvasContribution {
+  id: string
+  team_id: string
+  user_id: string
+  section: 'problem' | 'solution' | 'value_proposition' | 'target_audience' | 'key_features' | 'revenue_model'
+  content: string
+  created_at: string
+  updated_at: string
+}
+
+// Canvas contribution with user details
+export interface CanvasContributionWithUser extends CanvasContribution {
+  user?: {
+    full_name: string
+    display_name?: string
+    role?: string
+  }
+  // User info from team_members JSON for role display
+  member_role?: string
+  member_name?: string
+  is_captain?: boolean
 }
 
 // Mentor types

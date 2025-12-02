@@ -14,6 +14,7 @@ import { PitchViewer } from '@/components/student/pitch-viewer'
 import { NotesManager } from '@/components/student/notes-manager'
 import { PortfolioVoting } from '@/components/student/portfolio-voting'
 import { FeedbackDialog } from '@/components/student/feedback-dialog'
+import { CollaborativeCanvasSection } from '@/components/student/collaborative-canvas-section'
 import { Loader2, Users, Crown, FileText, Upload, LogOut, AlertCircle, Lightbulb, Target, Star, Zap, DollarSign, Save, CheckCircle } from 'lucide-react'
 import { useLanguage } from '@/lib/i18n/language-provider'
 import { Locale } from '@/lib/i18n/config'
@@ -37,6 +38,7 @@ export default function StudentPage() {
   const [profile, setProfile] = useState<Profile | null>(null)
   const [members, setMembers] = useState<TeamMember[]>([])
   const [isCaptain, setIsCaptain] = useState(false)
+  const [currentUserId, setCurrentUserId] = useState<string | null>(null)
 
   // Update language when event changes
   useEffect(() => {
@@ -44,17 +46,6 @@ export default function StudentPage() {
       setLocale(currentEvent.language as Locale)
     }
   }, [currentEvent?.language, setLocale])
-
-  // Canvas form state
-  const [problem, setProblem] = useState('')
-  const [solution, setSolution] = useState('')
-  const [targetAudience, setTargetAudience] = useState('')
-  const [valueProposition, setValueProposition] = useState('')
-  const [keyFeatures, setKeyFeatures] = useState('')
-  const [revenueModel, setRevenueModel] = useState('')
-  const [isSavingCanvas, setIsSavingCanvas] = useState(false)
-  const [lastSaved, setLastSaved] = useState<Date | null>(null)
-  const [autoSaveTimer, setAutoSaveTimer] = useState<NodeJS.Timeout | null>(null)
 
   // Presentation upload state
   const [presentationFile, setPresentationFile] = useState<File | null>(null)
@@ -168,15 +159,8 @@ export default function StudentPage() {
       if (teamError) throw teamError
       setTeam(teamData)
 
-      // Set canvas data
-      if (teamData.canvas_data) {
-        setProblem(teamData.canvas_data.problem || '')
-        setSolution(teamData.canvas_data.solution || '')
-        setTargetAudience(teamData.canvas_data.target_audience || '')
-        setValueProposition(teamData.canvas_data.value_proposition || '')
-        setKeyFeatures(teamData.canvas_data.key_features || '')
-        setRevenueModel(teamData.canvas_data.revenue_model || '')
-      }
+      // Set current user ID
+      setCurrentUserId(user.id)
 
       // Set members
       setMembers(teamData.team_members || [])
@@ -249,64 +233,6 @@ export default function StudentPage() {
   const getFeedbackForSection = (section: string) => {
     return feedbacks.filter((f) => f.canvas_section === section)
   }
-
-  const handleSaveCanvas = async (showAlert = true) => {
-    if (!team) return
-
-    setIsSavingCanvas(true)
-    try {
-      const { error } = await supabase
-        .from('teams')
-        .update({
-          canvas_data: {
-            problem,
-            solution,
-            target_audience: targetAudience,
-            value_proposition: valueProposition,
-            key_features: keyFeatures,
-            revenue_model: revenueModel,
-          },
-        })
-        .eq('id', team.id)
-
-      if (error) throw error
-
-      setLastSaved(new Date())
-      if (showAlert) {
-        alert('Canvas saved successfully!')
-      }
-    } catch (error) {
-      console.error('Save canvas error:', error)
-      if (showAlert) {
-        alert('Failed to save canvas. Please try again.')
-      }
-    } finally {
-      setIsSavingCanvas(false)
-    }
-  }
-
-  // Auto-save effect
-  useEffect(() => {
-    if (!team || currentEvent?.status !== 'IDEATION') return
-
-    // Clear existing timer
-    if (autoSaveTimer) {
-      clearTimeout(autoSaveTimer)
-    }
-
-    // Set new timer for auto-save after 3 seconds of inactivity
-    const timer = setTimeout(() => {
-      handleSaveCanvas(false)
-    }, 3000)
-
-    setAutoSaveTimer(timer)
-
-    // Cleanup
-    return () => {
-      if (timer) clearTimeout(timer)
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [problem, solution, targetAudience, valueProposition, keyFeatures, revenueModel, currentEvent?.status])
 
   const handlePresentationUpload = async () => {
     if (!presentationFile || !team) return
@@ -426,273 +352,140 @@ export default function StudentPage() {
             {/* Canvas Tab */}
             <TabsContent value="canvas">
               <div className="space-y-4">
-                {/* Header with save indicator */}
+                {/* Header */}
                 <Card className="bg-gradient-to-r from-purple-50 to-blue-50 border-purple-200">
                   <CardContent className="pt-6">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <h3 className="text-xl font-bold text-purple-900">Lean Canvas</h3>
-                        <p className="text-sm text-purple-700">Develop your winning idea together</p>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        {isSavingCanvas ? (
-                          <div className="flex items-center gap-2 text-sm text-blue-600">
-                            <Loader2 className="h-4 w-4 animate-spin" />
-                            <span>Saving...</span>
-                          </div>
-                        ) : lastSaved ? (
-                          <div className="flex items-center gap-2 text-sm text-green-600">
-                            <CheckCircle className="h-4 w-4" />
-                            <span>Saved {lastSaved.toLocaleTimeString()}</span>
-                          </div>
-                        ) : null}
-                      </div>
+                    <div>
+                      <h3 className="text-xl font-bold text-purple-900">Collaborative Lean Canvas</h3>
+                      <p className="text-sm text-purple-700">Each team member can add their ideas • All contributions are visible to everyone</p>
                     </div>
                   </CardContent>
                 </Card>
 
-                {/* Canvas Grid */}
-                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {/* Problem */}
-                  <Card className="border-l-4 border-red-400 hover:shadow-lg transition-shadow">
-                    <CardHeader className="pb-3">
-                      <div className="flex items-center gap-2">
-                        <div className="p-2 bg-red-100 rounded-lg">
-                          <AlertCircle className="h-5 w-5 text-red-600" />
-                        </div>
-                        <div>
-                          <CardTitle className="text-lg">Problem</CardTitle>
-                          <CardDescription className="text-xs">What problem are you solving?</CardDescription>
-                        </div>
-                      </div>
-                    </CardHeader>
-                    <CardContent>
-                      <Textarea
-                        placeholder="Describe the main problem your target audience faces..."
-                        value={problem}
-                        onChange={(e) => setProblem(e.target.value)}
-                        rows={5}
-                        className="resize-none"
-                        maxLength={500}
-                      />
-                      <p className="text-xs text-right text-muted-foreground mt-1">
-                        {problem.length}/500
-                      </p>
-                      <FeedbackDialog
-                        sectionKey="problem"
-                        sectionTitle="Problem"
-                        sectionColor="red"
-                        feedbacks={getFeedbackForSection('problem')}
-                        onMarkAsRead={markFeedbackAsRead}
-                      />
-                    </CardContent>
-                  </Card>
+                {/* Canvas Grid - New Collaborative Sections */}
+                {currentUserId && team && (
+                  <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {/* Problem */}
+                    <CollaborativeCanvasSection
+                      teamId={team.id}
+                      currentUserId={currentUserId}
+                      section="problem"
+                      title="Problem"
+                      description="What problem are you solving?"
+                      placeholder="Describe the main problem your target audience faces..."
+                      icon={<AlertCircle className="h-5 w-5 text-red-600" />}
+                      colorClasses={{
+                        border: 'border-l-4 border-red-400',
+                        bg: 'bg-red-50',
+                        iconBg: 'bg-red-100',
+                        badgeBg: 'bg-red-100',
+                      }}
+                      teamMembers={members}
+                      feedbacks={getFeedbackForSection('problem')}
+                      onMarkFeedbackAsRead={markFeedbackAsRead}
+                    />
 
-                  {/* Solution */}
-                  <Card className="border-l-4 border-yellow-400 hover:shadow-lg transition-shadow">
-                    <CardHeader className="pb-3">
-                      <div className="flex items-center gap-2">
-                        <div className="p-2 bg-yellow-100 rounded-lg">
-                          <Lightbulb className="h-5 w-5 text-yellow-600" />
-                        </div>
-                        <div>
-                          <CardTitle className="text-lg">Solution</CardTitle>
-                          <CardDescription className="text-xs">How does it work?</CardDescription>
-                        </div>
-                      </div>
-                    </CardHeader>
-                    <CardContent>
-                      <Textarea
-                        placeholder="Explain your solution and how it addresses the problem..."
-                        value={solution}
-                        onChange={(e) => setSolution(e.target.value)}
-                        rows={5}
-                        className="resize-none"
-                        maxLength={500}
-                      />
-                      <p className="text-xs text-right text-muted-foreground mt-1">
-                        {solution.length}/500
-                      </p>
-                      <FeedbackDialog
-                        sectionKey="solution"
-                        sectionTitle="Solution"
-                        sectionColor="yellow"
-                        feedbacks={getFeedbackForSection('solution')}
-                        onMarkAsRead={markFeedbackAsRead}
-                      />
-                    </CardContent>
-                  </Card>
+                    {/* Solution */}
+                    <CollaborativeCanvasSection
+                      teamId={team.id}
+                      currentUserId={currentUserId}
+                      section="solution"
+                      title="Solution"
+                      description="How does it work?"
+                      placeholder="Explain your solution and how it addresses the problem..."
+                      icon={<Lightbulb className="h-5 w-5 text-yellow-600" />}
+                      colorClasses={{
+                        border: 'border-l-4 border-yellow-400',
+                        bg: 'bg-yellow-50',
+                        iconBg: 'bg-yellow-100',
+                        badgeBg: 'bg-yellow-100',
+                      }}
+                      teamMembers={members}
+                      feedbacks={getFeedbackForSection('solution')}
+                      onMarkFeedbackAsRead={markFeedbackAsRead}
+                    />
 
-                  {/* Unique Value Proposition */}
-                  <Card className="border-l-4 border-purple-400 hover:shadow-lg transition-shadow">
-                    <CardHeader className="pb-3">
-                      <div className="flex items-center gap-2">
-                        <div className="p-2 bg-purple-100 rounded-lg">
-                          <Star className="h-5 w-5 text-purple-600" />
-                        </div>
-                        <div>
-                          <CardTitle className="text-lg">Unique Value</CardTitle>
-                          <CardDescription className="text-xs">Why choose you?</CardDescription>
-                        </div>
-                      </div>
-                    </CardHeader>
-                    <CardContent>
-                      <Textarea
-                        placeholder="What makes your solution unique and better than alternatives?"
-                        value={valueProposition}
-                        onChange={(e) => setValueProposition(e.target.value)}
-                        rows={5}
-                        className="resize-none"
-                        maxLength={500}
-                      />
-                      <p className="text-xs text-right text-muted-foreground mt-1">
-                        {valueProposition.length}/500
-                      </p>
-                      <FeedbackDialog
-                        sectionKey="value_proposition"
-                        sectionTitle="Unique Value"
-                        sectionColor="purple"
-                        feedbacks={getFeedbackForSection('value_proposition')}
-                        onMarkAsRead={markFeedbackAsRead}
-                      />
-                    </CardContent>
-                  </Card>
+                    {/* Unique Value Proposition */}
+                    <CollaborativeCanvasSection
+                      teamId={team.id}
+                      currentUserId={currentUserId}
+                      section="value_proposition"
+                      title="Unique Value"
+                      description="Why choose you?"
+                      placeholder="What makes your solution unique and better than alternatives?"
+                      icon={<Star className="h-5 w-5 text-purple-600" />}
+                      colorClasses={{
+                        border: 'border-l-4 border-purple-400',
+                        bg: 'bg-purple-50',
+                        iconBg: 'bg-purple-100',
+                        badgeBg: 'bg-purple-100',
+                      }}
+                      teamMembers={members}
+                      feedbacks={getFeedbackForSection('value_proposition')}
+                      onMarkFeedbackAsRead={markFeedbackAsRead}
+                    />
 
-                  {/* Target Customers */}
-                  <Card className="border-l-4 border-blue-400 hover:shadow-lg transition-shadow">
-                    <CardHeader className="pb-3">
-                      <div className="flex items-center gap-2">
-                        <div className="p-2 bg-blue-100 rounded-lg">
-                          <Target className="h-5 w-5 text-blue-600" />
-                        </div>
-                        <div>
-                          <CardTitle className="text-lg">Target Customers</CardTitle>
-                          <CardDescription className="text-xs">Who are they?</CardDescription>
-                        </div>
-                      </div>
-                    </CardHeader>
-                    <CardContent>
-                      <Textarea
-                        placeholder="Describe your ideal customers, their demographics, and behaviors..."
-                        value={targetAudience}
-                        onChange={(e) => setTargetAudience(e.target.value)}
-                        rows={5}
-                        className="resize-none"
-                        maxLength={500}
-                      />
-                      <p className="text-xs text-right text-muted-foreground mt-1">
-                        {targetAudience.length}/500
-                      </p>
-                      <FeedbackDialog
-                        sectionKey="target_audience"
-                        sectionTitle="Target Customers"
-                        sectionColor="blue"
-                        feedbacks={getFeedbackForSection('target_audience')}
-                        onMarkAsRead={markFeedbackAsRead}
-                      />
-                    </CardContent>
-                  </Card>
+                    {/* Target Customers */}
+                    <CollaborativeCanvasSection
+                      teamId={team.id}
+                      currentUserId={currentUserId}
+                      section="target_audience"
+                      title="Target Customers"
+                      description="Who are they?"
+                      placeholder="Describe your ideal customers, their demographics, and behaviors..."
+                      icon={<Target className="h-5 w-5 text-blue-600" />}
+                      colorClasses={{
+                        border: 'border-l-4 border-blue-400',
+                        bg: 'bg-blue-50',
+                        iconBg: 'bg-blue-100',
+                        badgeBg: 'bg-blue-100',
+                      }}
+                      teamMembers={members}
+                      feedbacks={getFeedbackForSection('target_audience')}
+                      onMarkFeedbackAsRead={markFeedbackAsRead}
+                    />
 
-                  {/* Key Features */}
-                  <Card className="border-l-4 border-green-400 hover:shadow-lg transition-shadow">
-                    <CardHeader className="pb-3">
-                      <div className="flex items-center gap-2">
-                        <div className="p-2 bg-green-100 rounded-lg">
-                          <Zap className="h-5 w-5 text-green-600" />
-                        </div>
-                        <div>
-                          <CardTitle className="text-lg">Key Features</CardTitle>
-                          <CardDescription className="text-xs">Top 3 features</CardDescription>
-                        </div>
-                      </div>
-                    </CardHeader>
-                    <CardContent>
-                      <Textarea
-                        placeholder="List your top 3 key features that deliver the most value..."
-                        value={keyFeatures}
-                        onChange={(e) => setKeyFeatures(e.target.value)}
-                        rows={5}
-                        className="resize-none"
-                        maxLength={500}
-                      />
-                      <p className="text-xs text-right text-muted-foreground mt-1">
-                        {keyFeatures.length}/500
-                      </p>
-                      <FeedbackDialog
-                        sectionKey="key_features"
-                        sectionTitle="Key Features"
-                        sectionColor="green"
-                        feedbacks={getFeedbackForSection('key_features')}
-                        onMarkAsRead={markFeedbackAsRead}
-                      />
-                    </CardContent>
-                  </Card>
+                    {/* Key Features */}
+                    <CollaborativeCanvasSection
+                      teamId={team.id}
+                      currentUserId={currentUserId}
+                      section="key_features"
+                      title="Key Features"
+                      description="Top 3 features"
+                      placeholder="List your top 3 key features that deliver the most value..."
+                      icon={<Zap className="h-5 w-5 text-green-600" />}
+                      colorClasses={{
+                        border: 'border-l-4 border-green-400',
+                        bg: 'bg-green-50',
+                        iconBg: 'bg-green-100',
+                        badgeBg: 'bg-green-100',
+                      }}
+                      teamMembers={members}
+                      feedbacks={getFeedbackForSection('key_features')}
+                      onMarkFeedbackAsRead={markFeedbackAsRead}
+                    />
 
-                  {/* Revenue Model */}
-                  <Card className="border-l-4 border-emerald-400 hover:shadow-lg transition-shadow">
-                    <CardHeader className="pb-3">
-                      <div className="flex items-center gap-2">
-                        <div className="p-2 bg-emerald-100 rounded-lg">
-                          <DollarSign className="h-5 w-5 text-emerald-600" />
-                        </div>
-                        <div>
-                          <CardTitle className="text-lg">Revenue Model</CardTitle>
-                          <CardDescription className="text-xs">How to monetize?</CardDescription>
-                        </div>
-                      </div>
-                    </CardHeader>
-                    <CardContent>
-                      <Textarea
-                        placeholder="Explain how you will make money from your solution..."
-                        value={revenueModel}
-                        onChange={(e) => setRevenueModel(e.target.value)}
-                        rows={5}
-                        className="resize-none"
-                        maxLength={500}
-                      />
-                      <p className="text-xs text-right text-muted-foreground mt-1">
-                        {revenueModel.length}/500
-                      </p>
-                      <FeedbackDialog
-                        sectionKey="revenue_model"
-                        sectionTitle="Revenue Model"
-                        sectionColor="emerald"
-                        feedbacks={getFeedbackForSection('revenue_model')}
-                        onMarkAsRead={markFeedbackAsRead}
-                      />
-                    </CardContent>
-                  </Card>
-                </div>
-
-                {/* Manual Save Button */}
-                <Card className="bg-gradient-to-r from-green-50 to-emerald-50 border-green-200">
-                  <CardContent className="pt-6">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2 text-sm text-green-700">
-                        <Save className="h-4 w-4" />
-                        <span>Auto-save enabled • Changes save automatically</span>
-                      </div>
-                      <Button
-                        onClick={() => handleSaveCanvas(true)}
-                        disabled={isSavingCanvas}
-                        variant="outline"
-                        className="border-green-600 text-green-700 hover:bg-green-50"
-                      >
-                        {isSavingCanvas ? (
-                          <>
-                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                            Saving...
-                          </>
-                        ) : (
-                          <>
-                            <Save className="mr-2 h-4 w-4" />
-                            Save Now
-                          </>
-                        )}
-                      </Button>
-                    </div>
-                  </CardContent>
-                </Card>
+                    {/* Revenue Model */}
+                    <CollaborativeCanvasSection
+                      teamId={team.id}
+                      currentUserId={currentUserId}
+                      section="revenue_model"
+                      title="Revenue Model"
+                      description="How to monetize?"
+                      placeholder="Explain how you will make money from your solution..."
+                      icon={<DollarSign className="h-5 w-5 text-emerald-600" />}
+                      colorClasses={{
+                        border: 'border-l-4 border-emerald-400',
+                        bg: 'bg-emerald-50',
+                        iconBg: 'bg-emerald-100',
+                        badgeBg: 'bg-emerald-100',
+                      }}
+                      teamMembers={members}
+                      feedbacks={getFeedbackForSection('revenue_model')}
+                      onMarkFeedbackAsRead={markFeedbackAsRead}
+                    />
+                  </div>
+                )}
               </div>
             </TabsContent>
 
