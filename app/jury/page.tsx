@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from 'react'
 import { useAuth } from '@/hooks/use-auth'
-import { useRealtimeEvent } from '@/hooks/use-realtime-event'
 import { createClient } from '@/lib/supabase/client'
 import { Event, Team } from '@/types'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -23,8 +22,6 @@ export default function JuryPage() {
   const [isLoading, setIsLoading] = useState(true)
   const supabase = createClient()
 
-  useRealtimeEvent(currentEvent?.id || null)
-
   // Update language when event changes
   useEffect(() => {
     if (currentEvent?.language) {
@@ -42,6 +39,45 @@ export default function JuryPage() {
       loadEventData()
     }
   }, [profile, authLoading, router])
+
+  // Real-time subscription for event changes
+  useEffect(() => {
+    if (!currentEvent?.id) return
+
+    const channel = supabase
+      .channel(`jury-event-${currentEvent.id}`)
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'events',
+          filter: `id=eq.${currentEvent.id}`,
+        },
+        async (payload) => {
+          const updatedEvent = payload.new as Event
+          setCurrentEvent(updatedEvent)
+
+          // Update current team if changed
+          if (updatedEvent.current_team_id) {
+            const { data: teamData } = await supabase
+              .from('teams')
+              .select('*')
+              .eq('id', updatedEvent.current_team_id)
+              .single()
+
+            if (teamData) setCurrentTeam(teamData)
+          } else {
+            setCurrentTeam(null)
+          }
+        }
+      )
+      .subscribe()
+
+    return () => {
+      supabase.removeChannel(channel)
+    }
+  }, [currentEvent?.id, supabase])
 
   useEffect(() => {
     if (currentEvent?.current_team_id) {
