@@ -47,10 +47,10 @@ export function MentorManagement({ event, teams, onUpdate }: MentorManagementPro
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [event?.id])
 
-  // Real-time subscription for mentor assignments
+  // Real-time subscription for mentor assignments and profiles
   useEffect(() => {
     const channel = supabase
-      .channel('mentor-assignments-realtime')
+      .channel('mentor-realtime')
       .on(
         'postgres_changes',
         {
@@ -60,6 +60,19 @@ export function MentorManagement({ event, teams, onUpdate }: MentorManagementPro
         },
         (payload) => {
           console.log('Mentor assignment updated:', payload)
+          loadMentors()
+        }
+      )
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'profiles',
+          filter: 'role=eq.mentor'
+        },
+        (payload) => {
+          console.log('Mentor profile updated:', payload)
           loadMentors()
         }
       )
