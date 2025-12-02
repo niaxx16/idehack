@@ -99,11 +99,55 @@
       "teamName": "Team Name",
       "tableNumber": "Table Number"
     },
+    "teamManagement": {
+      "bulkCreate": {
+        "title": "Quick Setup: Create Multiple Teams",
+        "description": "Perfect for hackathon preparation - create all tables at once",
+        "numberLabel": "Number of Teams (Tables)",
+        "placeholder": "e.g., 20",
+        "infoText": "Teams will be named \"Table 1\", \"Table 2\", etc. Students will choose their own team names.",
+        "creating": "Creating...",
+        "createButton": "Create Teams",
+        "errorRange": "Please enter a number between 1 and 50",
+        "confirmExisting": "This event already has {count} teams. Creating {newCount} more teams will add to the existing ones. Continue?",
+        "errorCreate": "Failed to create teams. Please try again."
+      },
+      "singleCreate": {
+        "title": "Create Single Team",
+        "description": "Add one team manually",
+        "teamNamePlaceholder": "e.g., Team Alpha",
+        "tableNumberPlaceholder": "e.g., 1"
+      },
+      "teamsList": {
+        "title": "Teams",
+        "description": "Manage existing teams",
+        "printAll": "Print All QR Codes",
+        "table": "Table",
+        "active": "Active",
+        "members": "members",
+        "member": "member",
+        "noMembers": "No members yet",
+        "activationCode": "Activation Code:",
+        "presentationUploaded": "Presentation uploaded",
+        "showQR": "Show QR Code",
+        "captain": "Captain",
+        "noTeams": "No teams yet. Create your first team above."
+      },
+      "qrDialog": {
+        "allCodesTitle": "All Team Activation Codes & QR Codes",
+        "allCodesDescription": "Print and place these at each table. Students can either scan QR or enter the code.",
+        "scanInstruction": "Scan QR or visit idehack-bursaarge.vercel.app/join",
+        "print": "Print",
+        "joinTitle": "Join QR Code",
+        "joinDescription": "Scan this QR code to join the team"
+      }
+    },
     "pitchControl": {
       "title": "Pitch Control",
       "description": "Select a team and start their pitch timer",
       "selectTeam": "Select Team to Pitch",
       "chooseTeam": "Choose a team...",
+      "table": "Table",
       "startPitch": "Start Pitch Timer",
       "nowPitching": "Now Pitching",
       "timeRemaining": "Time Remaining",

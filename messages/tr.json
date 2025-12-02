@@ -99,11 +99,55 @@
       "teamName": "Takım Adı",
       "tableNumber": "Masa Numarası"
     },
+    "teamManagement": {
+      "bulkCreate": {
+        "title": "Hızlı Kurulum: Toplu Takım Oluştur",
+        "description": "Hackathon hazırlığı için mükemmel - tüm masaları tek seferde oluşturun",
+        "numberLabel": "Takım Sayısı (Masa)",
+        "placeholder": "örn., 20",
+        "infoText": "Takımlar \"Masa 1\", \"Masa 2\" vb. olarak adlandırılacaktır. Öğrenciler kendi takım isimlerini seçecekler.",
+        "creating": "Oluşturuluyor...",
+        "createButton": "Takımları Oluştur",
+        "errorRange": "Lütfen 1 ile 50 arasında bir sayı girin",
+        "confirmExisting": "Bu etkinliğin zaten {count} takımı var. {newCount} takım daha oluşturmak mevcut takımlara eklenecektir. Devam edilsin mi?",
+        "errorCreate": "Takımlar oluşturulamadı. Lütfen tekrar deneyin."
+      },
+      "singleCreate": {
+        "title": "Tek Takım Oluştur",
+        "description": "Manuel olarak bir takım ekle",
+        "teamNamePlaceholder": "örn., Alfa Takımı",
+        "tableNumberPlaceholder": "örn., 1"
+      },
+      "teamsList": {
+        "title": "Takımlar",
+        "description": "Mevcut takımları yönet",
+        "printAll": "Tüm QR Kodlarını Yazdır",
+        "table": "Masa",
+        "active": "Aktif",
+        "members": "üye",
+        "member": "üye",
+        "noMembers": "Henüz üye yok",
+        "activationCode": "Aktivasyon Kodu:",
+        "presentationUploaded": "Sunum yüklendi",
+        "showQR": "QR Kodu Göster",
+        "captain": "Kaptan",
+        "noTeams": "Henüz takım yok. Yukarıdan ilk takımınızı oluşturun."
+      },
+      "qrDialog": {
+        "allCodesTitle": "Tüm Takım Aktivasyon Kodları & QR Kodları",
+        "allCodesDescription": "Her masaya yazdırıp yerleştirin. Öğrenciler QR'ı tarayabilir veya kodu girebilirler.",
+        "scanInstruction": "QR'ı tarayın veya idehack-bursaarge.vercel.app/join adresini ziyaret edin",
+        "print": "Yazdır",
+        "joinTitle": "Katılım QR Kodu",
+        "joinDescription": "Takıma katılmak için bu QR kodunu tarayın"
+      }
+    },
     "pitchControl": {
       "title": "Sunum Kontrolü",
       "description": "Bir takım seçin ve sunum zamanlayıcısını başlatın",
       "selectTeam": "Sunum Yapacak Takımı Seçin",
       "chooseTeam": "Bir takım seçin...",
+      "table": "Masa",
       "startPitch": "Sunum Zamanlayıcısını Başlat",
       "nowPitching": "Şimdi Sunum Yapıyor",
       "timeRemaining": "Kalan Süre",

@@ -11,6 +11,7 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/component
 import { createClient } from '@/lib/supabase/client'
 import { Plus, Users, FileText, ChevronDown, Crown, UserCircle, Clock } from 'lucide-react'
 import { QRCodeSVG } from 'qrcode.react'
+import { useTranslations } from 'next-intl'
 
 interface TeamMember {
   user_id: string
@@ -27,6 +28,9 @@ interface TeamManagementProps {
 }
 
 export function TeamManagement({ event, teams, onUpdate }: TeamManagementProps) {
+  const t = useTranslations('admin.teamManagement')
+  const tForm = useTranslations('admin.teamForm')
+  const tCommon = useTranslations('common')
   const [isCreating, setIsCreating] = useState(false)
   const [newTeamName, setNewTeamName] = useState('')
   const [newTeamTable, setNewTeamTable] = useState('')
@@ -79,14 +83,14 @@ export function TeamManagement({ event, teams, onUpdate }: TeamManagementProps) 
 
     const count = parseInt(bulkCount)
     if (count < 1 || count > 50) {
-      alert('Please enter a number between 1 and 50')
+      alert(t('bulkCreate.errorRange'))
       return
     }
 
     // Check if teams already exist
     if (teams.length > 0) {
       const confirm = window.confirm(
-        `This event already has ${teams.length} teams. Creating ${count} more teams will add to the existing ones. Continue?`
+        t('bulkCreate.confirmExisting', { count: teams.length, newCount: count })
       )
       if (!confirm) return
     }
@@ -121,7 +125,7 @@ export function TeamManagement({ event, teams, onUpdate }: TeamManagementProps) 
       onUpdate()
     } catch (error) {
       console.error('Failed to create teams:', error)
-      alert('Failed to create teams. Please try again.')
+      alert(t('bulkCreate.errorCreate'))
     } finally {
       setIsBulkCreating(false)
     }
@@ -173,30 +177,30 @@ export function TeamManagement({ event, teams, onUpdate }: TeamManagementProps) 
       {/* Bulk Team Creation */}
       <Card className="border-blue-200 bg-blue-50/50">
         <CardHeader>
-          <CardTitle className="text-blue-900">Quick Setup: Create Multiple Teams</CardTitle>
-          <CardDescription>Perfect for hackathon preparation - create all tables at once</CardDescription>
+          <CardTitle className="text-blue-900">{t('bulkCreate.title')}</CardTitle>
+          <CardDescription>{t('bulkCreate.description')}</CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={createBulkTeams} className="space-y-4">
             <div className="flex items-end gap-4">
               <div className="flex-1 space-y-2">
-                <Label htmlFor="bulkCount">Number of Teams (Tables)</Label>
+                <Label htmlFor="bulkCount">{t('bulkCreate.numberLabel')}</Label>
                 <Input
                   id="bulkCount"
                   type="number"
                   min="1"
                   max="50"
-                  placeholder="e.g., 20"
+                  placeholder={t('bulkCreate.placeholder')}
                   value={bulkCount}
                   onChange={(e) => setBulkCount(e.target.value)}
                   required
                 />
                 <p className="text-xs text-muted-foreground">
-                  Teams will be named "Table 1", "Table 2", etc. Students will choose their own team names.
+                  {t('bulkCreate.infoText')}
                 </p>
               </div>
               <Button type="submit" disabled={isBulkCreating || !event} size="lg">
-                {isBulkCreating ? 'Creating...' : 'Create Teams'}
+                {isBulkCreating ? t('bulkCreate.creating') : t('bulkCreate.createButton')}
               </Button>
             </div>
           </form>
@@ -206,28 +210,28 @@ export function TeamManagement({ event, teams, onUpdate }: TeamManagementProps) 
       {/* Single Team Creation */}
       <Card>
         <CardHeader>
-          <CardTitle>Create Single Team</CardTitle>
-          <CardDescription>Add one team manually</CardDescription>
+          <CardTitle>{t('singleCreate.title')}</CardTitle>
+          <CardDescription>{t('singleCreate.description')}</CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={createTeam} className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="teamName">Team Name</Label>
+                <Label htmlFor="teamName">{tForm('teamName')}</Label>
                 <Input
                   id="teamName"
-                  placeholder="e.g., Team Alpha"
+                  placeholder={t('singleCreate.teamNamePlaceholder')}
                   value={newTeamName}
                   onChange={(e) => setNewTeamName(e.target.value)}
                   required
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="tableNumber">Table Number</Label>
+                <Label htmlFor="tableNumber">{tForm('tableNumber')}</Label>
                 <Input
                   id="tableNumber"
                   type="number"
-                  placeholder="e.g., 1"
+                  placeholder={t('singleCreate.tableNumberPlaceholder')}
                   value={newTeamTable}
                   onChange={(e) => setNewTeamTable(e.target.value)}
                   required
@@ -236,7 +240,7 @@ export function TeamManagement({ event, teams, onUpdate }: TeamManagementProps) 
             </div>
             <Button type="submit" disabled={isCreating || !event}>
               <Plus className="mr-2 h-4 w-4" />
-              Create Team
+              {tForm('createTeam')}
             </Button>
           </form>
         </CardContent>
@@ -246,21 +250,21 @@ export function TeamManagement({ event, teams, onUpdate }: TeamManagementProps) 
         <CardHeader>
           <div className="flex items-center justify-between">
             <div>
-              <CardTitle>Teams ({teams.length})</CardTitle>
-              <CardDescription>Manage existing teams</CardDescription>
+              <CardTitle>{t('teamsList.title')} ({teams.length})</CardTitle>
+              <CardDescription>{t('teamsList.description')}</CardDescription>
             </div>
             {teams.length > 0 && (
               <Dialog open={showAllQR} onOpenChange={setShowAllQR}>
                 <DialogTrigger asChild>
                   <Button variant="outline">
-                    Print All QR Codes
+                    {t('teamsList.printAll')}
                   </Button>
                 </DialogTrigger>
                 <DialogContent className="max-w-6xl max-h-[90vh] overflow-y-auto">
                   <DialogHeader>
-                    <DialogTitle>All Team Activation Codes & QR Codes</DialogTitle>
+                    <DialogTitle>{t('qrDialog.allCodesTitle')}</DialogTitle>
                     <DialogDescription>
-                      Print and place these at each table. Students can either scan QR or enter the code.
+                      {t('qrDialog.allCodesDescription')}
                     </DialogDescription>
                   </DialogHeader>
                   <div className="grid grid-cols-2 md:grid-cols-3 gap-6 p-4">
@@ -269,7 +273,7 @@ export function TeamManagement({ event, teams, onUpdate }: TeamManagementProps) 
                       return (
                         <div key={team.id} className="flex flex-col items-center space-y-2 p-4 border-2 rounded-lg break-inside-avoid">
                           <h3 className="font-bold text-xl">{team.name}</h3>
-                          <p className="text-sm text-muted-foreground">Table {team.table_number}</p>
+                          <p className="text-sm text-muted-foreground">{t('teamsList.table')} {team.table_number}</p>
                           <div className="p-4 bg-white rounded-lg border">
                             <QRCodeSVG
                               value={joinUrl}
@@ -279,11 +283,11 @@ export function TeamManagement({ event, teams, onUpdate }: TeamManagementProps) 
                             />
                           </div>
                           <div className="text-center">
-                            <p className="text-xs text-muted-foreground">Activation Code:</p>
+                            <p className="text-xs text-muted-foreground">{t('teamsList.activationCode')}</p>
                             <p className="text-2xl font-bold font-mono tracking-wider">{team.activation_code}</p>
                           </div>
                           <p className="text-xs text-center text-muted-foreground">
-                            Scan QR or visit idehack-bursaarge.vercel.app/join
+                            {t('qrDialog.scanInstruction')}
                           </p>
                         </div>
                       )
@@ -291,10 +295,10 @@ export function TeamManagement({ event, teams, onUpdate }: TeamManagementProps) 
                   </div>
                   <div className="flex justify-end gap-2 print:hidden">
                     <Button onClick={() => window.print()} variant="default">
-                      Print
+                      {t('qrDialog.print')}
                     </Button>
                     <Button onClick={() => setShowAllQR(false)} variant="outline">
-                      Close
+                      {tCommon('close')}
                     </Button>
                   </div>
                 </DialogContent>
@@ -314,10 +318,10 @@ export function TeamManagement({ event, teams, onUpdate }: TeamManagementProps) 
                     <div className="flex items-start justify-between">
                       <div>
                         <CardTitle className="text-lg">{team.name}</CardTitle>
-                        <CardDescription>Table {team.table_number}</CardDescription>
+                        <CardDescription>{t('teamsList.table')} {team.table_number}</CardDescription>
                       </div>
                       {team.is_activated && (
-                        <span className="text-xs bg-green-100 text-green-700 px-2 py-1 rounded">Active</span>
+                        <span className="text-xs bg-green-100 text-green-700 px-2 py-1 rounded">{t('teamsList.active')}</span>
                       )}
                     </div>
                   </CardHeader>
@@ -332,7 +336,7 @@ export function TeamManagement({ event, teams, onUpdate }: TeamManagementProps) 
                         >
                           <div className="flex items-center gap-2">
                             <Users className="h-4 w-4" />
-                            <span className="font-medium">{members.length} member{members.length !== 1 ? 's' : ''}</span>
+                            <span className="font-medium">{members.length} {members.length !== 1 ? t('teamsList.members') : t('teamsList.member')}</span>
                           </div>
                           <ChevronDown className={`h-4 w-4 transition-transform ${isExpanded ? 'rotate-180' : ''}`} />
                         </Button>
@@ -364,7 +368,7 @@ export function TeamManagement({ event, teams, onUpdate }: TeamManagementProps) 
                                   </div>
                                   {member.is_captain && (
                                     <span className="text-[10px] bg-yellow-100 text-yellow-700 px-1.5 py-0.5 rounded flex-shrink-0">
-                                      Captain
+                                      {t('teamsList.captain')}
                                     </span>
                                   )}
                                 </div>
@@ -382,7 +386,7 @@ export function TeamManagement({ event, teams, onUpdate }: TeamManagementProps) 
                           </div>
                         ) : (
                           <div className="text-center py-3 text-xs text-muted-foreground">
-                            No members yet
+                            {t('teamsList.noMembers')}
                           </div>
                         )}
                       </CollapsibleContent>
@@ -390,7 +394,7 @@ export function TeamManagement({ event, teams, onUpdate }: TeamManagementProps) 
 
                     {/* Activation Code */}
                     <div className="text-sm pt-2 border-t">
-                      <p className="text-muted-foreground text-xs">Activation Code:</p>
+                      <p className="text-muted-foreground text-xs">{t('teamsList.activationCode')}</p>
                       <p className="font-mono font-bold">{team.activation_code}</p>
                     </div>
 
@@ -398,7 +402,7 @@ export function TeamManagement({ event, teams, onUpdate }: TeamManagementProps) 
                     {team.presentation_url && (
                       <div className="flex items-center gap-2 text-sm text-green-600">
                         <FileText className="h-4 w-4" />
-                        <span>Presentation uploaded</span>
+                        <span>{t('teamsList.presentationUploaded')}</span>
                       </div>
                     )}
 
@@ -411,14 +415,14 @@ export function TeamManagement({ event, teams, onUpdate }: TeamManagementProps) 
                           className="w-full"
                           onClick={() => setSelectedTeam(team)}
                         >
-                          Show QR Code
+                          {t('teamsList.showQR')}
                         </Button>
                       </DialogTrigger>
                       <DialogContent className="sm:max-w-md">
                         <DialogHeader>
-                          <DialogTitle>{team.name} - Join QR Code</DialogTitle>
+                          <DialogTitle>{team.name} - {t('qrDialog.joinTitle')}</DialogTitle>
                           <DialogDescription>
-                            Scan this QR code to join the team
+                            {t('qrDialog.joinDescription')}
                           </DialogDescription>
                         </DialogHeader>
                         <div className="flex flex-col items-center space-y-4">
@@ -451,7 +455,7 @@ export function TeamManagement({ event, teams, onUpdate }: TeamManagementProps) 
           {teams.length === 0 && (
             <div className="text-center py-12 text-muted-foreground">
               <Users className="h-12 w-12 mx-auto mb-4 opacity-50" />
-              <p>No teams yet. Create your first team above.</p>
+              <p>{t('teamsList.noTeams')}</p>
             </div>
           )}
         </CardContent>

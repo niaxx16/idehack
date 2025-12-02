@@ -10,6 +10,7 @@ import { createClient } from '@/lib/supabase/client'
 import { Play, Pause, ExternalLink, Clock } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { useHype } from '@/hooks/use-hype'
+import { useTranslations } from 'next-intl'
 
 interface PitchControlProps {
   event: Event | null
@@ -20,6 +21,7 @@ interface PitchControlProps {
 const PITCH_DURATION = 3 * 60 // 3 minutes in seconds
 
 export function PitchControl({ event, teams, onUpdate }: PitchControlProps) {
+  const t = useTranslations('admin.pitchControl')
   const [selectedTeamId, setSelectedTeamId] = useState<string>('')
   const [isStarting, setIsStarting] = useState(false)
   const [timeRemaining, setTimeRemaining] = useState<number>(0)
@@ -163,24 +165,24 @@ export function PitchControl({ event, teams, onUpdate }: PitchControlProps) {
 
       <Card>
         <CardHeader>
-          <CardTitle>Pitch Control</CardTitle>
+          <CardTitle>{t('title')}</CardTitle>
           <CardDescription>
-            Select a team and start their pitch timer
+            {t('description')}
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
           {!currentTeam ? (
             <div className="space-y-4">
               <div className="space-y-2">
-                <label className="text-sm font-medium">Select Team to Pitch</label>
+                <label className="text-sm font-medium">{t('selectTeam')}</label>
                 <Select value={selectedTeamId} onValueChange={setSelectedTeamId}>
                   <SelectTrigger>
-                    <SelectValue placeholder="Choose a team..." />
+                    <SelectValue placeholder={t('chooseTeam')} />
                   </SelectTrigger>
                   <SelectContent>
                     {teams.map((team) => (
                       <SelectItem key={team.id} value={team.id}>
-                        {team.name} (Table {team.table_number})
+                        {team.name} ({t('table')} {team.table_number})
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -193,22 +195,22 @@ export function PitchControl({ event, teams, onUpdate }: PitchControlProps) {
                 className="w-full"
               >
                 <Play className="mr-2 h-4 w-4" />
-                Start Pitch Timer
+                {t('startPitch')}
               </Button>
             </div>
           ) : (
             <div className="space-y-6">
               <div className="text-center space-y-2">
-                <Badge className="mb-2">Now Pitching</Badge>
+                <Badge className="mb-2">{t('nowPitching')}</Badge>
                 <h3 className="text-2xl font-bold">{currentTeam.name}</h3>
-                <p className="text-muted-foreground">Table {currentTeam.table_number}</p>
+                <p className="text-muted-foreground">{t('table')} {currentTeam.table_number}</p>
               </div>
 
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
                   <span className="text-sm font-medium flex items-center gap-2">
                     <Clock className="h-4 w-4" />
-                    Time Remaining
+                    {t('timeRemaining')}
                   </span>
                   <span className={`text-2xl font-mono font-bold ${
                     timeRemaining < 30 ? 'text-red-600' : 'text-primary'
@@ -223,7 +225,7 @@ export function PitchControl({ event, teams, onUpdate }: PitchControlProps) {
                 {currentTeam.presentation_url && (
                   <Button onClick={openPresentation} variant="outline">
                     <ExternalLink className="mr-2 h-4 w-4" />
-                    Open Presentation
+                    {t('openPresentation')}
                   </Button>
                 )}
                 <Button
@@ -232,7 +234,7 @@ export function PitchControl({ event, teams, onUpdate }: PitchControlProps) {
                   disabled={isStarting}
                 >
                   <Pause className="mr-2 h-4 w-4" />
-                  Stop Pitch
+                  {t('stopPitch')}
                 </Button>
               </div>
             </div>
@@ -243,31 +245,31 @@ export function PitchControl({ event, teams, onUpdate }: PitchControlProps) {
       {currentTeam && (
         <Card>
           <CardHeader>
-            <CardTitle>Project Details</CardTitle>
+            <CardTitle>{t('projectDetails')}</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <div>
-              <h4 className="font-medium mb-1">Problem</h4>
+              <h4 className="font-medium mb-1">{t('problem')}</h4>
               <p className="text-sm text-muted-foreground">
-                {currentTeam.canvas_data.problem || 'Not specified'}
+                {currentTeam.canvas_data.problem || t('notSpecified')}
               </p>
             </div>
             <div>
-              <h4 className="font-medium mb-1">Solution</h4>
+              <h4 className="font-medium mb-1">{t('solution')}</h4>
               <p className="text-sm text-muted-foreground">
-                {currentTeam.canvas_data.solution || 'Not specified'}
+                {currentTeam.canvas_data.solution || t('notSpecified')}
               </p>
             </div>
             <div>
-              <h4 className="font-medium mb-1">Target Audience</h4>
+              <h4 className="font-medium mb-1">{t('targetAudience')}</h4>
               <p className="text-sm text-muted-foreground">
-                {currentTeam.canvas_data.target_audience || 'Not specified'}
+                {currentTeam.canvas_data.target_audience || t('notSpecified')}
               </p>
             </div>
             <div>
-              <h4 className="font-medium mb-1">Revenue Model</h4>
+              <h4 className="font-medium mb-1">{t('revenueModel')}</h4>
               <p className="text-sm text-muted-foreground">
-                {currentTeam.canvas_data.revenue_model || 'Not specified'}
+                {currentTeam.canvas_data.revenue_model || t('notSpecified')}
               </p>
             </div>
           </CardContent>
