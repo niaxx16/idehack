@@ -259,21 +259,42 @@ export function TeamManagement({ event, teams, onUpdate }: TeamManagementProps) 
                     {t('teamsList.printAll')}
                   </Button>
                 </DialogTrigger>
-                <DialogContent className="max-w-6xl max-h-[90vh] overflow-y-auto">
-                  <DialogHeader>
+                <DialogContent className="max-w-6xl max-h-[90vh] overflow-y-auto print:max-w-full print:max-h-full">
+                  <DialogHeader className="print:hidden">
                     <DialogTitle>{t('qrDialog.allCodesTitle')}</DialogTitle>
                     <DialogDescription>
                       {t('qrDialog.allCodesDescription')}
                     </DialogDescription>
                   </DialogHeader>
-                  <div className="grid grid-cols-2 md:grid-cols-3 gap-6 p-4">
+
+                  <style jsx>{`
+                    @media print {
+                      @page {
+                        size: A4;
+                        margin: 1cm;
+                      }
+
+                      .qr-card {
+                        page-break-inside: avoid;
+                        break-inside: avoid;
+                        display: block !important;
+                      }
+                    }
+                  `}</style>
+
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-6 p-4 print:grid-cols-3 print:gap-4">
                     {teams.map((team) => {
                       const joinUrl = `${process.env.NEXT_PUBLIC_APP_URL || window.location.origin}/join?code=${team.activation_code}`
                       return (
-                        <div key={team.id} className="flex flex-col items-center space-y-2 p-4 border-2 rounded-lg break-inside-avoid">
-                          <h3 className="font-bold text-xl">{team.name}</h3>
-                          <p className="text-sm text-muted-foreground">{t('teamsList.table')} {team.table_number}</p>
-                          <div className="p-4 bg-white rounded-lg border">
+                        <div
+                          key={team.id}
+                          className="qr-card flex flex-col items-center space-y-2 p-4 border-2 rounded-lg break-inside-avoid print:border-black print:p-3"
+                        >
+                          <h3 className="font-bold text-xl print:text-lg">{team.name}</h3>
+                          <p className="text-sm text-muted-foreground print:text-black print:text-xs">
+                            {t('teamsList.table')} {team.table_number}
+                          </p>
+                          <div className="p-4 bg-white rounded-lg border print:border-black print:p-2">
                             <QRCodeSVG
                               value={joinUrl}
                               size={200}
@@ -281,11 +302,11 @@ export function TeamManagement({ event, teams, onUpdate }: TeamManagementProps) 
                               includeMargin
                             />
                           </div>
-                          <div className="text-center">
-                            <p className="text-xs text-muted-foreground">{t('teamsList.activationCode')}</p>
-                            <p className="text-2xl font-bold font-mono tracking-wider">{team.activation_code}</p>
+                          <div className="text-center w-full">
+                            <p className="text-xs text-muted-foreground print:text-black">{t('teamsList.activationCode')}</p>
+                            <p className="text-2xl font-bold font-mono tracking-wider print:text-xl break-all">{team.activation_code}</p>
                           </div>
-                          <p className="text-xs text-center text-muted-foreground">
+                          <p className="text-xs text-center text-muted-foreground print:text-black print:text-[10px] w-full break-words">
                             {t('qrDialog.scanInstruction')}
                           </p>
                         </div>

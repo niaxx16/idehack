@@ -63,3 +63,41 @@
     text-wrap: balance;
   }
 }
+
+/* Print styles */
+@media print {
+  /* Hide dialog overlay/backdrop */
+  [data-radix-dialog-overlay],
+  [data-radix-portal] > div:first-child {
+    display: none !important;
+  }
+
+  /* Show only dialog content */
+  [data-radix-dialog-content] {
+    position: static !important;
+    max-width: 100% !important;
+    max-height: 100% !important;
+    overflow: visible !important;
+    box-shadow: none !important;
+    border: none !important;
+  }
+
+  /* Ensure text is black */
+  * {
+    color: black !important;
+    background: white !important;
+  }
+
+  /* Keep borders visible */
+  .border,
+  .border-2 {
+    border-color: black !important;
+  }
+
+  /* Prevent page breaks inside cards */
+  .qr-card,
+  .break-inside-avoid {
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+  }
+}
