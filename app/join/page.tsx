@@ -7,7 +7,8 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { createClient } from '@/lib/supabase/client'
-import { Loader2 } from 'lucide-react'
+import { Loader2, Key } from 'lucide-react'
+import Link from 'next/link'
 
 function JoinFormContent() {
   const router = useRouter()
@@ -146,10 +147,16 @@ function JoinFormContent() {
             </Button>
           </form>
 
-          <div className="mt-6 pt-6 border-t">
+          <div className="mt-6 pt-6 border-t space-y-3">
             <p className="text-xs text-center text-muted-foreground">
               Don't have a code? Ask your event organizer or scan the QR code on your table.
             </p>
+            <Link href="/rejoin">
+              <Button variant="ghost" className="w-full" size="sm">
+                <Key className="mr-2 h-4 w-4" />
+                Already have a personal code? Rejoin here
+              </Button>
+            </Link>
           </div>
         </CardContent>
       </Card>

@@ -311,11 +311,19 @@ export default function StudentPage() {
       <div className="max-w-6xl mx-auto space-y-6">
         {/* Header */}
         <div className="flex items-center justify-between">
-          <div>
+          <div className="flex-1">
             <h1 className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
               {team.name}
             </h1>
             <p className="text-muted-foreground">Table {team.table_number}</p>
+            {profile?.personal_code && (
+              <div className="mt-2 inline-flex items-center gap-2 px-3 py-1 bg-purple-100 border border-purple-300 rounded-lg">
+                <Users className="h-3 w-3 text-purple-600" />
+                <span className="text-xs text-purple-900">
+                  Your Code: <span className="font-mono font-bold">{profile.personal_code}</span>
+                </span>
+              </div>
+            )}
           </div>
           <Button variant="outline" onClick={handleSignOut}>
             <LogOut className="mr-2 h-4 w-4" />

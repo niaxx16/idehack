@@ -8,7 +8,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { createClient } from '@/lib/supabase/client'
-import { Loader2, Users, Crown } from 'lucide-react'
+import { Loader2, Users, Crown, CheckCircle, Key } from 'lucide-react'
 
 export default function TeamSetupPage() {
   const router = useRouter()
@@ -20,6 +20,8 @@ export default function TeamSetupPage() {
   const [isLoading, setIsLoading] = useState(true)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [showSuccess, setShowSuccess] = useState(false)
+  const [personalCode, setPersonalCode] = useState<string | null>(null)
 
   // Form fields
   const [teamName, setTeamName] = useState('')
@@ -108,12 +110,16 @@ export default function TeamSetupPage() {
         if (nameError) throw nameError
       }
 
-      // Clear session storage
-      sessionStorage.removeItem('pending_activation_code')
-      sessionStorage.removeItem('pending_user_id')
-
-      // Redirect to student dashboard
-      router.push('/student')
+      // Show success screen with personal code
+      if (joinResult.personal_code) {
+        setPersonalCode(joinResult.personal_code)
+        setShowSuccess(true)
+      } else {
+        // If no personal code (shouldn't happen), redirect immediately
+        sessionStorage.removeItem('pending_activation_code')
+        sessionStorage.removeItem('pending_user_id')
+        router.push('/student')
+      }
     } catch (err: any) {
       console.error('Join team error:', err)
       setError(err.message || 'Failed to join team. Please try again.')
@@ -126,6 +132,67 @@ export default function TeamSetupPage() {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <Loader2 className="h-8 w-8 animate-spin text-purple-600" />
+      </div>
+    )
+  }
+
+  // Success screen with personal code
+  if (showSuccess && personalCode) {
+    return (
+      <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-purple-50 via-blue-50 to-indigo-100">
+        <Card className="w-full max-w-md">
+          <CardHeader className="text-center">
+            <div className="mx-auto mb-4 w-16 h-16 bg-gradient-to-br from-green-400 to-emerald-500 rounded-full flex items-center justify-center">
+              <CheckCircle className="h-8 w-8 text-white" />
+            </div>
+            <CardTitle className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
+              Welcome to Your Team!
+            </CardTitle>
+            <CardDescription>
+              Save your personal code to rejoin later
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            {/* Personal Code Display */}
+            <div className="p-6 bg-gradient-to-br from-purple-100 to-blue-100 rounded-lg border-2 border-purple-300">
+              <div className="flex items-center justify-center gap-2 mb-3">
+                <Key className="h-5 w-5 text-purple-600" />
+                <p className="text-sm font-semibold text-purple-900">Your Personal Code</p>
+              </div>
+              <div className="text-center">
+                <p className="text-4xl font-bold font-mono tracking-wider text-purple-900 mb-2">
+                  {personalCode}
+                </p>
+                <p className="text-xs text-purple-700">
+                  Save this code! You'll need it to rejoin if you sign out.
+                </p>
+              </div>
+            </div>
+
+            {/* Instructions */}
+            <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+              <p className="text-sm text-yellow-800 font-medium mb-2">⚠️ Important</p>
+              <ul className="text-xs text-yellow-700 space-y-1">
+                <li>• Take a screenshot or write down this code</li>
+                <li>• If you sign out, use this code at /rejoin to return</li>
+                <li>• Don't share your code with others</li>
+              </ul>
+            </div>
+
+            {/* Continue Button */}
+            <Button
+              onClick={() => {
+                sessionStorage.removeItem('pending_activation_code')
+                sessionStorage.removeItem('pending_user_id')
+                router.push('/student')
+              }}
+              className="w-full"
+              size="lg"
+            >
+              Continue to Dashboard
+            </Button>
+          </CardContent>
+        </Card>
       </div>
     )
   }
