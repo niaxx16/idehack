@@ -4,14 +4,18 @@ import { useEffect, useState } from 'react'
 import { Event, TopInvestorEntry } from '@/types'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { createClient } from '@/lib/supabase/client'
-import { TrendingUp, Award, DollarSign, Target, Trophy } from 'lucide-react'
+import { TrendingUp, Award, Coins, Target, Trophy } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
+import { useTranslations } from 'next-intl'
 
 interface TopInvestorsProps {
   event: Event | null
 }
 
 export function TopInvestors({ event }: TopInvestorsProps) {
+  const t = useTranslations('admin.topInvestors')
+  const tAdmin = useTranslations('admin')
+  const tCommon = useTranslations('common')
   const [investors, setInvestors] = useState<TopInvestorEntry[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const supabase = createClient()
@@ -73,7 +77,7 @@ export function TopInvestors({ event }: TopInvestorsProps) {
     return (
       <Card>
         <CardHeader>
-          <CardTitle>No Event Selected</CardTitle>
+          <CardTitle>{tAdmin('noEventSelected')}</CardTitle>
         </CardHeader>
       </Card>
     )
@@ -84,18 +88,18 @@ export function TopInvestors({ event }: TopInvestorsProps) {
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <TrendingUp className="h-5 w-5 text-green-600" />
-          Top Investors
+          {t('title')}
         </CardTitle>
         <CardDescription>
-          Students who made the smartest investments in winning teams (3x for 1st, 2x for 2nd, 1x for 3rd)
+          {t('description')}
         </CardDescription>
       </CardHeader>
       <CardContent>
         {isLoading ? (
-          <div className="text-center py-8 text-muted-foreground">Loading...</div>
+          <div className="text-center py-8 text-muted-foreground">{tCommon('loading')}</div>
         ) : investors.length === 0 ? (
           <div className="text-center py-8 text-muted-foreground">
-            No investments yet. Wait for students to invest in teams during the voting phase.
+            {t('noInvestments')}
           </div>
         ) : (
           <div className="space-y-4">
@@ -145,7 +149,7 @@ export function TopInvestors({ event }: TopInvestorsProps) {
                             </div>
                             <div className="flex items-center gap-3">
                               <div className="flex items-center gap-1 text-muted-foreground">
-                                <DollarSign className="h-3 w-3" />
+                                <Coins className="h-3 w-3" />
                                 <span>{investment.amount}</span>
                               </div>
                               <div className="flex items-center gap-1 text-green-600 font-semibold">
@@ -163,8 +167,8 @@ export function TopInvestors({ event }: TopInvestorsProps) {
                       {/* Summary */}
                       <div className="flex items-center gap-4 mt-3 pt-3 border-t text-sm">
                         <div className="flex items-center gap-1">
-                          <DollarSign className="h-4 w-4 text-muted-foreground" />
-                          <span className="text-muted-foreground">Total Invested:</span>
+                          <Coins className="h-4 w-4 text-muted-foreground" />
+                          <span className="text-muted-foreground">{t('totalInvested')}</span>
                           <span className="font-semibold">{investor.total_invested}</span>
                         </div>
                       </div>
@@ -175,7 +179,7 @@ export function TopInvestors({ event }: TopInvestorsProps) {
                       <Badge variant="outline" className="text-lg font-bold px-3 py-1 bg-gradient-to-r from-purple-100 to-pink-100 border-purple-300">
                         {investor.roi_score}
                       </Badge>
-                      <p className="text-xs text-muted-foreground mt-1">ROI Score</p>
+                      <p className="text-xs text-muted-foreground mt-1">{t('roiScore')}</p>
                     </div>
                   </div>
                 </CardContent>

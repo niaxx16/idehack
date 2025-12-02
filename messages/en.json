@@ -168,6 +168,13 @@
       "investment": "Investment",
       "finalScore": "Final Score"
     },
+    "topInvestors": {
+      "title": "Top Investors",
+      "description": "Students who made the smartest investments in winning teams (3x for 1st, 2x for 2nd, 1x for 3rd)",
+      "noInvestments": "No investments yet. Wait for students to invest in teams during the voting phase.",
+      "totalInvested": "Total Invested:",
+      "roiScore": "ROI Score"
+    },
     "mentorManagement": {
       "title": "Mentor Management",
       "description": "Create mentors and assign them to teams",

@@ -168,6 +168,13 @@
       "investment": "Yatırım",
       "finalScore": "Final Skoru"
     },
+    "topInvestors": {
+      "title": "En İyi Yatırımcılar",
+      "description": "Kazanan takımlara en akıllı yatırımları yapan öğrenciler (1. için 3x, 2. için 2x, 3. için 1x)",
+      "noInvestments": "Henüz yatırım yok. Oylama aşamasında öğrencilerin takımlara yatırım yapmasını bekleyin.",
+      "totalInvested": "Toplam Yatırım:",
+      "roiScore": "ROI Skoru"
+    },
     "mentorManagement": {
       "title": "Mentor Yönetimi",
       "description": "Mentor oluşturun ve takımlara atayın",
