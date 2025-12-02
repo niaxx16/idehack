@@ -1,13 +1,13 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Team, MentorFeedbackWithMentor, Profile } from '@/types'
+import { Team, MentorFeedbackWithMentor, Profile, CanvasContributionWithUser } from '@/types'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import { createClient } from '@/lib/supabase/client'
-import { AlertCircle, Lightbulb, Target, Star, Zap, DollarSign, MessageSquare, Send, Loader2, Users } from 'lucide-react'
+import { AlertCircle, Lightbulb, Target, Star, Zap, DollarSign, MessageSquare, Send, Loader2, Users, Crown, UserCircle } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 
 interface TeamCanvasViewProps {
@@ -99,6 +99,15 @@ export function TeamCanvasView({ team, onClose }: TeamCanvasViewProps) {
   const [feedbackText, setFeedbackText] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [currentMentorId, setCurrentMentorId] = useState<string | null>(null)
+  const [contributions, setContributions] = useState<Record<CanvasSection, CanvasContributionWithUser[]>>({
+    problem: [],
+    solution: [],
+    value_proposition: [],
+    target_audience: [],
+    key_features: [],
+    revenue_model: [],
+  })
+  const [isLoadingContributions, setIsLoadingContributions] = useState(true)
 
   const members = (team.team_members as any[]) || []
   const canvasData = team.canvas_data || {}
@@ -106,6 +115,7 @@ export function TeamCanvasView({ team, onClose }: TeamCanvasViewProps) {
   useEffect(() => {
     loadFeedback()
     getCurrentMentor()
+    loadContributions()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
@@ -123,6 +133,29 @@ export function TeamCanvasView({ team, onClose }: TeamCanvasViewProps) {
         },
         () => {
           loadFeedback()
+        }
+      )
+      .subscribe()
+
+    return () => {
+      supabase.removeChannel(channel)
+    }
+  }, [team.id, supabase])
+
+  // Real-time subscription for contributions
+  useEffect(() => {
+    const channel = supabase
+      .channel(`contributions-${team.id}`)
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'canvas_contributions',
+          filter: `team_id=eq.${team.id}`,
+        },
+        () => {
+          loadContributions()
         }
       )
       .subscribe()
@@ -154,6 +187,46 @@ export function TeamCanvasView({ team, onClose }: TeamCanvasViewProps) {
       console.error('Failed to load feedback:', error)
     } finally {
       setIsLoadingFeedback(false)
+    }
+  }
+
+  const loadContributions = async () => {
+    setIsLoadingContributions(true)
+    try {
+      const { data, error } = await supabase
+        .from('canvas_contributions')
+        .select('*')
+        .eq('team_id', team.id)
+        .order('created_at', { ascending: true })
+
+      if (error) throw error
+
+      // Group by section and enrich with member info
+      const grouped: Record<CanvasSection, CanvasContributionWithUser[]> = {
+        problem: [],
+        solution: [],
+        value_proposition: [],
+        target_audience: [],
+        key_features: [],
+        revenue_model: [],
+      }
+
+      ;(data || []).forEach((contrib) => {
+        const member = members.find((m: any) => m.user_id === contrib.user_id)
+        const enriched = {
+          ...contrib,
+          member_name: member?.name || 'Unknown',
+          member_role: member?.role || 'Student',
+          is_captain: member?.is_captain || false,
+        }
+        grouped[contrib.section as CanvasSection].push(enriched)
+      })
+
+      setContributions(grouped)
+    } catch (error) {
+      console.error('Failed to load contributions:', error)
+    } finally {
+      setIsLoadingContributions(false)
     }
   }
 
@@ -220,7 +293,7 @@ export function TeamCanvasView({ team, onClose }: TeamCanvasViewProps) {
       {/* Canvas Grid */}
       <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
         {sectionConfigs.map((config) => {
-          const content = canvasData[config.key] || ''
+          const sectionContributions = contributions[config.key] || []
           const sectionFeedback = getFeedbackForSection(config.key)
 
           return (
@@ -237,20 +310,61 @@ export function TeamCanvasView({ team, onClose }: TeamCanvasViewProps) {
                       <CardDescription className="text-xs">{config.description}</CardDescription>
                     </div>
                   </div>
-                  {sectionFeedback.length > 0 && (
-                    <Badge variant="secondary" className="text-xs">
-                      {sectionFeedback.length} feedback
-                    </Badge>
-                  )}
+                  <div className="flex items-center gap-2">
+                    {sectionContributions.length > 0 && (
+                      <Badge variant="outline" className="text-xs">
+                        {sectionContributions.length} ideas
+                      </Badge>
+                    )}
+                    {sectionFeedback.length > 0 && (
+                      <Badge variant="secondary" className="text-xs">
+                        {sectionFeedback.length} feedback
+                      </Badge>
+                    )}
+                  </div>
                 </div>
               </CardHeader>
               <CardContent className="space-y-3">
-                {/* Read-only content */}
-                <div className={`p-3 ${config.bgColor} rounded-md min-h-[120px]`}>
-                  {content ? (
-                    <p className="text-sm whitespace-pre-wrap">{content}</p>
+                {/* Student Contributions */}
+                <div className={`p-3 ${config.bgColor} rounded-md min-h-[120px] max-h-[300px] overflow-y-auto space-y-2`}>
+                  {isLoadingContributions ? (
+                    <div className="flex items-center justify-center py-4">
+                      <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
+                    </div>
+                  ) : sectionContributions.length === 0 ? (
+                    <p className="text-sm text-muted-foreground italic">No contributions yet</p>
                   ) : (
-                    <p className="text-sm text-muted-foreground italic">No content yet</p>
+                    sectionContributions.map((contrib) => (
+                      <div
+                        key={contrib.id}
+                        className="bg-white rounded-md p-2 shadow-sm border border-gray-200"
+                      >
+                        <div className="flex items-start gap-2 mb-1">
+                          {contrib.is_captain ? (
+                            <Crown className="h-3 w-3 text-yellow-600 flex-shrink-0 mt-0.5" />
+                          ) : (
+                            <UserCircle className="h-3 w-3 text-gray-400 flex-shrink-0 mt-0.5" />
+                          )}
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center justify-between gap-2">
+                              <div>
+                                <p className="text-xs font-semibold text-gray-900">{contrib.member_name}</p>
+                                <p className="text-[10px] text-gray-500">{contrib.member_role}</p>
+                              </div>
+                              <p className="text-[10px] text-gray-400 flex-shrink-0">
+                                {new Date(contrib.created_at).toLocaleTimeString('en-US', {
+                                  hour: '2-digit',
+                                  minute: '2-digit',
+                                })}
+                              </p>
+                            </div>
+                            <p className="text-xs text-gray-700 mt-1 whitespace-pre-wrap break-words">
+                              {contrib.content}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    ))
                   )}
                 </div>
 
@@ -281,14 +395,33 @@ export function TeamCanvasView({ team, onClose }: TeamCanvasViewProps) {
                     </DialogHeader>
 
                     <div className="space-y-4">
-                      {/* Team's content */}
+                      {/* Team's contributions */}
                       <div>
-                        <p className="text-sm font-medium mb-2">Team's Response:</p>
-                        <div className={`p-3 ${config.bgColor} rounded-md`}>
-                          {content ? (
-                            <p className="text-sm whitespace-pre-wrap">{content}</p>
+                        <p className="text-sm font-medium mb-2">Team Ideas ({sectionContributions.length}):</p>
+                        <div className={`p-3 ${config.bgColor} rounded-md max-h-48 overflow-y-auto space-y-2`}>
+                          {sectionContributions.length === 0 ? (
+                            <p className="text-sm text-muted-foreground italic">No contributions yet</p>
                           ) : (
-                            <p className="text-sm text-muted-foreground italic">No content yet</p>
+                            sectionContributions.map((contrib) => (
+                              <div
+                                key={contrib.id}
+                                className="bg-white rounded-md p-2 shadow-sm border border-gray-200"
+                              >
+                                <div className="flex items-start gap-2">
+                                  {contrib.is_captain ? (
+                                    <Crown className="h-3 w-3 text-yellow-600 flex-shrink-0 mt-0.5" />
+                                  ) : (
+                                    <UserCircle className="h-3 w-3 text-gray-400 flex-shrink-0 mt-0.5" />
+                                  )}
+                                  <div className="flex-1 min-w-0">
+                                    <p className="text-xs font-semibold text-gray-900">{contrib.member_name}</p>
+                                    <p className="text-xs text-gray-700 mt-1 whitespace-pre-wrap break-words">
+                                      {contrib.content}
+                                    </p>
+                                  </div>
+                                </div>
+                              </div>
+                            ))
                           )}
                         </div>
                       </div>
