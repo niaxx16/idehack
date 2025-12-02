@@ -10,6 +10,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import { createClient } from '@/lib/supabase/client'
 import { Plus, UserCheck, Loader2, Copy, Gavel } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
+import { createUser } from '@/app/actions/create-user'
 
 interface JuryManagementProps {
   event: Event | null
@@ -120,38 +121,17 @@ export function JuryManagement({ event, onUpdate }: JuryManagementProps) {
       // Generate a random 8-character password with uppercase, lowercase, and numbers
       const randomPassword = generatePassword()
 
-      // Create auth user via Supabase Admin API (sign up)
-      const { data: authData, error: authError } = await supabase.auth.signUp({
+      // Create user via server action (using admin API)
+      const result = await createUser({
         email: juryEmail,
         password: randomPassword,
-        options: {
-          data: {
-            full_name: juryName,
-            role: 'jury',
-          },
-        },
+        fullName: juryName,
+        role: 'jury',
+        eventId: event.id
       })
 
-      if (authError) throw authError
-
-      // Manually create the profile (trigger is disabled)
-      if (authData.user) {
-        const { error: insertError } = await supabase
-          .from('profiles')
-          .insert({
-            id: authData.user.id,
-            role: 'jury',
-            full_name: juryName,
-            email: juryEmail,
-            display_name: juryName,
-            wallet_balance: 1000,
-            event_id: event.id
-          })
-
-        if (insertError) {
-          console.error('Profile insert error:', insertError)
-          throw insertError
-        }
+      if (!result.success) {
+        throw new Error(result.error || 'Failed to create jury member')
       }
 
       // Show password to admin in a copyable dialog
