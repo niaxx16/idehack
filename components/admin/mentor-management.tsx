@@ -59,8 +59,7 @@ export function MentorManagement({ event, teams, onUpdate }: MentorManagementPro
           schema: 'public',
           table: 'mentor_assignments'
         },
-        (payload) => {
-          console.log('Mentor assignment updated:', payload)
+        () => {
           loadMentors()
         }
       )
@@ -72,8 +71,7 @@ export function MentorManagement({ event, teams, onUpdate }: MentorManagementPro
           table: 'profiles',
           filter: 'role=eq.mentor'
         },
-        (payload) => {
-          console.log('Mentor profile updated:', payload)
+        () => {
           loadMentors()
         }
       )

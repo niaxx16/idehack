@@ -83,7 +83,6 @@ export default function StudentPage() {
           filter: `id=eq.${currentEvent.id}`,
         },
         (payload) => {
-          console.log('Event updated:', payload)
           if (payload.new) {
             setCurrentEvent(payload.new as Event)
           }
@@ -110,8 +109,7 @@ export default function StudentPage() {
           table: 'mentor_feedback',
           filter: `team_id=eq.${team.id}`,
         },
-        (payload) => {
-          console.log('Feedback updated:', payload)
+        () => {
           loadFeedback()
         }
       )

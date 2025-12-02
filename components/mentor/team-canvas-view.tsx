@@ -121,8 +121,7 @@ export function TeamCanvasView({ team, onClose }: TeamCanvasViewProps) {
           table: 'mentor_feedback',
           filter: `team_id=eq.${team.id}`,
         },
-        (payload) => {
-          console.log('Feedback updated:', payload)
+        () => {
           loadFeedback()
         }
       )

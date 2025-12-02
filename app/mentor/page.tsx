@@ -47,8 +47,7 @@ export default function MentorPage() {
           schema: 'public',
           table: 'mentor_assignments',
         },
-        (payload) => {
-          console.log('Assignment updated:', payload)
+        () => {
           loadData()
         }
       )
@@ -71,7 +70,6 @@ export default function MentorPage() {
           table: 'teams',
         },
         (payload) => {
-          console.log('Team updated:', payload)
           // Reload all data to refresh assignments with latest team data
           loadData()
 

@@ -55,8 +55,7 @@ export function TeamManagement({ event, teams, onUpdate }: TeamManagementProps) 
           table: 'teams',
           filter: `event_id=eq.${event.id}`
         },
-        (payload) => {
-          console.log('Team updated:', payload)
+        () => {
           onUpdate() // Refresh teams list
         }
       )

@@ -53,8 +53,7 @@ export function JuryManagement({ event, onUpdate }: JuryManagementProps) {
           table: 'profiles',
           filter: 'role=eq.jury'
         },
-        (payload) => {
-          console.log('Jury updated:', payload)
+        () => {
           loadJuryMembers()
         }
       )
