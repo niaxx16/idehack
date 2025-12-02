@@ -10,7 +10,7 @@ import { Textarea } from '@/components/ui/textarea'
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { createClient } from '@/lib/supabase/client'
-import { Plus, Calendar, Trash2, CheckCircle, Circle, Loader2, Globe } from 'lucide-react'
+import { Plus, Calendar, Trash2, CheckCircle, Circle, Loader2, Globe, Pencil } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { locales, localeNames, localeFlags, defaultLocale } from '@/lib/i18n/config'
 
@@ -25,6 +25,8 @@ export function EventManagement({ currentEvent, onEventSelect, onUpdate }: Event
   const [isLoading, setIsLoading] = useState(true)
   const [isCreating, setIsCreating] = useState(false)
   const [showCreateDialog, setShowCreateDialog] = useState(false)
+  const [showEditDialog, setShowEditDialog] = useState(false)
+  const [editingEvent, setEditingEvent] = useState<Event | null>(null)
   const supabase = createClient()
 
   // Form fields
@@ -92,6 +94,62 @@ export function EventManagement({ currentEvent, onEventSelect, onUpdate }: Event
     } catch (err: any) {
       console.error('Failed to create event:', err)
       setError(err.message || 'Failed to create event')
+    } finally {
+      setIsCreating(false)
+    }
+  }
+
+  const openEditDialog = (event: Event) => {
+    setEditingEvent(event)
+    setEventName(event.name)
+    setEventDescription(event.description || '')
+    setEventLanguage(event.language || defaultLocale)
+    setShowEditDialog(true)
+  }
+
+  const updateEvent = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!eventName.trim() || !editingEvent) return
+
+    setIsCreating(true)
+    setError(null)
+
+    try {
+      const { error } = await supabase
+        .from('events')
+        .update({
+          name: eventName.trim(),
+          description: eventDescription.trim() || null,
+          language: eventLanguage,
+        })
+        .eq('id', editingEvent.id)
+
+      if (error) throw error
+
+      setEventName('')
+      setEventDescription('')
+      setEventLanguage(defaultLocale)
+      setShowEditDialog(false)
+      setEditingEvent(null)
+      await loadEvents()
+
+      // If edited event was the current one, refresh current event
+      if (currentEvent?.id === editingEvent.id) {
+        const updatedEvent = await supabase
+          .from('events')
+          .select('*')
+          .eq('id', editingEvent.id)
+          .single()
+
+        if (updatedEvent.data) {
+          onEventSelect(updatedEvent.data)
+        }
+      }
+
+      onUpdate()
+    } catch (err: any) {
+      console.error('Failed to update event:', err)
+      setError(err.message || 'Failed to update event')
     } finally {
       setIsCreating(false)
     }
@@ -225,6 +283,83 @@ export function EventManagement({ currentEvent, onEventSelect, onUpdate }: Event
         </CardHeader>
       </Card>
 
+      {/* Edit Event Dialog */}
+      <Dialog open={showEditDialog} onOpenChange={(open) => {
+        setShowEditDialog(open)
+        if (!open) {
+          setEditingEvent(null)
+          setEventName('')
+          setEventDescription('')
+          setEventLanguage(defaultLocale)
+          setError(null)
+        }
+      }}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Edit Event</DialogTitle>
+            <DialogDescription>
+              Update event details
+            </DialogDescription>
+          </DialogHeader>
+          <form onSubmit={updateEvent} className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="editEventName">Event Name *</Label>
+              <Input
+                id="editEventName"
+                placeholder="e.g., Spring 2024 Hackathon"
+                value={eventName}
+                onChange={(e) => setEventName(e.target.value)}
+                required
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="editEventDescription">Description (Optional)</Label>
+              <Textarea
+                id="editEventDescription"
+                placeholder="Brief description of the event..."
+                value={eventDescription}
+                onChange={(e) => setEventDescription(e.target.value)}
+                rows={3}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="editEventLanguage">
+                <Globe className="h-4 w-4 inline mr-1" />
+                Event Language *
+              </Label>
+              <Select value={eventLanguage} onValueChange={setEventLanguage}>
+                <SelectTrigger id="editEventLanguage">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {locales.map((locale) => (
+                    <SelectItem key={locale} value={locale}>
+                      {localeFlags[locale]} {localeNames[locale]}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <p className="text-xs text-muted-foreground">
+                All users will see the event in this language
+              </p>
+            </div>
+            {error && (
+              <p className="text-sm text-red-600">{error}</p>
+            )}
+            <Button type="submit" disabled={isCreating} className="w-full">
+              {isCreating ? (
+                <>
+                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                  Updating...
+                </>
+              ) : (
+                'Update Event'
+              )}
+            </Button>
+          </form>
+        </DialogContent>
+      </Dialog>
+
       {/* Events List */}
       <Card>
         <CardHeader>
@@ -305,18 +440,31 @@ export function EventManagement({ currentEvent, onEventSelect, onUpdate }: Event
                         </div>
                       </div>
 
-                      {/* Delete Button */}
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="flex-shrink-0 text-red-600 hover:text-red-700 hover:bg-red-50"
-                        onClick={(e) => {
-                          e.stopPropagation()
-                          deleteEvent(event.id)
-                        }}
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
+                      {/* Action Buttons */}
+                      <div className="flex items-center gap-1 flex-shrink-0">
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="text-blue-600 hover:text-blue-700 hover:bg-blue-50"
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            openEditDialog(event)
+                          }}
+                        >
+                          <Pencil className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            deleteEvent(event.id)
+                          }}
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
                     </div>
                   </CardContent>
                 </Card>
