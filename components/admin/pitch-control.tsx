@@ -199,24 +199,44 @@ export function PitchControl({ event, teams, onUpdate }: PitchControlProps) {
     try {
       // Fetch the file
       const response = await fetch(currentTeam.presentation_url)
+      if (!response.ok) throw new Error('Failed to fetch file')
+
+      // Get the content type from response
+      const contentType = response.headers.get('content-type') || 'application/octet-stream'
       const blob = await response.blob()
 
+      // Create blob with correct MIME type
+      const properBlob = new Blob([blob], { type: contentType })
+
       // Create download link
-      const url = window.URL.createObjectURL(blob)
+      const url = window.URL.createObjectURL(properBlob)
       const a = document.createElement('a')
       a.href = url
 
-      // Extract filename from URL or use team name
+      // Extract filename from URL
       const urlParts = currentTeam.presentation_url.split('/')
-      const filename = urlParts[urlParts.length - 1] || `${currentTeam.name}-presentation.pdf`
+      let filename = urlParts[urlParts.length - 1]
+
+      // If filename doesn't have extension, add it based on content type
+      if (!filename.includes('.')) {
+        const extension = contentType.includes('pdf') ? '.pdf' :
+                         contentType.includes('powerpoint') || contentType.includes('presentation') ? '.pptx' :
+                         contentType.includes('msword') || contentType.includes('document') ? '.docx' : ''
+        filename = `${currentTeam.name}-presentation${extension}`
+      }
+
+      // Decode URL-encoded filename
+      filename = decodeURIComponent(filename)
 
       a.download = filename
       document.body.appendChild(a)
       a.click()
 
       // Cleanup
-      window.URL.revokeObjectURL(url)
-      document.body.removeChild(a)
+      setTimeout(() => {
+        window.URL.revokeObjectURL(url)
+        document.body.removeChild(a)
+      }, 100)
     } catch (error) {
       console.error('Failed to download presentation:', error)
       // Fallback to opening in new tab
