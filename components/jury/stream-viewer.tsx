@@ -2,8 +2,6 @@
 
 import { Event, Team, CanvasContributionWithUser } from '@/types'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { ExternalLink, Video, Crown, UserCircle } from 'lucide-react'
@@ -18,8 +16,6 @@ interface StreamViewerProps {
 type CanvasSection = 'problem' | 'solution' | 'value_proposition' | 'target_audience' | 'key_features' | 'revenue_model'
 
 export function StreamViewer({ event, team }: StreamViewerProps) {
-  const [streamUrl, setStreamUrl] = useState(event.stream_url || '')
-  const [isUpdating, setIsUpdating] = useState(false)
   const [contributions, setContributions] = useState<Record<CanvasSection, CanvasContributionWithUser[]>>({
     problem: [],
     solution: [],
@@ -90,22 +86,6 @@ export function StreamViewer({ event, team }: StreamViewerProps) {
     }
   }
 
-  const updateStreamUrl = async () => {
-    setIsUpdating(true)
-    try {
-      const { error } = await supabase
-        .from('events')
-        .update({ stream_url: streamUrl })
-        .eq('id', event.id)
-
-      if (error) throw error
-    } catch (error) {
-      console.error('Failed to update stream URL:', error)
-    } finally {
-      setIsUpdating(false)
-    }
-  }
-
   const getEmbedUrl = (url: string) => {
     // Convert YouTube watch URL to embed URL
     if (url.includes('youtube.com/watch')) {
@@ -163,28 +143,6 @@ export function StreamViewer({ event, team }: StreamViewerProps) {
               </div>
             </div>
           )}
-
-          <div className="mt-4 space-y-2">
-            <Label htmlFor="streamUrl" className="text-xs">
-              Stream URL (YouTube, Zoom, etc.)
-            </Label>
-            <div className="flex gap-2">
-              <Input
-                id="streamUrl"
-                type="url"
-                placeholder="https://youtube.com/watch?v=..."
-                value={streamUrl}
-                onChange={(e) => setStreamUrl(e.target.value)}
-              />
-              <Button
-                onClick={updateStreamUrl}
-                disabled={isUpdating}
-                size="sm"
-              >
-                Update
-              </Button>
-            </div>
-          </div>
         </CardContent>
       </Card>
 
