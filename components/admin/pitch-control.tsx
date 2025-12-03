@@ -384,6 +384,34 @@ export function PitchControl({ event, teams, onUpdate }: PitchControlProps) {
               )}
             </div>
 
+            {/* Value Proposition */}
+            <div>
+              <h4 className="font-medium mb-2 flex items-center gap-2">
+                <div className="w-1 h-4 bg-purple-500 rounded"></div>
+                Unique Value
+              </h4>
+              {contributions.value_proposition.length > 0 ? (
+                <div className="space-y-2">
+                  {contributions.value_proposition.map((contrib) => (
+                    <div key={contrib.id} className="bg-purple-50 border border-purple-200 rounded p-2">
+                      <div className="flex items-center gap-1 mb-1">
+                        {contrib.is_captain ? (
+                          <Crown className="h-3 w-3 text-yellow-600" />
+                        ) : (
+                          <UserCircle className="h-3 w-3 text-gray-400" />
+                        )}
+                        <span className="text-xs font-medium">{contrib.member_name}</span>
+                        <span className="text-xs text-muted-foreground">({contrib.member_role})</span>
+                      </div>
+                      <p className="text-sm">{contrib.content}</p>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-sm text-muted-foreground italic">{t('notSpecified')}</p>
+              )}
+            </div>
+
             {/* Target Audience */}
             <div>
               <h4 className="font-medium mb-2 flex items-center gap-2">
@@ -394,6 +422,34 @@ export function PitchControl({ event, teams, onUpdate }: PitchControlProps) {
                 <div className="space-y-2">
                   {contributions.target_audience.map((contrib) => (
                     <div key={contrib.id} className="bg-blue-50 border border-blue-200 rounded p-2">
+                      <div className="flex items-center gap-1 mb-1">
+                        {contrib.is_captain ? (
+                          <Crown className="h-3 w-3 text-yellow-600" />
+                        ) : (
+                          <UserCircle className="h-3 w-3 text-gray-400" />
+                        )}
+                        <span className="text-xs font-medium">{contrib.member_name}</span>
+                        <span className="text-xs text-muted-foreground">({contrib.member_role})</span>
+                      </div>
+                      <p className="text-sm">{contrib.content}</p>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-sm text-muted-foreground italic">{t('notSpecified')}</p>
+              )}
+            </div>
+
+            {/* Key Features */}
+            <div>
+              <h4 className="font-medium mb-2 flex items-center gap-2">
+                <div className="w-1 h-4 bg-green-500 rounded"></div>
+                Key Features
+              </h4>
+              {contributions.key_features.length > 0 ? (
+                <div className="space-y-2">
+                  {contributions.key_features.map((contrib) => (
+                    <div key={contrib.id} className="bg-green-50 border border-green-200 rounded p-2">
                       <div className="flex items-center gap-1 mb-1">
                         {contrib.is_captain ? (
                           <Crown className="h-3 w-3 text-yellow-600" />
