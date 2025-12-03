@@ -42,12 +42,16 @@ export function ScoringForm({ event, team, juryId, onScoreSubmitted }: ScoringFo
   }, [team.id, juryId])
 
   const loadExistingScore = async () => {
-    const { data } = await supabase
+    const { data, error } = await supabase
       .from('jury_scores')
-      .select('*')
+      .select('id, jury_id, team_id, scores, comments, created_at')
       .eq('jury_id', juryId)
       .eq('team_id', team.id)
-      .single()
+      .maybeSingle()
+
+    if (error && error.code !== 'PGRST116') {
+      console.error('Error loading score:', error)
+    }
 
     if (data) {
       setScores(data.scores as JuryScoreData)
