@@ -7,10 +7,12 @@ import { Button } from '@/components/ui/button'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Progress } from '@/components/ui/progress'
 import { createClient } from '@/lib/supabase/client'
-import { Play, Pause, ExternalLink, Clock, Crown, UserCircle, Download } from 'lucide-react'
+import { Play, Pause, ExternalLink, Clock, Crown, UserCircle, Download, Video, Loader2, CheckCircle } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { useHype } from '@/hooks/use-hype'
 import { useTranslations } from 'next-intl'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
 
 interface PitchControlProps {
   event: Event | null
@@ -28,6 +30,8 @@ export function PitchControl({ event, teams, onUpdate }: PitchControlProps) {
   const [isStarting, setIsStarting] = useState(false)
   const [timeRemaining, setTimeRemaining] = useState<number>(0)
   const [isTimerActive, setIsTimerActive] = useState(false)
+  const [streamUrl, setStreamUrl] = useState('')
+  const [isUpdatingStream, setIsUpdatingStream] = useState(false)
   const [contributions, setContributions] = useState<Record<CanvasSection, CanvasContributionWithUser[]>>({
     problem: [],
     solution: [],
@@ -40,6 +44,15 @@ export function PitchControl({ event, teams, onUpdate }: PitchControlProps) {
   const { hypeEvents } = useHype(event?.id || null)
 
   const currentTeam = teams.find((t) => t.id === event?.current_team_id)
+
+  // Load stream URL from event
+  useEffect(() => {
+    if (event?.stream_url) {
+      setStreamUrl(event.stream_url)
+    } else {
+      setStreamUrl('')
+    }
+  }, [event?.stream_url])
 
   // Load contributions when current team changes
   useEffect(() => {
@@ -193,6 +206,26 @@ export function PitchControl({ event, teams, onUpdate }: PitchControlProps) {
     }
   }
 
+  const updateStreamUrl = async () => {
+    if (!event) return
+
+    setIsUpdatingStream(true)
+    try {
+      const { error } = await supabase
+        .from('events')
+        .update({ stream_url: streamUrl.trim() || null })
+        .eq('id', event.id)
+
+      if (error) throw error
+
+      onUpdate()
+    } catch (error) {
+      console.error('Failed to update stream URL:', error)
+    } finally {
+      setIsUpdatingStream(false)
+    }
+  }
+
   const downloadPresentation = async () => {
     if (!currentTeam?.presentation_url) return
 
@@ -287,6 +320,53 @@ export function PitchControl({ event, teams, onUpdate }: PitchControlProps) {
           animation: float 3s ease-out forwards;
         }
       `}</style>
+
+      {/* Stream URL Configuration */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Video className="h-5 w-5" />
+            Stream Configuration
+          </CardTitle>
+          <CardDescription>
+            Set the live stream URL for jury members to watch presentations
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-3">
+          <div className="space-y-2">
+            <Label htmlFor="streamUrl">Stream URL (YouTube, Zoom, etc.)</Label>
+            <div className="flex gap-2">
+              <Input
+                id="streamUrl"
+                type="url"
+                placeholder="https://youtube.com/watch?v=... or https://zoom.us/..."
+                value={streamUrl}
+                onChange={(e) => setStreamUrl(e.target.value)}
+              />
+              <Button
+                onClick={updateStreamUrl}
+                disabled={isUpdatingStream}
+                variant="secondary"
+              >
+                {isUpdatingStream ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Saving...
+                  </>
+                ) : (
+                  'Update'
+                )}
+              </Button>
+            </div>
+          </div>
+          {event?.stream_url && (
+            <div className="flex items-center gap-2 p-2 bg-green-50 border border-green-200 rounded text-sm text-green-700">
+              <CheckCircle className="h-4 w-4" />
+              <span>Stream URL is configured and visible to jury members</span>
+            </div>
+          )}
+        </CardContent>
+      </Card>
 
       <Card>
         <CardHeader>
