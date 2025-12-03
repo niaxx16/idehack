@@ -64,15 +64,17 @@ export function PresentationUpload({ team, isLocked, onUpdate }: PresentationUpl
 
       if (uploadError) throw uploadError
 
-      // Get public URL
-      const { data: urlData } = supabase.storage
-        .from('team-presentations')
-        .getPublicUrl(fileName)
+      // Get the Supabase project URL
+      const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+      if (!supabaseUrl) throw new Error('Supabase URL not configured')
+
+      // Construct the full public URL manually
+      const publicUrl = `${supabaseUrl}/storage/v1/object/public/team-presentations/${fileName}`
 
       // Update team record with presentation URL
       const { error: updateError } = await supabase
         .from('teams')
-        .update({ presentation_url: urlData.publicUrl })
+        .update({ presentation_url: publicUrl })
         .eq('id', team.id)
 
       if (updateError) throw updateError
