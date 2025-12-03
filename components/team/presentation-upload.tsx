@@ -64,22 +64,9 @@ export function PresentationUpload({ team, isLocked, onUpdate }: PresentationUpl
 
       if (uploadError) throw uploadError
 
-      // Get public URL using Supabase's method
-      const { data: publicUrlData } = supabase.storage
-        .from('team-presentations')
-        .getPublicUrl(fileName)
-
-      // Ensure the URL is absolute and points to Supabase
-      let publicUrl = publicUrlData.publicUrl
-
-      // If URL doesn't contain supabase.co, reconstruct it
-      if (!publicUrl.includes('supabase.co')) {
-        // Extract the Supabase URL from the client
-        const supabaseUrl = (supabase as any).supabaseUrl ||
-                           (supabase as any).auth?.url?.replace('/auth/v1', '') ||
-                           'https://udlkyxytmyxxktflzfpi.supabase.co'
-        publicUrl = `${supabaseUrl}/storage/v1/object/public/team-presentations/${fileName}`
-      }
+      // Always use the hardcoded Supabase URL to ensure correctness
+      const supabaseUrl = 'https://udlkyxytmyxxktflzfpi.supabase.co'
+      const publicUrl = `${supabaseUrl}/storage/v1/object/public/team-presentations/${fileName}`
 
       console.log('Generated presentation URL:', publicUrl)
 
