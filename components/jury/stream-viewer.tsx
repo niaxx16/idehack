@@ -38,13 +38,30 @@ export function StreamViewer({ event, team }: StreamViewerProps) {
 
   const loadContributions = async () => {
     try {
+      console.log('Loading contributions for team:', team.id)
+      console.log('Team members:', members)
+
+      // Load contributions with profile information
       const { data, error } = await supabase
         .from('canvas_contributions')
-        .select('*')
+        .select(`
+          *,
+          profiles:user_id (
+            id,
+            full_name,
+            display_name,
+            role
+          )
+        `)
         .eq('team_id', team.id)
         .order('created_at', { ascending: true })
 
-      if (error) throw error
+      if (error) {
+        console.error('Error loading contributions:', error)
+        throw error
+      }
+
+      console.log('Contributions data with profiles:', data)
 
       // Group by section and enrich with member info
       const grouped: Record<CanvasSection, CanvasContributionWithUser[]> = {
@@ -56,17 +73,28 @@ export function StreamViewer({ event, team }: StreamViewerProps) {
         revenue_model: [],
       }
 
-      ;(data || []).forEach((contrib) => {
+      ;(data || []).forEach((contrib: any) => {
+        // Get member info from team_members JSON
         const member = members.find((m: any) => m.user_id === contrib.user_id)
+
+        // Use profile info if available, otherwise fallback to member info
+        const profile = contrib.profiles
+        const memberName = profile?.display_name || profile?.full_name || member?.name || 'Unknown'
+        const memberRole = member?.role || 'Student'
+        const isCaptain = member?.is_captain || false
+
+        console.log(`User ${contrib.user_id}: name=${memberName}, role=${memberRole}, captain=${isCaptain}`)
+
         const enriched = {
           ...contrib,
-          member_name: member?.name || 'Unknown',
-          member_role: member?.role || 'Student',
-          is_captain: member?.is_captain || false,
+          member_name: memberName,
+          member_role: memberRole,
+          is_captain: isCaptain,
         }
         grouped[contrib.section as CanvasSection].push(enriched)
       })
 
+      console.log('Grouped contributions:', grouped)
       setContributions(grouped)
     } catch (error) {
       console.error('Failed to load contributions:', error)
