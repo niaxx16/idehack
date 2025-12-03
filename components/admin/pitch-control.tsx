@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Progress } from '@/components/ui/progress'
 import { createClient } from '@/lib/supabase/client'
-import { Play, Pause, ExternalLink, Clock, Crown, UserCircle } from 'lucide-react'
+import { Play, Pause, ExternalLink, Clock, Crown, UserCircle, Download } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { useHype } from '@/hooks/use-hype'
 import { useTranslations } from 'next-intl'
@@ -193,8 +193,33 @@ export function PitchControl({ event, teams, onUpdate }: PitchControlProps) {
     }
   }
 
-  const openPresentation = () => {
-    if (currentTeam?.presentation_url) {
+  const downloadPresentation = async () => {
+    if (!currentTeam?.presentation_url) return
+
+    try {
+      // Fetch the file
+      const response = await fetch(currentTeam.presentation_url)
+      const blob = await response.blob()
+
+      // Create download link
+      const url = window.URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+
+      // Extract filename from URL or use team name
+      const urlParts = currentTeam.presentation_url.split('/')
+      const filename = urlParts[urlParts.length - 1] || `${currentTeam.name}-presentation.pdf`
+
+      a.download = filename
+      document.body.appendChild(a)
+      a.click()
+
+      // Cleanup
+      window.URL.revokeObjectURL(url)
+      document.body.removeChild(a)
+    } catch (error) {
+      console.error('Failed to download presentation:', error)
+      // Fallback to opening in new tab
       window.open(currentTeam.presentation_url, '_blank')
     }
   }
@@ -303,9 +328,9 @@ export function PitchControl({ event, teams, onUpdate }: PitchControlProps) {
 
               <div className="grid grid-cols-2 gap-3">
                 {currentTeam.presentation_url && (
-                  <Button onClick={openPresentation} variant="outline">
-                    <ExternalLink className="mr-2 h-4 w-4" />
-                    {t('openPresentation')}
+                  <Button onClick={downloadPresentation} variant="outline">
+                    <Download className="mr-2 h-4 w-4" />
+                    Download Presentation
                   </Button>
                 )}
                 <Button
