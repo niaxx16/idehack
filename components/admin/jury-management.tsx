@@ -8,7 +8,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import { createClient } from '@/lib/supabase/client'
-import { Plus, UserCheck, Loader2, Copy, Gavel } from 'lucide-react'
+import { Plus, UserCheck, Loader2, Copy, Gavel, Eye, EyeOff, KeyRound } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { createUser } from '@/app/actions/create-user'
 
@@ -23,6 +23,7 @@ export function JuryManagement({ event, onUpdate }: JuryManagementProps) {
   const [isCreating, setIsCreating] = useState(false)
   const [showCreateDialog, setShowCreateDialog] = useState(false)
   const [showCredentialsDialog, setShowCredentialsDialog] = useState(false)
+  const [visiblePasswords, setVisiblePasswords] = useState<Set<string>>(new Set())
   const supabase = createClient()
 
   // Form fields
@@ -133,6 +134,16 @@ export function JuryManagement({ event, onUpdate }: JuryManagementProps) {
         throw new Error(result.error || 'Failed to create jury member')
       }
 
+      // Save the password to the profile for admin access
+      const { error: updateError } = await supabase
+        .from('profiles')
+        .update({ display_password: randomPassword })
+        .eq('email', juryEmail)
+
+      if (updateError) {
+        console.error('Failed to save display password:', updateError)
+      }
+
       // Show password to admin in a copyable dialog
       setCreatedEmail(juryEmail)
       setCreatedPassword(randomPassword)
@@ -148,6 +159,18 @@ export function JuryManagement({ event, onUpdate }: JuryManagementProps) {
     } finally {
       setIsCreating(false)
     }
+  }
+
+  const togglePasswordVisibility = (juryId: string) => {
+    setVisiblePasswords(prev => {
+      const newSet = new Set(prev)
+      if (newSet.has(juryId)) {
+        newSet.delete(juryId)
+      } else {
+        newSet.add(juryId)
+      }
+      return newSet
+    })
   }
 
   return (
@@ -297,9 +320,29 @@ export function JuryManagement({ event, onUpdate }: JuryManagementProps) {
                         <div className="h-10 w-10 rounded-full bg-purple-100 flex items-center justify-center">
                           <UserCheck className="h-5 w-5 text-purple-600" />
                         </div>
-                        <div>
+                        <div className="space-y-1">
                           <h3 className="font-semibold">{jury.full_name || 'Anonymous Jury'}</h3>
                           <p className="text-sm text-muted-foreground">{jury.email}</p>
+                          {jury.display_password && (
+                            <div className="flex items-center gap-2 mt-1">
+                              <KeyRound className="h-3.5 w-3.5 text-purple-600" />
+                              <code className="text-xs font-mono font-bold bg-purple-50 px-2 py-1 rounded border border-purple-200">
+                                {visiblePasswords.has(jury.id) ? jury.display_password : '••••••••'}
+                              </code>
+                              <Button
+                                size="sm"
+                                variant="ghost"
+                                onClick={() => togglePasswordVisibility(jury.id)}
+                                className="h-6 w-6 p-0"
+                              >
+                                {visiblePasswords.has(jury.id) ? (
+                                  <EyeOff className="h-3.5 w-3.5" />
+                                ) : (
+                                  <Eye className="h-3.5 w-3.5" />
+                                )}
+                              </Button>
+                            </div>
+                          )}
                         </div>
                       </div>
                       <Badge variant="outline" className="bg-purple-50 text-purple-700 border-purple-200">

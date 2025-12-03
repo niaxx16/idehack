@@ -9,7 +9,7 @@ import { Label } from '@/components/ui/label'
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { createClient } from '@/lib/supabase/client'
-import { Plus, Users, Loader2, UserCheck, Mail, Copy, Check } from 'lucide-react'
+import { Plus, Users, Loader2, UserCheck, Mail, Copy, Check, Eye, EyeOff, KeyRound } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { createUser } from '@/app/actions/create-user'
 
@@ -30,6 +30,7 @@ export function MentorManagement({ event, teams, onUpdate }: MentorManagementPro
   const [isCreating, setIsCreating] = useState(false)
   const [showCreateDialog, setShowCreateDialog] = useState(false)
   const [showCredentialsDialog, setShowCredentialsDialog] = useState(false)
+  const [visiblePasswords, setVisiblePasswords] = useState<Set<string>>(new Set())
   const supabase = createClient()
 
   // Form fields
@@ -168,6 +169,16 @@ export function MentorManagement({ event, teams, onUpdate }: MentorManagementPro
         throw new Error(result.error || 'Failed to create mentor')
       }
 
+      // Save the password to the profile for admin access
+      const { error: updateError } = await supabase
+        .from('profiles')
+        .update({ display_password: randomPassword })
+        .eq('email', mentorEmail)
+
+      if (updateError) {
+        console.error('Failed to save display password:', updateError)
+      }
+
       // Show password to admin in a copyable dialog
       setCreatedEmail(mentorEmail)
       setCreatedPassword(randomPassword)
@@ -232,6 +243,18 @@ export function MentorManagement({ event, teams, onUpdate }: MentorManagementPro
       console.error('Failed to unassign mentor:', err)
       alert('Failed to unassign mentor: ' + err.message)
     }
+  }
+
+  const togglePasswordVisibility = (mentorId: string) => {
+    setVisiblePasswords(prev => {
+      const newSet = new Set(prev)
+      if (newSet.has(mentorId)) {
+        newSet.delete(mentorId)
+      } else {
+        newSet.add(mentorId)
+      }
+      return newSet
+    })
   }
 
   if (isLoading) {
@@ -338,6 +361,26 @@ export function MentorManagement({ event, teams, onUpdate }: MentorManagementPro
                           <Mail className="h-3.5 w-3.5" />
                           <span>{mentor.email}</span>
                         </div>
+                        {mentor.display_password && (
+                          <div className="flex items-center gap-2 mt-2">
+                            <KeyRound className="h-3.5 w-3.5 text-purple-600" />
+                            <code className="text-xs font-mono font-bold bg-purple-50 px-2 py-1 rounded">
+                              {visiblePasswords.has(mentor.id) ? mentor.display_password : '••••••••'}
+                            </code>
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              onClick={() => togglePasswordVisibility(mentor.id)}
+                              className="h-6 w-6 p-0"
+                            >
+                              {visiblePasswords.has(mentor.id) ? (
+                                <EyeOff className="h-3.5 w-3.5" />
+                              ) : (
+                                <Eye className="h-3.5 w-3.5" />
+                              )}
+                            </Button>
+                          </div>
+                        )}
                       </div>
                       <Badge variant="secondary" className="flex items-center gap-1">
                         <Users className="h-3 w-3" />

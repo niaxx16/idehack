@@ -118,28 +118,43 @@ export type Database = {
       profiles: {
         Row: {
           id: string
-          role: 'student' | 'jury' | 'admin'
+          role: 'student' | 'jury' | 'admin' | 'mentor'
           team_id: string | null
           wallet_balance: number
           display_name: string | null
+          full_name: string | null
+          email: string | null
+          event_id: string | null
+          personal_code: string | null
+          display_password: string | null
           created_at: string
           updated_at: string
         }
         Insert: {
           id: string
-          role?: 'student' | 'jury' | 'admin'
+          role?: 'student' | 'jury' | 'admin' | 'mentor'
           team_id?: string | null
           wallet_balance?: number
           display_name?: string | null
+          full_name?: string | null
+          email?: string | null
+          event_id?: string | null
+          personal_code?: string | null
+          display_password?: string | null
           created_at?: string
           updated_at?: string
         }
         Update: {
           id?: string
-          role?: 'student' | 'jury' | 'admin'
+          role?: 'student' | 'jury' | 'admin' | 'mentor'
           team_id?: string | null
           wallet_balance?: number
           display_name?: string | null
+          full_name?: string | null
+          email?: string | null
+          event_id?: string | null
+          personal_code?: string | null
+          display_password?: string | null
           created_at?: string
           updated_at?: string
         }
