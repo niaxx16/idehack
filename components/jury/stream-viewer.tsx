@@ -38,9 +38,6 @@ export function StreamViewer({ event, team }: StreamViewerProps) {
 
   const loadContributions = async () => {
     try {
-      console.log('Loading contributions for team:', team.id)
-      console.log('Team members:', members)
-
       // Load contributions with profile information
       const { data, error } = await supabase
         .from('canvas_contributions')
@@ -56,12 +53,7 @@ export function StreamViewer({ event, team }: StreamViewerProps) {
         .eq('team_id', team.id)
         .order('created_at', { ascending: true })
 
-      if (error) {
-        console.error('Error loading contributions:', error)
-        throw error
-      }
-
-      console.log('Contributions data with profiles:', data)
+      if (error) throw error
 
       // Group by section and enrich with member info
       const grouped: Record<CanvasSection, CanvasContributionWithUser[]> = {
@@ -83,8 +75,6 @@ export function StreamViewer({ event, team }: StreamViewerProps) {
         const memberRole = member?.role || 'Student'
         const isCaptain = member?.is_captain || false
 
-        console.log(`User ${contrib.user_id}: name=${memberName}, role=${memberRole}, captain=${isCaptain}`)
-
         const enriched = {
           ...contrib,
           member_name: memberName,
@@ -94,7 +84,6 @@ export function StreamViewer({ event, team }: StreamViewerProps) {
         grouped[contrib.section as CanvasSection].push(enriched)
       })
 
-      console.log('Grouped contributions:', grouped)
       setContributions(grouped)
     } catch (error) {
       console.error('Failed to load contributions:', error)

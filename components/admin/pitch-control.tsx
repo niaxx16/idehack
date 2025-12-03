@@ -1,13 +1,13 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Event, Team } from '@/types'
+import { Event, Team, CanvasContributionWithUser } from '@/types'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Progress } from '@/components/ui/progress'
 import { createClient } from '@/lib/supabase/client'
-import { Play, Pause, ExternalLink, Clock } from 'lucide-react'
+import { Play, Pause, ExternalLink, Clock, Crown, UserCircle } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { useHype } from '@/hooks/use-hype'
 import { useTranslations } from 'next-intl'
@@ -20,16 +20,43 @@ interface PitchControlProps {
 
 const PITCH_DURATION = 3 * 60 // 3 minutes in seconds
 
+type CanvasSection = 'problem' | 'solution' | 'value_proposition' | 'target_audience' | 'key_features' | 'revenue_model'
+
 export function PitchControl({ event, teams, onUpdate }: PitchControlProps) {
   const t = useTranslations('admin.pitchControl')
   const [selectedTeamId, setSelectedTeamId] = useState<string>('')
   const [isStarting, setIsStarting] = useState(false)
   const [timeRemaining, setTimeRemaining] = useState<number>(0)
   const [isTimerActive, setIsTimerActive] = useState(false)
+  const [contributions, setContributions] = useState<Record<CanvasSection, CanvasContributionWithUser[]>>({
+    problem: [],
+    solution: [],
+    value_proposition: [],
+    target_audience: [],
+    key_features: [],
+    revenue_model: [],
+  })
   const supabase = createClient()
   const { hypeEvents } = useHype(event?.id || null)
 
   const currentTeam = teams.find((t) => t.id === event?.current_team_id)
+
+  // Load contributions when current team changes
+  useEffect(() => {
+    if (currentTeam?.id) {
+      loadContributions(currentTeam.id)
+    } else {
+      // Reset contributions when no team is selected
+      setContributions({
+        problem: [],
+        solution: [],
+        value_proposition: [],
+        target_audience: [],
+        key_features: [],
+        revenue_model: [],
+      })
+    }
+  }, [currentTeam?.id])
 
   useEffect(() => {
     if (event?.pitch_timer_end) {
@@ -61,6 +88,59 @@ export function PitchControl({ event, teams, onUpdate }: PitchControlProps) {
 
     return () => clearInterval(interval)
   }, [isTimerActive, timeRemaining])
+
+  const loadContributions = async (teamId: string) => {
+    try {
+      const members = (currentTeam?.team_members as any[]) || []
+
+      // Load contributions with profile information
+      const { data, error } = await supabase
+        .from('canvas_contributions')
+        .select(`
+          *,
+          profiles:user_id (
+            id,
+            full_name,
+            display_name,
+            role
+          )
+        `)
+        .eq('team_id', teamId)
+        .order('created_at', { ascending: true })
+
+      if (error) throw error
+
+      // Group by section and enrich with member info
+      const grouped: Record<CanvasSection, CanvasContributionWithUser[]> = {
+        problem: [],
+        solution: [],
+        value_proposition: [],
+        target_audience: [],
+        key_features: [],
+        revenue_model: [],
+      }
+
+      ;(data || []).forEach((contrib: any) => {
+        const member = members.find((m: any) => m.user_id === contrib.user_id)
+        const profile = contrib.profiles
+        const memberName = profile?.display_name || profile?.full_name || member?.name || 'Unknown'
+        const memberRole = member?.role || 'Student'
+        const isCaptain = member?.is_captain || false
+
+        const enriched = {
+          ...contrib,
+          member_name: memberName,
+          member_role: memberRole,
+          is_captain: isCaptain,
+        }
+        grouped[contrib.section as CanvasSection].push(enriched)
+      })
+
+      setContributions(grouped)
+    } catch (error) {
+      console.error('Failed to load contributions:', error)
+    }
+  }
 
   const startPitch = async () => {
     if (!event || !selectedTeamId) return
@@ -248,29 +328,116 @@ export function PitchControl({ event, teams, onUpdate }: PitchControlProps) {
             <CardTitle>{t('projectDetails')}</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
+            {/* Problem */}
             <div>
-              <h4 className="font-medium mb-1">{t('problem')}</h4>
-              <p className="text-sm text-muted-foreground">
-                {currentTeam.canvas_data.problem || t('notSpecified')}
-              </p>
+              <h4 className="font-medium mb-2 flex items-center gap-2">
+                <div className="w-1 h-4 bg-red-500 rounded"></div>
+                {t('problem')}
+              </h4>
+              {contributions.problem.length > 0 ? (
+                <div className="space-y-2">
+                  {contributions.problem.map((contrib) => (
+                    <div key={contrib.id} className="bg-red-50 border border-red-200 rounded p-2">
+                      <div className="flex items-center gap-1 mb-1">
+                        {contrib.is_captain ? (
+                          <Crown className="h-3 w-3 text-yellow-600" />
+                        ) : (
+                          <UserCircle className="h-3 w-3 text-gray-400" />
+                        )}
+                        <span className="text-xs font-medium">{contrib.member_name}</span>
+                        <span className="text-xs text-muted-foreground">({contrib.member_role})</span>
+                      </div>
+                      <p className="text-sm">{contrib.content}</p>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-sm text-muted-foreground italic">{t('notSpecified')}</p>
+              )}
             </div>
+
+            {/* Solution */}
             <div>
-              <h4 className="font-medium mb-1">{t('solution')}</h4>
-              <p className="text-sm text-muted-foreground">
-                {currentTeam.canvas_data.solution || t('notSpecified')}
-              </p>
+              <h4 className="font-medium mb-2 flex items-center gap-2">
+                <div className="w-1 h-4 bg-yellow-500 rounded"></div>
+                {t('solution')}
+              </h4>
+              {contributions.solution.length > 0 ? (
+                <div className="space-y-2">
+                  {contributions.solution.map((contrib) => (
+                    <div key={contrib.id} className="bg-yellow-50 border border-yellow-200 rounded p-2">
+                      <div className="flex items-center gap-1 mb-1">
+                        {contrib.is_captain ? (
+                          <Crown className="h-3 w-3 text-yellow-600" />
+                        ) : (
+                          <UserCircle className="h-3 w-3 text-gray-400" />
+                        )}
+                        <span className="text-xs font-medium">{contrib.member_name}</span>
+                        <span className="text-xs text-muted-foreground">({contrib.member_role})</span>
+                      </div>
+                      <p className="text-sm">{contrib.content}</p>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-sm text-muted-foreground italic">{t('notSpecified')}</p>
+              )}
             </div>
+
+            {/* Target Audience */}
             <div>
-              <h4 className="font-medium mb-1">{t('targetAudience')}</h4>
-              <p className="text-sm text-muted-foreground">
-                {currentTeam.canvas_data.target_audience || t('notSpecified')}
-              </p>
+              <h4 className="font-medium mb-2 flex items-center gap-2">
+                <div className="w-1 h-4 bg-blue-500 rounded"></div>
+                {t('targetAudience')}
+              </h4>
+              {contributions.target_audience.length > 0 ? (
+                <div className="space-y-2">
+                  {contributions.target_audience.map((contrib) => (
+                    <div key={contrib.id} className="bg-blue-50 border border-blue-200 rounded p-2">
+                      <div className="flex items-center gap-1 mb-1">
+                        {contrib.is_captain ? (
+                          <Crown className="h-3 w-3 text-yellow-600" />
+                        ) : (
+                          <UserCircle className="h-3 w-3 text-gray-400" />
+                        )}
+                        <span className="text-xs font-medium">{contrib.member_name}</span>
+                        <span className="text-xs text-muted-foreground">({contrib.member_role})</span>
+                      </div>
+                      <p className="text-sm">{contrib.content}</p>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-sm text-muted-foreground italic">{t('notSpecified')}</p>
+              )}
             </div>
+
+            {/* Revenue Model */}
             <div>
-              <h4 className="font-medium mb-1">{t('revenueModel')}</h4>
-              <p className="text-sm text-muted-foreground">
-                {currentTeam.canvas_data.revenue_model || t('notSpecified')}
-              </p>
+              <h4 className="font-medium mb-2 flex items-center gap-2">
+                <div className="w-1 h-4 bg-emerald-500 rounded"></div>
+                {t('revenueModel')}
+              </h4>
+              {contributions.revenue_model.length > 0 ? (
+                <div className="space-y-2">
+                  {contributions.revenue_model.map((contrib) => (
+                    <div key={contrib.id} className="bg-emerald-50 border border-emerald-200 rounded p-2">
+                      <div className="flex items-center gap-1 mb-1">
+                        {contrib.is_captain ? (
+                          <Crown className="h-3 w-3 text-yellow-600" />
+                        ) : (
+                          <UserCircle className="h-3 w-3 text-gray-400" />
+                        )}
+                        <span className="text-xs font-medium">{contrib.member_name}</span>
+                        <span className="text-xs text-muted-foreground">({contrib.member_role})</span>
+                      </div>
+                      <p className="text-sm">{contrib.content}</p>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-sm text-muted-foreground italic">{t('notSpecified')}</p>
+              )}
             </div>
           </CardContent>
         </Card>
