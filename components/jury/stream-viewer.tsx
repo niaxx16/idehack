@@ -1,13 +1,13 @@
 'use client'
 
-import { Event, Team } from '@/types'
+import { Event, Team, CanvasContributionWithUser } from '@/types'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { ExternalLink, Video } from 'lucide-react'
-import { useState } from 'react'
+import { ExternalLink, Video, Crown, UserCircle } from 'lucide-react'
+import { useState, useEffect } from 'react'
 import { createClient } from '@/lib/supabase/client'
 
 interface StreamViewerProps {
@@ -15,10 +15,63 @@ interface StreamViewerProps {
   team: Team
 }
 
+type CanvasSection = 'problem' | 'solution' | 'value_proposition' | 'target_audience' | 'key_features' | 'revenue_model'
+
 export function StreamViewer({ event, team }: StreamViewerProps) {
   const [streamUrl, setStreamUrl] = useState(event.stream_url || '')
   const [isUpdating, setIsUpdating] = useState(false)
+  const [contributions, setContributions] = useState<Record<CanvasSection, CanvasContributionWithUser[]>>({
+    problem: [],
+    solution: [],
+    value_proposition: [],
+    target_audience: [],
+    key_features: [],
+    revenue_model: [],
+  })
   const supabase = createClient()
+
+  const members = (team.team_members as any[]) || []
+
+  useEffect(() => {
+    loadContributions()
+  }, [team.id])
+
+  const loadContributions = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('canvas_contributions')
+        .select('*')
+        .eq('team_id', team.id)
+        .order('created_at', { ascending: true })
+
+      if (error) throw error
+
+      // Group by section and enrich with member info
+      const grouped: Record<CanvasSection, CanvasContributionWithUser[]> = {
+        problem: [],
+        solution: [],
+        value_proposition: [],
+        target_audience: [],
+        key_features: [],
+        revenue_model: [],
+      }
+
+      ;(data || []).forEach((contrib) => {
+        const member = members.find((m: any) => m.user_id === contrib.user_id)
+        const enriched = {
+          ...contrib,
+          member_name: member?.name || 'Unknown',
+          member_role: member?.role || 'Student',
+          is_captain: member?.is_captain || false,
+        }
+        grouped[contrib.section as CanvasSection].push(enriched)
+      })
+
+      setContributions(grouped)
+    } catch (error) {
+      console.error('Failed to load contributions:', error)
+    }
+  }
 
   const updateStreamUrl = async () => {
     setIsUpdating(true)
@@ -121,38 +174,182 @@ export function StreamViewer({ event, team }: StreamViewerProps) {
       <Card>
         <CardHeader>
           <CardTitle>Project Canvas</CardTitle>
+          <CardDescription>Team ideas and contributions</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
+          {/* Problem */}
           <div>
-            <h4 className="font-medium mb-1 text-sm">Problem Statement</h4>
-            <p className="text-sm text-muted-foreground">
-              {team.canvas_data.problem || 'Not specified'}
-            </p>
+            <h4 className="font-semibold mb-2 text-sm flex items-center gap-2">
+              <div className="w-1 h-4 bg-red-500 rounded"></div>
+              Problem Statement
+            </h4>
+            {contributions.problem.length > 0 ? (
+              <div className="space-y-2">
+                {contributions.problem.map((contrib) => (
+                  <div key={contrib.id} className="bg-red-50 border border-red-200 rounded p-2">
+                    <div className="flex items-center gap-1 mb-1">
+                      {contrib.is_captain ? (
+                        <Crown className="h-3 w-3 text-yellow-600" />
+                      ) : (
+                        <UserCircle className="h-3 w-3 text-gray-400" />
+                      )}
+                      <span className="text-xs font-medium">{contrib.member_name}</span>
+                      <span className="text-xs text-muted-foreground">({contrib.member_role})</span>
+                    </div>
+                    <p className="text-sm">{contrib.content}</p>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p className="text-sm text-muted-foreground italic">No ideas yet</p>
+            )}
           </div>
+
+          {/* Solution */}
           <div>
-            <h4 className="font-medium mb-1 text-sm">Solution</h4>
-            <p className="text-sm text-muted-foreground">
-              {team.canvas_data.solution || 'Not specified'}
-            </p>
+            <h4 className="font-semibold mb-2 text-sm flex items-center gap-2">
+              <div className="w-1 h-4 bg-yellow-500 rounded"></div>
+              Solution
+            </h4>
+            {contributions.solution.length > 0 ? (
+              <div className="space-y-2">
+                {contributions.solution.map((contrib) => (
+                  <div key={contrib.id} className="bg-yellow-50 border border-yellow-200 rounded p-2">
+                    <div className="flex items-center gap-1 mb-1">
+                      {contrib.is_captain ? (
+                        <Crown className="h-3 w-3 text-yellow-600" />
+                      ) : (
+                        <UserCircle className="h-3 w-3 text-gray-400" />
+                      )}
+                      <span className="text-xs font-medium">{contrib.member_name}</span>
+                      <span className="text-xs text-muted-foreground">({contrib.member_role})</span>
+                    </div>
+                    <p className="text-sm">{contrib.content}</p>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p className="text-sm text-muted-foreground italic">No ideas yet</p>
+            )}
           </div>
+
+          {/* Value Proposition */}
           <div>
-            <h4 className="font-medium mb-1 text-sm">Target Audience</h4>
-            <p className="text-sm text-muted-foreground">
-              {team.canvas_data.target_audience || 'Not specified'}
-            </p>
+            <h4 className="font-semibold mb-2 text-sm flex items-center gap-2">
+              <div className="w-1 h-4 bg-purple-500 rounded"></div>
+              Unique Value
+            </h4>
+            {contributions.value_proposition.length > 0 ? (
+              <div className="space-y-2">
+                {contributions.value_proposition.map((contrib) => (
+                  <div key={contrib.id} className="bg-purple-50 border border-purple-200 rounded p-2">
+                    <div className="flex items-center gap-1 mb-1">
+                      {contrib.is_captain ? (
+                        <Crown className="h-3 w-3 text-yellow-600" />
+                      ) : (
+                        <UserCircle className="h-3 w-3 text-gray-400" />
+                      )}
+                      <span className="text-xs font-medium">{contrib.member_name}</span>
+                      <span className="text-xs text-muted-foreground">({contrib.member_role})</span>
+                    </div>
+                    <p className="text-sm">{contrib.content}</p>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p className="text-sm text-muted-foreground italic">No ideas yet</p>
+            )}
           </div>
+
+          {/* Target Audience */}
           <div>
-            <h4 className="font-medium mb-1 text-sm">Revenue Model</h4>
-            <p className="text-sm text-muted-foreground">
-              {team.canvas_data.revenue_model || 'Not specified'}
-            </p>
+            <h4 className="font-semibold mb-2 text-sm flex items-center gap-2">
+              <div className="w-1 h-4 bg-blue-500 rounded"></div>
+              Target Customers
+            </h4>
+            {contributions.target_audience.length > 0 ? (
+              <div className="space-y-2">
+                {contributions.target_audience.map((contrib) => (
+                  <div key={contrib.id} className="bg-blue-50 border border-blue-200 rounded p-2">
+                    <div className="flex items-center gap-1 mb-1">
+                      {contrib.is_captain ? (
+                        <Crown className="h-3 w-3 text-yellow-600" />
+                      ) : (
+                        <UserCircle className="h-3 w-3 text-gray-400" />
+                      )}
+                      <span className="text-xs font-medium">{contrib.member_name}</span>
+                      <span className="text-xs text-muted-foreground">({contrib.member_role})</span>
+                    </div>
+                    <p className="text-sm">{contrib.content}</p>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p className="text-sm text-muted-foreground italic">No ideas yet</p>
+            )}
+          </div>
+
+          {/* Key Features */}
+          <div>
+            <h4 className="font-semibold mb-2 text-sm flex items-center gap-2">
+              <div className="w-1 h-4 bg-green-500 rounded"></div>
+              Key Features
+            </h4>
+            {contributions.key_features.length > 0 ? (
+              <div className="space-y-2">
+                {contributions.key_features.map((contrib) => (
+                  <div key={contrib.id} className="bg-green-50 border border-green-200 rounded p-2">
+                    <div className="flex items-center gap-1 mb-1">
+                      {contrib.is_captain ? (
+                        <Crown className="h-3 w-3 text-yellow-600" />
+                      ) : (
+                        <UserCircle className="h-3 w-3 text-gray-400" />
+                      )}
+                      <span className="text-xs font-medium">{contrib.member_name}</span>
+                      <span className="text-xs text-muted-foreground">({contrib.member_role})</span>
+                    </div>
+                    <p className="text-sm">{contrib.content}</p>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p className="text-sm text-muted-foreground italic">No ideas yet</p>
+            )}
+          </div>
+
+          {/* Revenue Model */}
+          <div>
+            <h4 className="font-semibold mb-2 text-sm flex items-center gap-2">
+              <div className="w-1 h-4 bg-emerald-500 rounded"></div>
+              Revenue Model
+            </h4>
+            {contributions.revenue_model.length > 0 ? (
+              <div className="space-y-2">
+                {contributions.revenue_model.map((contrib) => (
+                  <div key={contrib.id} className="bg-emerald-50 border border-emerald-200 rounded p-2">
+                    <div className="flex items-center gap-1 mb-1">
+                      {contrib.is_captain ? (
+                        <Crown className="h-3 w-3 text-yellow-600" />
+                      ) : (
+                        <UserCircle className="h-3 w-3 text-gray-400" />
+                      )}
+                      <span className="text-xs font-medium">{contrib.member_name}</span>
+                      <span className="text-xs text-muted-foreground">({contrib.member_role})</span>
+                    </div>
+                    <p className="text-sm">{contrib.content}</p>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p className="text-sm text-muted-foreground italic">No ideas yet</p>
+            )}
           </div>
 
           {team.presentation_url && (
             <Button
               variant="outline"
               onClick={() => window.open(team.presentation_url!, '_blank')}
-              className="w-full"
+              className="w-full mt-4"
             >
               <ExternalLink className="mr-2 h-4 w-4" />
               View Presentation
