@@ -2,12 +2,12 @@
 
 import { useState, useEffect, useRef } from 'react'
 import { createClient } from '@/lib/supabase/client'
-import { CanvasContributionWithUser } from '@/types'
+import { CanvasContributionWithUser, TeamDecision } from '@/types'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
 import { Badge } from '@/components/ui/badge'
-import { Loader2, Send, Crown, UserCircle, Trash2 } from 'lucide-react'
+import { Loader2, Send, Crown, UserCircle, Trash2, CheckCircle, Edit3, Save } from 'lucide-react'
 import { FeedbackDialog } from './feedback-dialog'
 
 interface TeamMember {
@@ -57,11 +57,21 @@ export function CollaborativeCanvasSection({
   const [error, setError] = useState<string | null>(null)
   const contributionsEndRef = useRef<HTMLDivElement>(null)
 
+  // Team Decision states
+  const [teamDecision, setTeamDecision] = useState<TeamDecision | null>(null)
+  const [decisionContent, setDecisionContent] = useState('')
+  const [isEditingDecision, setIsEditingDecision] = useState(false)
+  const [isSavingDecision, setIsSavingDecision] = useState(false)
+
+  // Check if current user is captain
+  const isCaptain = teamMembers.find(m => m.user_id === currentUserId)?.is_captain || false
+
   useEffect(() => {
     loadContributions()
+    loadTeamDecision()
   }, [teamId, section])
 
-  // Real-time subscription
+  // Real-time subscription for contributions
   useEffect(() => {
     const channel = supabase
       .channel(`contributions-${teamId}-${section}`)
@@ -80,6 +90,31 @@ export function CollaborativeCanvasSection({
           }
           if (payload.eventType === 'DELETE' && (payload.old as any).section === section) {
             loadContributions()
+          }
+        }
+      )
+      .subscribe()
+
+    return () => {
+      supabase.removeChannel(channel)
+    }
+  }, [teamId, section, supabase])
+
+  // Real-time subscription for team decisions
+  useEffect(() => {
+    const channel = supabase
+      .channel(`decisions-${teamId}-${section}`)
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'team_decisions',
+          filter: `team_id=eq.${teamId}`,
+        },
+        (payload) => {
+          if (payload.new && (payload.new as any).section === section) {
+            loadTeamDecision()
           }
         }
       )
@@ -119,6 +154,67 @@ export function CollaborativeCanvasSection({
       setError(err.message)
     } finally {
       setIsLoading(false)
+    }
+  }
+
+  const loadTeamDecision = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('team_decisions')
+        .select('*')
+        .eq('team_id', teamId)
+        .eq('section', section)
+        .maybeSingle()
+
+      if (error) throw error
+
+      setTeamDecision(data)
+      if (data) {
+        setDecisionContent(data.content)
+      }
+    } catch (err: any) {
+      console.error('Failed to load team decision:', err)
+    }
+  }
+
+  const handleSaveDecision = async () => {
+    if (!decisionContent.trim()) return
+
+    setIsSavingDecision(true)
+    try {
+      if (teamDecision) {
+        // Update existing decision
+        const { error } = await supabase
+          .from('team_decisions')
+          .update({
+            content: decisionContent.trim(),
+            updated_by: currentUserId,
+            updated_at: new Date().toISOString(),
+          })
+          .eq('id', teamDecision.id)
+
+        if (error) throw error
+      } else {
+        // Insert new decision
+        const { error } = await supabase
+          .from('team_decisions')
+          .insert({
+            team_id: teamId,
+            section: section,
+            content: decisionContent.trim(),
+            updated_by: currentUserId,
+          })
+
+        if (error) throw error
+      }
+
+      await loadTeamDecision()
+      setIsEditingDecision(false)
+    } catch (err: any) {
+      console.error('Failed to save team decision:', err)
+      alert('Failed to save team decision. Please try again.')
+    } finally {
+      setIsSavingDecision(false)
     }
   }
 
@@ -299,6 +395,98 @@ export function CollaborativeCanvasSection({
             <p className="text-xs text-red-600">{error}</p>
           )}
         </form>
+
+        {/* Team Decision Section */}
+        <div className="border-t pt-4 mt-4">
+          <div className="flex items-center justify-between mb-3">
+            <div className="flex items-center gap-2">
+              <CheckCircle className="h-4 w-4 text-green-600" />
+              <h4 className="text-sm font-semibold text-gray-900">Takım Kararı</h4>
+              {isCaptain && (
+                <Badge variant="outline" className="text-[10px] bg-yellow-50 border-yellow-300 text-yellow-700">
+                  Kaptan
+                </Badge>
+              )}
+            </div>
+            {isCaptain && !isEditingDecision && (
+              <Button
+                variant="ghost"
+                size="sm"
+                className="h-7 text-xs gap-1"
+                onClick={() => setIsEditingDecision(true)}
+              >
+                <Edit3 className="h-3 w-3" />
+                {teamDecision ? 'Düzenle' : 'Karar Yaz'}
+              </Button>
+            )}
+          </div>
+
+          {isEditingDecision && isCaptain ? (
+            <div className="space-y-2">
+              <Textarea
+                placeholder="Takım üyelerinin fikirlerini değerlendirerek takım kararınızı buraya yazın..."
+                value={decisionContent}
+                onChange={(e) => setDecisionContent(e.target.value)}
+                rows={4}
+                className="resize-none text-sm border-green-200 focus:border-green-400"
+                maxLength={1000}
+              />
+              <div className="flex items-center justify-between">
+                <p className="text-xs text-muted-foreground">
+                  {decisionContent.length}/1000
+                </p>
+                <div className="flex gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="h-7 text-xs"
+                    onClick={() => {
+                      setIsEditingDecision(false)
+                      setDecisionContent(teamDecision?.content || '')
+                    }}
+                  >
+                    İptal
+                  </Button>
+                  <Button
+                    size="sm"
+                    className="h-7 text-xs gap-1 bg-green-600 hover:bg-green-700"
+                    onClick={handleSaveDecision}
+                    disabled={!decisionContent.trim() || isSavingDecision}
+                  >
+                    {isSavingDecision ? (
+                      <>
+                        <Loader2 className="h-3 w-3 animate-spin" />
+                        Kaydediliyor...
+                      </>
+                    ) : (
+                      <>
+                        <Save className="h-3 w-3" />
+                        Kaydet
+                      </>
+                    )}
+                  </Button>
+                </div>
+              </div>
+            </div>
+          ) : teamDecision ? (
+            <div className="bg-green-50 border border-green-200 rounded-lg p-3">
+              <p className="text-sm text-gray-800 whitespace-pre-wrap break-words">
+                {teamDecision.content}
+              </p>
+              <p className="text-[10px] text-green-600 mt-2">
+                Son güncelleme: {new Date(teamDecision.updated_at).toLocaleString('tr-TR')}
+              </p>
+            </div>
+          ) : (
+            <div className="bg-gray-50 border border-dashed border-gray-300 rounded-lg p-4 text-center">
+              <p className="text-sm text-muted-foreground">
+                {isCaptain
+                  ? 'Henüz bir takım kararı yazılmadı. Takım üyelerinin fikirlerini değerlendirip kararınızı yazabilirsiniz.'
+                  : 'Takım kaptanı henüz bu bölüm için bir karar yazmadı.'}
+              </p>
+            </div>
+          )}
+        </div>
 
         {/* Mentor Feedback */}
         {feedbacks && onMarkFeedbackAsRead && (

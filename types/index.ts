@@ -46,6 +46,19 @@ export interface CanvasContributionWithUser extends CanvasContribution {
   is_captain?: boolean
 }
 
+// Team Decision (captain's final decision for each canvas section)
+export type CanvasSection = 'problem' | 'solution' | 'value_proposition' | 'target_audience' | 'key_features' | 'revenue_model'
+
+export interface TeamDecision {
+  id: string
+  team_id: string
+  section: CanvasSection
+  content: string
+  updated_by: string | null
+  created_at: string
+  updated_at: string
+}
+
 // Mentor types
 export interface MentorAssignment {
   id: string

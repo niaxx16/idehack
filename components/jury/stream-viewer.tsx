@@ -1,10 +1,10 @@
 'use client'
 
-import { Event, Team, CanvasContributionWithUser } from '@/types'
+import { Event, Team, CanvasContributionWithUser, TeamDecision, CanvasSection } from '@/types'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { ExternalLink, Video, Crown, UserCircle } from 'lucide-react'
+import { ExternalLink, Video, Crown, UserCircle, CheckCircle } from 'lucide-react'
 import { useState, useEffect } from 'react'
 import { createClient } from '@/lib/supabase/client'
 
@@ -12,8 +12,6 @@ interface StreamViewerProps {
   event: Event
   team: Team
 }
-
-type CanvasSection = 'problem' | 'solution' | 'value_proposition' | 'target_audience' | 'key_features' | 'revenue_model'
 
 export function StreamViewer({ event, team }: StreamViewerProps) {
   const [contributions, setContributions] = useState<Record<CanvasSection, CanvasContributionWithUser[]>>({
@@ -24,12 +22,21 @@ export function StreamViewer({ event, team }: StreamViewerProps) {
     key_features: [],
     revenue_model: [],
   })
+  const [teamDecisions, setTeamDecisions] = useState<Record<CanvasSection, TeamDecision | null>>({
+    problem: null,
+    solution: null,
+    value_proposition: null,
+    target_audience: null,
+    key_features: null,
+    revenue_model: null,
+  })
   const supabase = createClient()
 
   const members = (team.team_members as any[]) || []
 
   useEffect(() => {
     loadContributions()
+    loadTeamDecisions()
   }, [team.id])
 
   const loadContributions = async () => {
@@ -83,6 +90,34 @@ export function StreamViewer({ event, team }: StreamViewerProps) {
       setContributions(grouped)
     } catch (error) {
       console.error('Failed to load contributions:', error)
+    }
+  }
+
+  const loadTeamDecisions = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('team_decisions')
+        .select('*')
+        .eq('team_id', team.id)
+
+      if (error) throw error
+
+      const decisions: Record<CanvasSection, TeamDecision | null> = {
+        problem: null,
+        solution: null,
+        value_proposition: null,
+        target_audience: null,
+        key_features: null,
+        revenue_model: null,
+      }
+
+      ;(data || []).forEach((decision: TeamDecision) => {
+        decisions[decision.section as CanvasSection] = decision
+      })
+
+      setTeamDecisions(decisions)
+    } catch (error) {
+      console.error('Failed to load team decisions:', error)
     }
   }
 
@@ -149,7 +184,7 @@ export function StreamViewer({ event, team }: StreamViewerProps) {
       <Card>
         <CardHeader>
           <CardTitle>Project Canvas</CardTitle>
-          <CardDescription>Team ideas and contributions</CardDescription>
+          <CardDescription>Takım kararları öne çıkarılmıştır</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           {/* Problem */}
@@ -158,7 +193,15 @@ export function StreamViewer({ event, team }: StreamViewerProps) {
               <div className="w-1 h-4 bg-red-500 rounded"></div>
               Problem Statement
             </h4>
-            {contributions.problem.length > 0 ? (
+            {teamDecisions.problem ? (
+              <div className="bg-green-50 border-2 border-green-400 rounded-lg p-2">
+                <div className="flex items-center gap-1 mb-1">
+                  <CheckCircle className="h-3 w-3 text-green-600" />
+                  <span className="text-xs font-semibold text-green-700">Takım Kararı</span>
+                </div>
+                <p className="text-sm font-medium">{teamDecisions.problem.content}</p>
+              </div>
+            ) : contributions.problem.length > 0 ? (
               <div className="space-y-2">
                 {contributions.problem.map((contrib) => (
                   <div key={contrib.id} className="bg-red-50 border border-red-200 rounded p-2">
@@ -186,7 +229,15 @@ export function StreamViewer({ event, team }: StreamViewerProps) {
               <div className="w-1 h-4 bg-yellow-500 rounded"></div>
               Solution
             </h4>
-            {contributions.solution.length > 0 ? (
+            {teamDecisions.solution ? (
+              <div className="bg-green-50 border-2 border-green-400 rounded-lg p-2">
+                <div className="flex items-center gap-1 mb-1">
+                  <CheckCircle className="h-3 w-3 text-green-600" />
+                  <span className="text-xs font-semibold text-green-700">Takım Kararı</span>
+                </div>
+                <p className="text-sm font-medium">{teamDecisions.solution.content}</p>
+              </div>
+            ) : contributions.solution.length > 0 ? (
               <div className="space-y-2">
                 {contributions.solution.map((contrib) => (
                   <div key={contrib.id} className="bg-yellow-50 border border-yellow-200 rounded p-2">
@@ -214,7 +265,15 @@ export function StreamViewer({ event, team }: StreamViewerProps) {
               <div className="w-1 h-4 bg-purple-500 rounded"></div>
               Unique Value
             </h4>
-            {contributions.value_proposition.length > 0 ? (
+            {teamDecisions.value_proposition ? (
+              <div className="bg-green-50 border-2 border-green-400 rounded-lg p-2">
+                <div className="flex items-center gap-1 mb-1">
+                  <CheckCircle className="h-3 w-3 text-green-600" />
+                  <span className="text-xs font-semibold text-green-700">Takım Kararı</span>
+                </div>
+                <p className="text-sm font-medium">{teamDecisions.value_proposition.content}</p>
+              </div>
+            ) : contributions.value_proposition.length > 0 ? (
               <div className="space-y-2">
                 {contributions.value_proposition.map((contrib) => (
                   <div key={contrib.id} className="bg-purple-50 border border-purple-200 rounded p-2">
@@ -242,7 +301,15 @@ export function StreamViewer({ event, team }: StreamViewerProps) {
               <div className="w-1 h-4 bg-blue-500 rounded"></div>
               Target Customers
             </h4>
-            {contributions.target_audience.length > 0 ? (
+            {teamDecisions.target_audience ? (
+              <div className="bg-green-50 border-2 border-green-400 rounded-lg p-2">
+                <div className="flex items-center gap-1 mb-1">
+                  <CheckCircle className="h-3 w-3 text-green-600" />
+                  <span className="text-xs font-semibold text-green-700">Takım Kararı</span>
+                </div>
+                <p className="text-sm font-medium">{teamDecisions.target_audience.content}</p>
+              </div>
+            ) : contributions.target_audience.length > 0 ? (
               <div className="space-y-2">
                 {contributions.target_audience.map((contrib) => (
                   <div key={contrib.id} className="bg-blue-50 border border-blue-200 rounded p-2">
@@ -270,7 +337,15 @@ export function StreamViewer({ event, team }: StreamViewerProps) {
               <div className="w-1 h-4 bg-green-500 rounded"></div>
               Key Features
             </h4>
-            {contributions.key_features.length > 0 ? (
+            {teamDecisions.key_features ? (
+              <div className="bg-green-50 border-2 border-green-400 rounded-lg p-2">
+                <div className="flex items-center gap-1 mb-1">
+                  <CheckCircle className="h-3 w-3 text-green-600" />
+                  <span className="text-xs font-semibold text-green-700">Takım Kararı</span>
+                </div>
+                <p className="text-sm font-medium">{teamDecisions.key_features.content}</p>
+              </div>
+            ) : contributions.key_features.length > 0 ? (
               <div className="space-y-2">
                 {contributions.key_features.map((contrib) => (
                   <div key={contrib.id} className="bg-green-50 border border-green-200 rounded p-2">
@@ -298,7 +373,15 @@ export function StreamViewer({ event, team }: StreamViewerProps) {
               <div className="w-1 h-4 bg-emerald-500 rounded"></div>
               Revenue Model
             </h4>
-            {contributions.revenue_model.length > 0 ? (
+            {teamDecisions.revenue_model ? (
+              <div className="bg-green-50 border-2 border-green-400 rounded-lg p-2">
+                <div className="flex items-center gap-1 mb-1">
+                  <CheckCircle className="h-3 w-3 text-green-600" />
+                  <span className="text-xs font-semibold text-green-700">Takım Kararı</span>
+                </div>
+                <p className="text-sm font-medium">{teamDecisions.revenue_model.content}</p>
+              </div>
+            ) : contributions.revenue_model.length > 0 ? (
               <div className="space-y-2">
                 {contributions.revenue_model.map((contrib) => (
                   <div key={contrib.id} className="bg-emerald-50 border border-emerald-200 rounded p-2">
