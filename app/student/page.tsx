@@ -15,6 +15,7 @@ import { NotesManager } from '@/components/student/notes-manager'
 import { PortfolioVoting } from '@/components/student/portfolio-voting'
 import { FeedbackDialog } from '@/components/student/feedback-dialog'
 import { CollaborativeCanvasSection } from '@/components/student/collaborative-canvas-section'
+import { PresentationUpload } from '@/components/team/presentation-upload'
 import { Loader2, Users, Crown, FileText, Upload, LogOut, AlertCircle, Lightbulb, Target, Star, Zap, DollarSign, Save, CheckCircle } from 'lucide-react'
 import { useLanguage } from '@/lib/i18n/language-provider'
 import { Locale } from '@/lib/i18n/config'
@@ -555,74 +556,11 @@ export default function StudentPage() {
 
             {/* Presentation Tab */}
             <TabsContent value="presentation">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Presentation Upload</CardTitle>
-                  <CardDescription>
-                    {isCaptain ? 'Upload your team presentation (PDF, PPT, PPTX)' : 'Only the team captain can upload the presentation'}
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  {team.presentation_url ? (
-                    <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
-                      <div className="flex items-center gap-2 text-green-700 mb-2">
-                        <FileText className="h-5 w-5" />
-                        <span className="font-semibold">Presentation uploaded!</span>
-                      </div>
-                      {presentationSignedUrl ? (
-                        <a
-                          href={presentationSignedUrl}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-sm text-blue-600 hover:underline"
-                        >
-                          View presentation
-                        </a>
-                      ) : (
-                        <p className="text-sm text-muted-foreground">Loading preview...</p>
-                      )}
-                    </div>
-                  ) : (
-                    <div className="text-center py-8 text-muted-foreground">
-                      <FileText className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                      <p>No presentation uploaded yet</p>
-                    </div>
-                  )}
-
-                  {isCaptain && (
-                    <div className="space-y-4">
-                      <div className="space-y-2">
-                        <Label htmlFor="presentation">Upload New Presentation</Label>
-                        <Input
-                          id="presentation"
-                          type="file"
-                          accept=".pdf,.ppt,.pptx"
-                          onChange={(e) => setPresentationFile(e.target.files?.[0] || null)}
-                        />
-                      </div>
-
-                      <Button
-                        onClick={handlePresentationUpload}
-                        disabled={!presentationFile || isUploadingPresentation}
-                        size="lg"
-                        className="w-full"
-                      >
-                        {isUploadingPresentation ? (
-                          <>
-                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                            Uploading...
-                          </>
-                        ) : (
-                          <>
-                            <Upload className="mr-2 h-4 w-4" />
-                            Upload Presentation
-                          </>
-                        )}
-                      </Button>
-                    </div>
-                  )}
-                </CardContent>
-              </Card>
+              <PresentationUpload
+                team={team}
+                isLocked={!isCaptain}
+                onUpdate={loadData}
+              />
             </TabsContent>
           </Tabs>
         ) : isPitching ? (
