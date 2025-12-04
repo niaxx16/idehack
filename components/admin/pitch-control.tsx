@@ -86,6 +86,56 @@ export function PitchControl({ event, teams, onUpdate }: PitchControlProps) {
     }
   }, [currentTeam?.id])
 
+  // Real-time subscription for canvas contributions
+  useEffect(() => {
+    if (!currentTeam?.id) return
+
+    const channel = supabase
+      .channel(`admin-contributions-${currentTeam.id}`)
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'canvas_contributions',
+          filter: `team_id=eq.${currentTeam.id}`,
+        },
+        () => {
+          loadContributions(currentTeam.id)
+        }
+      )
+      .subscribe()
+
+    return () => {
+      supabase.removeChannel(channel)
+    }
+  }, [currentTeam?.id, supabase])
+
+  // Real-time subscription for team decisions
+  useEffect(() => {
+    if (!currentTeam?.id) return
+
+    const channel = supabase
+      .channel(`admin-decisions-${currentTeam.id}`)
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'team_decisions',
+          filter: `team_id=eq.${currentTeam.id}`,
+        },
+        () => {
+          loadTeamDecisions(currentTeam.id)
+        }
+      )
+      .subscribe()
+
+    return () => {
+      supabase.removeChannel(channel)
+    }
+  }, [currentTeam?.id, supabase])
+
   useEffect(() => {
     if (event?.pitch_timer_end) {
       const endTime = new Date(event.pitch_timer_end).getTime()
