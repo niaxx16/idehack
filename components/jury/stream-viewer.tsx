@@ -184,7 +184,7 @@ export function StreamViewer({ event, team }: StreamViewerProps) {
       <Card>
         <CardHeader>
           <CardTitle>Project Canvas</CardTitle>
-          <CardDescription>Takım kararları öne çıkarılmıştır</CardDescription>
+          <CardDescription>Team decisions are highlighted</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           {/* Problem */}
@@ -197,7 +197,7 @@ export function StreamViewer({ event, team }: StreamViewerProps) {
               <div className="bg-green-50 border-2 border-green-400 rounded-lg p-2">
                 <div className="flex items-center gap-1 mb-1">
                   <CheckCircle className="h-3 w-3 text-green-600" />
-                  <span className="text-xs font-semibold text-green-700">Takım Kararı</span>
+                  <span className="text-xs font-semibold text-green-700">Team Decision</span>
                 </div>
                 <p className="text-sm font-medium">{teamDecisions.problem.content}</p>
               </div>
@@ -233,7 +233,7 @@ export function StreamViewer({ event, team }: StreamViewerProps) {
               <div className="bg-green-50 border-2 border-green-400 rounded-lg p-2">
                 <div className="flex items-center gap-1 mb-1">
                   <CheckCircle className="h-3 w-3 text-green-600" />
-                  <span className="text-xs font-semibold text-green-700">Takım Kararı</span>
+                  <span className="text-xs font-semibold text-green-700">Team Decision</span>
                 </div>
                 <p className="text-sm font-medium">{teamDecisions.solution.content}</p>
               </div>
@@ -269,7 +269,7 @@ export function StreamViewer({ event, team }: StreamViewerProps) {
               <div className="bg-green-50 border-2 border-green-400 rounded-lg p-2">
                 <div className="flex items-center gap-1 mb-1">
                   <CheckCircle className="h-3 w-3 text-green-600" />
-                  <span className="text-xs font-semibold text-green-700">Takım Kararı</span>
+                  <span className="text-xs font-semibold text-green-700">Team Decision</span>
                 </div>
                 <p className="text-sm font-medium">{teamDecisions.value_proposition.content}</p>
               </div>
@@ -305,7 +305,7 @@ export function StreamViewer({ event, team }: StreamViewerProps) {
               <div className="bg-green-50 border-2 border-green-400 rounded-lg p-2">
                 <div className="flex items-center gap-1 mb-1">
                   <CheckCircle className="h-3 w-3 text-green-600" />
-                  <span className="text-xs font-semibold text-green-700">Takım Kararı</span>
+                  <span className="text-xs font-semibold text-green-700">Team Decision</span>
                 </div>
                 <p className="text-sm font-medium">{teamDecisions.target_audience.content}</p>
               </div>
@@ -341,7 +341,7 @@ export function StreamViewer({ event, team }: StreamViewerProps) {
               <div className="bg-green-50 border-2 border-green-400 rounded-lg p-2">
                 <div className="flex items-center gap-1 mb-1">
                   <CheckCircle className="h-3 w-3 text-green-600" />
-                  <span className="text-xs font-semibold text-green-700">Takım Kararı</span>
+                  <span className="text-xs font-semibold text-green-700">Team Decision</span>
                 </div>
                 <p className="text-sm font-medium">{teamDecisions.key_features.content}</p>
               </div>
@@ -377,7 +377,7 @@ export function StreamViewer({ event, team }: StreamViewerProps) {
               <div className="bg-green-50 border-2 border-green-400 rounded-lg p-2">
                 <div className="flex items-center gap-1 mb-1">
                   <CheckCircle className="h-3 w-3 text-green-600" />
-                  <span className="text-xs font-semibold text-green-700">Takım Kararı</span>
+                  <span className="text-xs font-semibold text-green-700">Team Decision</span>
                 </div>
                 <p className="text-sm font-medium">{teamDecisions.revenue_model.content}</p>
               </div>

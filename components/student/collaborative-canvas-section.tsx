@@ -401,10 +401,10 @@ export function CollaborativeCanvasSection({
           <div className="flex items-center justify-between mb-3">
             <div className="flex items-center gap-2">
               <CheckCircle className="h-4 w-4 text-green-600" />
-              <h4 className="text-sm font-semibold text-gray-900">Takım Kararı</h4>
+              <h4 className="text-sm font-semibold text-gray-900">Team Decision</h4>
               {isCaptain && (
                 <Badge variant="outline" className="text-[10px] bg-yellow-50 border-yellow-300 text-yellow-700">
-                  Kaptan
+                  Captain
                 </Badge>
               )}
             </div>
@@ -416,7 +416,7 @@ export function CollaborativeCanvasSection({
                 onClick={() => setIsEditingDecision(true)}
               >
                 <Edit3 className="h-3 w-3" />
-                {teamDecision ? 'Düzenle' : 'Karar Yaz'}
+                {teamDecision ? 'Edit' : 'Write Decision'}
               </Button>
             )}
           </div>
@@ -424,7 +424,7 @@ export function CollaborativeCanvasSection({
           {isEditingDecision && isCaptain ? (
             <div className="space-y-2">
               <Textarea
-                placeholder="Takım üyelerinin fikirlerini değerlendirerek takım kararınızı buraya yazın..."
+                placeholder="Review your team's ideas and write the final team decision here..."
                 value={decisionContent}
                 onChange={(e) => setDecisionContent(e.target.value)}
                 rows={4}
@@ -445,7 +445,7 @@ export function CollaborativeCanvasSection({
                       setDecisionContent(teamDecision?.content || '')
                     }}
                   >
-                    İptal
+                    Cancel
                   </Button>
                   <Button
                     size="sm"
@@ -456,12 +456,12 @@ export function CollaborativeCanvasSection({
                     {isSavingDecision ? (
                       <>
                         <Loader2 className="h-3 w-3 animate-spin" />
-                        Kaydediliyor...
+                        Saving...
                       </>
                     ) : (
                       <>
                         <Save className="h-3 w-3" />
-                        Kaydet
+                        Save
                       </>
                     )}
                   </Button>
@@ -474,15 +474,15 @@ export function CollaborativeCanvasSection({
                 {teamDecision.content}
               </p>
               <p className="text-[10px] text-green-600 mt-2">
-                Son güncelleme: {new Date(teamDecision.updated_at).toLocaleString('tr-TR')}
+                Last updated: {new Date(teamDecision.updated_at).toLocaleString()}
               </p>
             </div>
           ) : (
             <div className="bg-gray-50 border border-dashed border-gray-300 rounded-lg p-4 text-center">
               <p className="text-sm text-muted-foreground">
                 {isCaptain
-                  ? 'Henüz bir takım kararı yazılmadı. Takım üyelerinin fikirlerini değerlendirip kararınızı yazabilirsiniz.'
-                  : 'Takım kaptanı henüz bu bölüm için bir karar yazmadı.'}
+                  ? 'No team decision yet. Review your team\'s ideas and write the final decision.'
+                  : 'The team captain has not written a decision for this section yet.'}
               </p>
             </div>
           )}
