@@ -5,7 +5,7 @@ import { Team } from '@/types'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { createClient } from '@/lib/supabase/client'
-import { Loader2, Upload, FileText, CheckCircle, ExternalLink } from 'lucide-react'
+import { Loader2, Upload, FileText, CheckCircle, ExternalLink, Lightbulb, Users, Target, Leaf, Rocket, TrendingUp, HelpCircle, Award } from 'lucide-react'
 import { Progress } from '@/components/ui/progress'
 
 interface PresentationUploadProps {
@@ -101,14 +101,126 @@ export function PresentationUpload({ team, isLocked, onUpdate }: PresentationUpl
   }
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Presentation Upload</CardTitle>
-        <CardDescription>
-          Upload your pitch deck (PDF, PPT, or DOCX - Max 50MB)
-        </CardDescription>
-      </CardHeader>
-      <CardContent className="space-y-6">
+    <div className="space-y-6">
+      {/* Pitch Guide */}
+      <Card>
+        <CardHeader>
+          <div className="flex items-center gap-2">
+            <div className="p-2 bg-amber-100 rounded-lg">
+              <Lightbulb className="h-5 w-5 text-amber-600" />
+            </div>
+            <div>
+              <CardTitle>Pitch Guide</CardTitle>
+              <CardDescription>
+                Use these questions to structure your presentation
+              </CardDescription>
+            </div>
+          </div>
+        </CardHeader>
+        <CardContent>
+          <div className="grid gap-4">
+            {/* Core Questions */}
+            <div className="space-y-3">
+              <h4 className="text-sm font-semibold text-gray-700 uppercase tracking-wide">Core Questions</h4>
+
+              <div className="grid gap-3">
+                <div className="flex gap-3 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                  <Users className="h-5 w-5 text-blue-600 flex-shrink-0 mt-0.5" />
+                  <div>
+                    <p className="font-medium text-blue-900">Who are we?</p>
+                    <p className="text-sm text-blue-700">Introduce your team and the scenario you're addressing</p>
+                  </div>
+                </div>
+
+                <div className="flex gap-3 p-3 bg-red-50 border border-red-200 rounded-lg">
+                  <HelpCircle className="h-5 w-5 text-red-600 flex-shrink-0 mt-0.5" />
+                  <div>
+                    <p className="font-medium text-red-900">What problem are we solving and for whom?</p>
+                    <p className="text-sm text-red-700">Define the problem clearly and identify who experiences it</p>
+                  </div>
+                </div>
+
+                <div className="flex gap-3 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
+                  <Lightbulb className="h-5 w-5 text-yellow-600 flex-shrink-0 mt-0.5" />
+                  <div>
+                    <p className="font-medium text-yellow-900">What is our solution and how does it work?</p>
+                    <p className="text-sm text-yellow-700">Explain your idea and demonstrate how it solves the problem</p>
+                  </div>
+                </div>
+
+                <div className="flex gap-3 p-3 bg-green-50 border border-green-200 rounded-lg">
+                  <Leaf className="h-5 w-5 text-green-600 flex-shrink-0 mt-0.5" />
+                  <div>
+                    <p className="font-medium text-green-900">Why is it sustainable?</p>
+                    <p className="text-sm text-green-700">Address environmental, social, and economic sustainability</p>
+                  </div>
+                </div>
+
+                <div className="flex gap-3 p-3 bg-purple-50 border border-purple-200 rounded-lg">
+                  <Rocket className="h-5 w-5 text-purple-600 flex-shrink-0 mt-0.5" />
+                  <div>
+                    <p className="font-medium text-purple-900">What's our first step?</p>
+                    <p className="text-sm text-purple-700">Describe the immediate action plan to start implementing</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Additional Questions */}
+            <div className="space-y-3 pt-2">
+              <h4 className="text-sm font-semibold text-gray-700 uppercase tracking-wide">Strengthen Your Pitch</h4>
+
+              <div className="grid gap-3">
+                <div className="flex gap-3 p-3 bg-indigo-50 border border-indigo-200 rounded-lg">
+                  <Target className="h-5 w-5 text-indigo-600 flex-shrink-0 mt-0.5" />
+                  <div>
+                    <p className="font-medium text-indigo-900">Who is our target audience?</p>
+                    <p className="text-sm text-indigo-700">Define the specific users or customers who will benefit</p>
+                  </div>
+                </div>
+
+                <div className="flex gap-3 p-3 bg-orange-50 border border-orange-200 rounded-lg">
+                  <Award className="h-5 w-5 text-orange-600 flex-shrink-0 mt-0.5" />
+                  <div>
+                    <p className="font-medium text-orange-900">What makes us different?</p>
+                    <p className="text-sm text-orange-700">Highlight your unique value proposition and competitive advantage</p>
+                  </div>
+                </div>
+
+                <div className="flex gap-3 p-3 bg-teal-50 border border-teal-200 rounded-lg">
+                  <TrendingUp className="h-5 w-5 text-teal-600 flex-shrink-0 mt-0.5" />
+                  <div>
+                    <p className="font-medium text-teal-900">How will we measure success?</p>
+                    <p className="text-sm text-teal-700">Define key metrics and indicators to track progress</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Tips */}
+            <div className="mt-2 p-4 bg-gray-50 border border-gray-200 rounded-lg">
+              <h4 className="font-medium text-gray-900 mb-2">💡 Presentation Tips</h4>
+              <ul className="text-sm text-gray-600 space-y-1.5">
+                <li>• Keep it simple: 5-10 slides maximum</li>
+                <li>• Use visuals: diagrams, mockups, or prototypes</li>
+                <li>• Tell a story: make it memorable and engaging</li>
+                <li>• Practice your timing: respect the pitch duration</li>
+                <li>• End with a clear call-to-action</li>
+              </ul>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Upload Section */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Presentation Upload</CardTitle>
+          <CardDescription>
+            Upload your pitch deck (PDF, PPT, or DOCX - Max 50MB)
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-6">
         {team.presentation_url ? (
           <div className="space-y-4">
             <div className="flex items-center gap-3 p-4 bg-green-50 border border-green-200 rounded-lg">
@@ -206,6 +318,7 @@ export function PresentationUpload({ team, isLocked, onUpdate }: PresentationUpl
           <p>Maximum file size: 50MB</p>
         </div>
       </CardContent>
-    </Card>
+      </Card>
+    </div>
   )
 }
