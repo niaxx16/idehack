@@ -16,6 +16,8 @@ import { PortfolioVoting } from '@/components/student/portfolio-voting'
 import { FeedbackDialog } from '@/components/student/feedback-dialog'
 import { CollaborativeCanvasSection } from '@/components/student/collaborative-canvas-section'
 import { PresentationUpload } from '@/components/team/presentation-upload'
+import { CanvasPdfExport } from '@/components/student/canvas-pdf-export'
+import { CanvasContributionWithUser, TeamDecision } from '@/types'
 import { Loader2, Users, Crown, FileText, Upload, LogOut, AlertCircle, Lightbulb, Target, Star, Zap, DollarSign, Save, CheckCircle } from 'lucide-react'
 import { useLanguage } from '@/lib/i18n/language-provider'
 import { Locale } from '@/lib/i18n/config'
@@ -55,6 +57,10 @@ export default function StudentPage() {
 
   // Feedback state
   const [feedbacks, setFeedbacks] = useState<MentorFeedbackWithMentor[]>([])
+
+  // Canvas data for PDF export
+  const [allContributions, setAllContributions] = useState<Record<string, CanvasContributionWithUser[]>>({})
+  const [allTeamDecisions, setAllTeamDecisions] = useState<Record<string, TeamDecision | null>>({})
 
   useEffect(() => {
     loadData()
@@ -235,6 +241,74 @@ export default function StudentPage() {
     return feedbacks.filter((f) => f.canvas_section === section)
   }
 
+  // Load all canvas data for PDF export
+  const loadCanvasDataForExport = async () => {
+    if (!team?.id) return
+
+    try {
+      // Load contributions
+      const { data: contribData } = await supabase
+        .from('canvas_contributions')
+        .select('*')
+        .eq('team_id', team.id)
+        .order('created_at', { ascending: true })
+
+      const grouped: Record<string, CanvasContributionWithUser[]> = {
+        problem: [],
+        solution: [],
+        value_proposition: [],
+        target_audience: [],
+        key_features: [],
+        revenue_model: [],
+      }
+
+      ;(contribData || []).forEach((contrib) => {
+        const member = members.find((m) => m.user_id === contrib.user_id)
+        const enriched = {
+          ...contrib,
+          member_name: member?.name || 'Unknown',
+          member_role: member?.role || 'Student',
+          is_captain: member?.is_captain || false,
+        }
+        if (grouped[contrib.section]) {
+          grouped[contrib.section].push(enriched)
+        }
+      })
+
+      setAllContributions(grouped)
+
+      // Load team decisions
+      const { data: decisionsData } = await supabase
+        .from('team_decisions')
+        .select('*')
+        .eq('team_id', team.id)
+
+      const decisionsMap: Record<string, TeamDecision | null> = {
+        problem: null,
+        solution: null,
+        value_proposition: null,
+        target_audience: null,
+        key_features: null,
+        revenue_model: null,
+      }
+
+      ;(decisionsData || []).forEach((decision: TeamDecision) => {
+        decisionsMap[decision.section] = decision
+      })
+
+      setAllTeamDecisions(decisionsMap)
+    } catch (error) {
+      console.error('Failed to load canvas data for export:', error)
+    }
+  }
+
+  // Load canvas data when team is available
+  useEffect(() => {
+    if (team?.id && members.length > 0) {
+      loadCanvasDataForExport()
+    }
+  }, [team?.id, members])
+
   const handlePresentationUpload = async () => {
     if (!presentationFile || !team) return
 
@@ -364,9 +438,18 @@ export default function StudentPage() {
                 {/* Header */}
                 <Card className="bg-gradient-to-r from-purple-50 to-blue-50 border-purple-200">
                   <CardContent className="pt-6">
-                    <div>
-                      <h3 className="text-xl font-bold text-purple-900">Collaborative Lean Canvas</h3>
-                      <p className="text-sm text-purple-700">Each team member can add their ideas • All contributions are visible to everyone</p>
+                    <div className="flex items-start justify-between">
+                      <div>
+                        <h3 className="text-xl font-bold text-purple-900">Collaborative Lean Canvas</h3>
+                        <p className="text-sm text-purple-700">Each team member can add their ideas • All contributions are visible to everyone</p>
+                      </div>
+                      {team && (
+                        <CanvasPdfExport
+                          teamName={team.name}
+                          contributions={allContributions}
+                          teamDecisions={allTeamDecisions}
+                        />
+                      )}
                     </div>
                   </CardContent>
                 </Card>
