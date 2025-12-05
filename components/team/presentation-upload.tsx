@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button'
 import { createClient } from '@/lib/supabase/client'
 import { Loader2, Upload, FileText, CheckCircle, ExternalLink, Lightbulb, Users, Target, Leaf, Rocket, TrendingUp, HelpCircle, Award } from 'lucide-react'
 import { Progress } from '@/components/ui/progress'
+import { useTranslations } from 'next-intl'
 
 interface PresentationUploadProps {
   team: Team
@@ -28,6 +29,7 @@ export function PresentationUpload({ team, isLocked, onUpdate }: PresentationUpl
   const [uploadError, setUploadError] = useState<string | null>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
   const supabase = createClient()
+  const t = useTranslations('student')
 
   const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
@@ -35,13 +37,13 @@ export function PresentationUpload({ team, isLocked, onUpdate }: PresentationUpl
 
     // Validate file type
     if (!ALLOWED_TYPES.includes(file.type)) {
-      setUploadError('Invalid file type. Please upload PDF, PPT, or DOCX files.')
+      setUploadError(t('upload.invalidType'))
       return
     }
 
     // Validate file size (max 50MB)
     if (file.size > 50 * 1024 * 1024) {
-      setUploadError('File is too large. Maximum size is 50MB.')
+      setUploadError(t('upload.tooLarge'))
       return
     }
 
@@ -110,9 +112,9 @@ export function PresentationUpload({ team, isLocked, onUpdate }: PresentationUpl
               <Lightbulb className="h-5 w-5 text-amber-600" />
             </div>
             <div>
-              <CardTitle>Pitch Guide</CardTitle>
+              <CardTitle>{t('pitchGuide.title')}</CardTitle>
               <CardDescription>
-                Use these questions to structure your presentation
+                {t('pitchGuide.description')}
               </CardDescription>
             </div>
           </div>
@@ -121,46 +123,46 @@ export function PresentationUpload({ team, isLocked, onUpdate }: PresentationUpl
           <div className="grid gap-4">
             {/* Core Questions */}
             <div className="space-y-3">
-              <h4 className="text-sm font-semibold text-gray-700 uppercase tracking-wide">Core Questions</h4>
+              <h4 className="text-sm font-semibold text-gray-700 uppercase tracking-wide">{t('pitchGuide.coreQuestions')}</h4>
 
               <div className="grid gap-3">
                 <div className="flex gap-3 p-3 bg-blue-50 border border-blue-200 rounded-lg">
                   <Users className="h-5 w-5 text-blue-600 flex-shrink-0 mt-0.5" />
                   <div>
-                    <p className="font-medium text-blue-900">Who are we?</p>
-                    <p className="text-sm text-blue-700">Introduce your team and the scenario you're addressing</p>
+                    <p className="font-medium text-blue-900">{t('pitchGuide.whoAreWe')}</p>
+                    <p className="text-sm text-blue-700">{t('pitchGuide.whoAreWeDesc')}</p>
                   </div>
                 </div>
 
                 <div className="flex gap-3 p-3 bg-red-50 border border-red-200 rounded-lg">
                   <HelpCircle className="h-5 w-5 text-red-600 flex-shrink-0 mt-0.5" />
                   <div>
-                    <p className="font-medium text-red-900">What problem are we solving and for whom?</p>
-                    <p className="text-sm text-red-700">Define the problem clearly and identify who experiences it</p>
+                    <p className="font-medium text-red-900">{t('pitchGuide.whatProblem')}</p>
+                    <p className="text-sm text-red-700">{t('pitchGuide.whatProblemDesc')}</p>
                   </div>
                 </div>
 
                 <div className="flex gap-3 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
                   <Lightbulb className="h-5 w-5 text-yellow-600 flex-shrink-0 mt-0.5" />
                   <div>
-                    <p className="font-medium text-yellow-900">What is our solution and how does it work?</p>
-                    <p className="text-sm text-yellow-700">Explain your idea and demonstrate how it solves the problem</p>
+                    <p className="font-medium text-yellow-900">{t('pitchGuide.whatSolution')}</p>
+                    <p className="text-sm text-yellow-700">{t('pitchGuide.whatSolutionDesc')}</p>
                   </div>
                 </div>
 
                 <div className="flex gap-3 p-3 bg-green-50 border border-green-200 rounded-lg">
                   <Leaf className="h-5 w-5 text-green-600 flex-shrink-0 mt-0.5" />
                   <div>
-                    <p className="font-medium text-green-900">Why is it sustainable?</p>
-                    <p className="text-sm text-green-700">Address environmental, social, and economic sustainability</p>
+                    <p className="font-medium text-green-900">{t('pitchGuide.whySustainable')}</p>
+                    <p className="text-sm text-green-700">{t('pitchGuide.whySustainableDesc')}</p>
                   </div>
                 </div>
 
                 <div className="flex gap-3 p-3 bg-purple-50 border border-purple-200 rounded-lg">
                   <Rocket className="h-5 w-5 text-purple-600 flex-shrink-0 mt-0.5" />
                   <div>
-                    <p className="font-medium text-purple-900">What's our first step?</p>
-                    <p className="text-sm text-purple-700">Describe the immediate action plan to start implementing</p>
+                    <p className="font-medium text-purple-900">{t('pitchGuide.firstStep')}</p>
+                    <p className="text-sm text-purple-700">{t('pitchGuide.firstStepDesc')}</p>
                   </div>
                 </div>
               </div>
@@ -168,30 +170,30 @@ export function PresentationUpload({ team, isLocked, onUpdate }: PresentationUpl
 
             {/* Additional Questions */}
             <div className="space-y-3 pt-2">
-              <h4 className="text-sm font-semibold text-gray-700 uppercase tracking-wide">Strengthen Your Pitch</h4>
+              <h4 className="text-sm font-semibold text-gray-700 uppercase tracking-wide">{t('pitchGuide.strengthenPitch')}</h4>
 
               <div className="grid gap-3">
                 <div className="flex gap-3 p-3 bg-indigo-50 border border-indigo-200 rounded-lg">
                   <Target className="h-5 w-5 text-indigo-600 flex-shrink-0 mt-0.5" />
                   <div>
-                    <p className="font-medium text-indigo-900">Who is our target audience?</p>
-                    <p className="text-sm text-indigo-700">Define the specific users or customers who will benefit</p>
+                    <p className="font-medium text-indigo-900">{t('pitchGuide.targetAudience')}</p>
+                    <p className="text-sm text-indigo-700">{t('pitchGuide.targetAudienceDesc')}</p>
                   </div>
                 </div>
 
                 <div className="flex gap-3 p-3 bg-orange-50 border border-orange-200 rounded-lg">
                   <Award className="h-5 w-5 text-orange-600 flex-shrink-0 mt-0.5" />
                   <div>
-                    <p className="font-medium text-orange-900">What makes us different?</p>
-                    <p className="text-sm text-orange-700">Highlight your unique value proposition and competitive advantage</p>
+                    <p className="font-medium text-orange-900">{t('pitchGuide.whatMakesDifferent')}</p>
+                    <p className="text-sm text-orange-700">{t('pitchGuide.whatMakesDifferentDesc')}</p>
                   </div>
                 </div>
 
                 <div className="flex gap-3 p-3 bg-teal-50 border border-teal-200 rounded-lg">
                   <TrendingUp className="h-5 w-5 text-teal-600 flex-shrink-0 mt-0.5" />
                   <div>
-                    <p className="font-medium text-teal-900">How will we measure success?</p>
-                    <p className="text-sm text-teal-700">Define key metrics and indicators to track progress</p>
+                    <p className="font-medium text-teal-900">{t('pitchGuide.measureSuccess')}</p>
+                    <p className="text-sm text-teal-700">{t('pitchGuide.measureSuccessDesc')}</p>
                   </div>
                 </div>
               </div>
@@ -199,13 +201,13 @@ export function PresentationUpload({ team, isLocked, onUpdate }: PresentationUpl
 
             {/* Tips */}
             <div className="mt-2 p-4 bg-gray-50 border border-gray-200 rounded-lg">
-              <h4 className="font-medium text-gray-900 mb-2">💡 Presentation Tips</h4>
+              <h4 className="font-medium text-gray-900 mb-2">💡 {t('pitchGuide.tips')}</h4>
               <ul className="text-sm text-gray-600 space-y-1.5">
-                <li>• Keep it simple: 5-10 slides maximum</li>
-                <li>• Use visuals: diagrams, mockups, or prototypes</li>
-                <li>• Tell a story: make it memorable and engaging</li>
-                <li>• Practice your timing: respect the pitch duration</li>
-                <li>• End with a clear call-to-action</li>
+                <li>• {t('pitchGuide.tip1')}</li>
+                <li>• {t('pitchGuide.tip2')}</li>
+                <li>• {t('pitchGuide.tip3')}</li>
+                <li>• {t('pitchGuide.tip4')}</li>
+                <li>• {t('pitchGuide.tip5')}</li>
               </ul>
             </div>
           </div>
@@ -215,9 +217,9 @@ export function PresentationUpload({ team, isLocked, onUpdate }: PresentationUpl
       {/* Upload Section */}
       <Card>
         <CardHeader>
-          <CardTitle>Presentation Upload</CardTitle>
+          <CardTitle>{t('upload.title')}</CardTitle>
           <CardDescription>
-            Upload your pitch deck (PDF, PPT, or DOCX - Max 50MB)
+            {t('upload.description')}
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
@@ -226,15 +228,15 @@ export function PresentationUpload({ team, isLocked, onUpdate }: PresentationUpl
             <div className="flex items-center gap-3 p-4 bg-green-50 border border-green-200 rounded-lg">
               <CheckCircle className="h-6 w-6 text-green-600 flex-shrink-0" />
               <div className="flex-1">
-                <p className="font-medium text-green-900">Presentation uploaded!</p>
-                <p className="text-sm text-green-700">Your file is ready for the pitch.</p>
+                <p className="font-medium text-green-900">{t('upload.uploaded')}</p>
+                <p className="text-sm text-green-700">{t('upload.readyForPitch')}</p>
               </div>
             </div>
 
             <div className="flex gap-3">
               <Button onClick={openPresentation} variant="outline" className="flex-1">
                 <ExternalLink className="mr-2 h-4 w-4" />
-                View Presentation
+                {t('upload.viewPresentation')}
               </Button>
 
               {!isLocked && (
@@ -245,7 +247,7 @@ export function PresentationUpload({ team, isLocked, onUpdate }: PresentationUpl
                   disabled={isUploading}
                 >
                   <Upload className="mr-2 h-4 w-4" />
-                  Replace File
+                  {t('upload.replaceFile')}
                 </Button>
               )}
             </div>
@@ -258,12 +260,12 @@ export function PresentationUpload({ team, isLocked, onUpdate }: PresentationUpl
             >
               <FileText className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
               <p className="text-lg font-medium mb-2">
-                {isLocked ? 'No presentation uploaded' : 'Upload your presentation'}
+                {isLocked ? t('upload.noPresentation') : t('upload.uploadPresentation')}
               </p>
               <p className="text-sm text-muted-foreground">
                 {isLocked
-                  ? 'Submissions are locked'
-                  : 'Click to browse or drag and drop your file'}
+                  ? t('upload.submissionsLocked')
+                  : t('upload.clickToBrowse')}
               </p>
             </div>
 
@@ -276,12 +278,12 @@ export function PresentationUpload({ team, isLocked, onUpdate }: PresentationUpl
                 {isUploading ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Uploading...
+                    {t('upload.uploading')}
                   </>
                 ) : (
                   <>
                     <Upload className="mr-2 h-4 w-4" />
-                    Choose File
+                    {t('upload.chooseFile')}
                   </>
                 )}
               </Button>
@@ -293,7 +295,7 @@ export function PresentationUpload({ team, isLocked, onUpdate }: PresentationUpl
           <div className="space-y-2">
             <Progress value={uploadProgress} />
             <p className="text-sm text-center text-muted-foreground">
-              Uploading... {uploadProgress}%
+              {t('upload.uploading')} {uploadProgress}%
             </p>
           </div>
         )}
@@ -314,8 +316,8 @@ export function PresentationUpload({ team, isLocked, onUpdate }: PresentationUpl
         />
 
         <div className="text-xs text-muted-foreground space-y-1">
-          <p>Accepted formats: PDF, PowerPoint, Word</p>
-          <p>Maximum file size: 50MB</p>
+          <p>{t('upload.acceptedFormats')}</p>
+          <p>{t('upload.maxSize')}</p>
         </div>
       </CardContent>
       </Card>
