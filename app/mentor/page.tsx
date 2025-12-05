@@ -196,6 +196,23 @@ export default function MentorPage() {
           </Card>
         )}
 
+        {/* Mentor Role Guide */}
+        <Card className="border-amber-200 bg-amber-50/50">
+          <CardHeader className="pb-3">
+            <CardTitle className="text-amber-900">Mentor Role</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-2">
+            <p className="text-sm text-amber-800 font-medium">
+              A mentor is not someone who gives solutions, but a guide who deepens the team's thinking process.
+            </p>
+            <ul className="text-sm text-amber-700 space-y-1 list-disc list-inside">
+              <li>Ask questions throughout the process</li>
+              <li>Help teams make their ideas clearer, more applicable, and more impactful</li>
+              <li>Stay neutral, guide without making decisions for them</li>
+            </ul>
+          </CardContent>
+        </Card>
+
         {/* Team Canvas View or Team List */}
         {selectedTeam ? (
           <div className="space-y-4">
