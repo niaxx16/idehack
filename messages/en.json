@@ -78,12 +78,25 @@
       "description": "Manage event status and phases",
       "currentStatus": "Current Status",
       "changeStatus": "Change Status",
+      "noEvent": "No Event",
+      "createEventFirst": "Please create an event first",
       "statuses": {
         "WAITING": "Waiting",
         "IDEATION": "Ideation",
+        "LOCKED": "Lock Submissions",
         "PITCHING": "Pitching",
         "VOTING": "Voting",
+        "COMPLETED": "Complete Event",
         "ENDED": "Ended"
+      },
+      "phaseGuidelines": "Phase Guidelines:",
+      "guidelines": {
+        "waiting": "Teams can join and form",
+        "ideation": "Teams can edit canvas and upload presentations",
+        "locked": "No more edits allowed, preparing for pitches",
+        "pitching": "Teams present their projects",
+        "voting": "Students allocate their portfolio",
+        "completed": "Event finished, view results"
       }
     },
     "eventForm": {

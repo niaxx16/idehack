@@ -78,12 +78,25 @@
       "description": "Etkinlik durumunu ve aşamalarını yönetin",
       "currentStatus": "Mevcut Durum",
       "changeStatus": "Durumu Değiştir",
+      "noEvent": "Etkinlik Yok",
+      "createEventFirst": "Lütfen önce bir etkinlik oluşturun",
       "statuses": {
         "WAITING": "Bekliyor",
         "IDEATION": "Fikir Geliştirme",
+        "LOCKED": "Gönderimler Kilitli",
         "PITCHING": "Sunum",
         "VOTING": "Oylama",
+        "COMPLETED": "Tamamlandı",
         "ENDED": "Bitti"
+      },
+      "phaseGuidelines": "Aşama Rehberi:",
+      "guidelines": {
+        "waiting": "Takımlar katılabilir ve oluşabilir",
+        "ideation": "Takımlar canvas düzenleyebilir ve sunum yükleyebilir",
+        "locked": "Artık düzenleme yapılamaz, sunumlara hazırlanılıyor",
+        "pitching": "Takımlar projelerini sunuyor",
+        "voting": "Öğrenciler portföylerini dağıtıyor",
+        "completed": "Etkinlik tamamlandı, sonuçları görüntüleyin"
       }
     },
     "eventForm": {

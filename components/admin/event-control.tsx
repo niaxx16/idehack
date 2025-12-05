@@ -51,8 +51,8 @@ export function EventControl({ event, onUpdate }: EventControlProps) {
     return (
       <Card>
         <CardHeader>
-          <CardTitle>No Event</CardTitle>
-          <CardDescription>Please create an event first</CardDescription>
+          <CardTitle>{t('noEvent')}</CardTitle>
+          <CardDescription>{t('createEventFirst')}</CardDescription>
         </CardHeader>
       </Card>
     )
@@ -94,7 +94,7 @@ export function EventControl({ event, onUpdate }: EventControlProps) {
             onClick={() => updateStatus('LOCKED')}
             disabled={isUpdating || event.status === 'LOCKED'}
           >
-            {isUpdating ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Lock Submissions'}
+            {isUpdating ? <Loader2 className="h-4 w-4 animate-spin" /> : t('statuses.LOCKED')}
           </Button>
 
           <Button
@@ -118,19 +118,19 @@ export function EventControl({ event, onUpdate }: EventControlProps) {
             onClick={() => updateStatus('COMPLETED')}
             disabled={isUpdating || event.status === 'COMPLETED'}
           >
-            {isUpdating ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Complete Event'}
+            {isUpdating ? <Loader2 className="h-4 w-4 animate-spin" /> : t('statuses.COMPLETED')}
           </Button>
         </div>
 
         <div className="p-4 bg-muted rounded-lg">
-          <h4 className="font-medium mb-2">Phase Guidelines:</h4>
+          <h4 className="font-medium mb-2">{t('phaseGuidelines')}</h4>
           <ul className="text-sm space-y-1 text-muted-foreground">
-            <li><strong>Waiting:</strong> Teams can join and form</li>
-            <li><strong>Ideation:</strong> Teams can edit canvas and upload presentations</li>
-            <li><strong>Locked:</strong> No more edits allowed, preparing for pitches</li>
-            <li><strong>Pitching:</strong> Teams present their projects</li>
-            <li><strong>Voting:</strong> Students allocate their portfolio</li>
-            <li><strong>Completed:</strong> Event finished, view results</li>
+            <li><strong>{t('statuses.WAITING')}:</strong> {t('guidelines.waiting')}</li>
+            <li><strong>{t('statuses.IDEATION')}:</strong> {t('guidelines.ideation')}</li>
+            <li><strong>{t('statuses.LOCKED')}:</strong> {t('guidelines.locked')}</li>
+            <li><strong>{t('statuses.PITCHING')}:</strong> {t('guidelines.pitching')}</li>
+            <li><strong>{t('statuses.VOTING')}:</strong> {t('guidelines.voting')}</li>
+            <li><strong>{t('statuses.COMPLETED')}:</strong> {t('guidelines.completed')}</li>
           </ul>
         </div>
       </CardContent>
