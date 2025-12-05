@@ -13,6 +13,7 @@ import { createClient } from '@/lib/supabase/client'
 import { Plus, Calendar, Trash2, CheckCircle, Circle, Loader2, Globe, Pencil } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { locales, localeNames, localeFlags, defaultLocale } from '@/lib/i18n/config'
+import { useTranslations } from 'next-intl'
 
 interface EventManagementProps {
   currentEvent: Event | null
@@ -28,6 +29,7 @@ export function EventManagement({ currentEvent, onEventSelect, onUpdate }: Event
   const [showEditDialog, setShowEditDialog] = useState(false)
   const [editingEvent, setEditingEvent] = useState<Event | null>(null)
   const supabase = createClient()
+  const t = useTranslations('admin')
 
   // Form fields
   const [eventName, setEventName] = useState('')
@@ -156,7 +158,7 @@ export function EventManagement({ currentEvent, onEventSelect, onUpdate }: Event
   }
 
   const deleteEvent = async (eventId: string) => {
-    if (!confirm('Are you sure you want to delete this event? This will also delete all associated teams and data.')) {
+    if (!confirm(t('eventList.confirmDelete'))) {
       return
     }
 
@@ -201,42 +203,42 @@ export function EventManagement({ currentEvent, onEventSelect, onUpdate }: Event
             <div>
               <CardTitle className="flex items-center gap-2">
                 <Calendar className="h-5 w-5" />
-                Event Management
+                {t('eventHeader.title')}
               </CardTitle>
               <CardDescription>
-                Create and manage hackathon/ideathon events
+                {t('eventHeader.description')}
               </CardDescription>
             </div>
             <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
               <DialogTrigger asChild>
                 <Button>
                   <Plus className="h-4 w-4 mr-2" />
-                  Create Event
+                  {t('eventHeader.createButton')}
                 </Button>
               </DialogTrigger>
               <DialogContent>
                 <DialogHeader>
-                  <DialogTitle>Create New Event</DialogTitle>
+                  <DialogTitle>{t('eventForm.createEvent')}</DialogTitle>
                   <DialogDescription>
-                    Start a new hackathon or ideathon event
+                    {t('eventForm.startNewEvent')}
                   </DialogDescription>
                 </DialogHeader>
                 <form onSubmit={createEvent} className="space-y-4">
                   <div className="space-y-2">
-                    <Label htmlFor="eventName">Event Name *</Label>
+                    <Label htmlFor="eventName">{t('eventForm.eventNameRequired')}</Label>
                     <Input
                       id="eventName"
-                      placeholder="e.g., Spring 2024 Hackathon"
+                      placeholder={t('eventForm.placeholder')}
                       value={eventName}
                       onChange={(e) => setEventName(e.target.value)}
                       required
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="eventDescription">Description (Optional)</Label>
+                    <Label htmlFor="eventDescription">{t('eventForm.descriptionOptional')}</Label>
                     <Textarea
                       id="eventDescription"
-                      placeholder="Brief description of the event..."
+                      placeholder={t('eventForm.descriptionPlaceholder')}
                       value={eventDescription}
                       onChange={(e) => setEventDescription(e.target.value)}
                       rows={3}
@@ -245,7 +247,7 @@ export function EventManagement({ currentEvent, onEventSelect, onUpdate }: Event
                   <div className="space-y-2">
                     <Label htmlFor="eventLanguage">
                       <Globe className="h-4 w-4 inline mr-1" />
-                      Event Language *
+                      {t('eventForm.eventLanguageRequired')}
                     </Label>
                     <Select value={eventLanguage} onValueChange={setEventLanguage}>
                       <SelectTrigger id="eventLanguage">
@@ -260,7 +262,7 @@ export function EventManagement({ currentEvent, onEventSelect, onUpdate }: Event
                       </SelectContent>
                     </Select>
                     <p className="text-xs text-muted-foreground">
-                      All users will see the event in this language
+                      {t('eventForm.languageHint')}
                     </p>
                   </div>
                   {error && (
@@ -270,10 +272,10 @@ export function EventManagement({ currentEvent, onEventSelect, onUpdate }: Event
                     {isCreating ? (
                       <>
                         <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                        Creating...
+                        {t('eventForm.creating')}
                       </>
                     ) : (
-                      'Create Event'
+                      t('eventForm.createEvent')
                     )}
                   </Button>
                 </form>
@@ -296,27 +298,27 @@ export function EventManagement({ currentEvent, onEventSelect, onUpdate }: Event
       }}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Edit Event</DialogTitle>
+            <DialogTitle>{t('eventForm.editEvent')}</DialogTitle>
             <DialogDescription>
-              Update event details
+              {t('eventForm.updateDetails')}
             </DialogDescription>
           </DialogHeader>
           <form onSubmit={updateEvent} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="editEventName">Event Name *</Label>
+              <Label htmlFor="editEventName">{t('eventForm.eventNameRequired')}</Label>
               <Input
                 id="editEventName"
-                placeholder="e.g., Spring 2024 Hackathon"
+                placeholder={t('eventForm.placeholder')}
                 value={eventName}
                 onChange={(e) => setEventName(e.target.value)}
                 required
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="editEventDescription">Description (Optional)</Label>
+              <Label htmlFor="editEventDescription">{t('eventForm.descriptionOptional')}</Label>
               <Textarea
                 id="editEventDescription"
-                placeholder="Brief description of the event..."
+                placeholder={t('eventForm.descriptionPlaceholder')}
                 value={eventDescription}
                 onChange={(e) => setEventDescription(e.target.value)}
                 rows={3}
@@ -325,7 +327,7 @@ export function EventManagement({ currentEvent, onEventSelect, onUpdate }: Event
             <div className="space-y-2">
               <Label htmlFor="editEventLanguage">
                 <Globe className="h-4 w-4 inline mr-1" />
-                Event Language *
+                {t('eventForm.eventLanguageRequired')}
               </Label>
               <Select value={eventLanguage} onValueChange={setEventLanguage}>
                 <SelectTrigger id="editEventLanguage">
@@ -340,7 +342,7 @@ export function EventManagement({ currentEvent, onEventSelect, onUpdate }: Event
                 </SelectContent>
               </Select>
               <p className="text-xs text-muted-foreground">
-                All users will see the event in this language
+                {t('eventForm.languageHint')}
               </p>
             </div>
             {error && (
@@ -350,10 +352,10 @@ export function EventManagement({ currentEvent, onEventSelect, onUpdate }: Event
               {isCreating ? (
                 <>
                   <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                  Updating...
+                  {t('eventForm.updating')}
                 </>
               ) : (
-                'Update Event'
+                t('eventForm.updateEvent')
               )}
             </Button>
           </form>
@@ -363,9 +365,9 @@ export function EventManagement({ currentEvent, onEventSelect, onUpdate }: Event
       {/* Events List */}
       <Card>
         <CardHeader>
-          <CardTitle>All Events ({events.length})</CardTitle>
+          <CardTitle>{t('eventList.title')} ({events.length})</CardTitle>
           <CardDescription>
-            Click on an event to make it active. The active event will be used across the platform.
+            {t('eventList.description')}
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -376,8 +378,8 @@ export function EventManagement({ currentEvent, onEventSelect, onUpdate }: Event
           ) : events.length === 0 ? (
             <div className="text-center py-8 text-muted-foreground">
               <Calendar className="h-12 w-12 mx-auto mb-2 opacity-50" />
-              <p>No events yet</p>
-              <p className="text-sm">Create your first event to get started</p>
+              <p>{t('eventList.noEvents')}</p>
+              <p className="text-sm">{t('eventList.createFirst')}</p>
             </div>
           ) : (
             <div className="space-y-3">
@@ -409,7 +411,7 @@ export function EventManagement({ currentEvent, onEventSelect, onUpdate }: Event
                             <h3 className="font-semibold text-lg truncate">{event.name}</h3>
                             {currentEvent?.id === event.id && (
                               <Badge variant="default" className="bg-blue-600">
-                                Active
+                                {t('eventList.active')}
                               </Badge>
                             )}
                           </div>
@@ -421,7 +423,7 @@ export function EventManagement({ currentEvent, onEventSelect, onUpdate }: Event
                           <div className="flex items-center gap-4 text-xs text-muted-foreground">
                             <div className="flex items-center gap-1">
                               <Calendar className="h-3 w-3" />
-                              <span>Created: {formatDate(event.created_at)}</span>
+                              <span>{t('eventList.created')} {formatDate(event.created_at)}</span>
                             </div>
                             <Badge variant="outline" className="text-xs">
                               {event.status}

@@ -92,7 +92,32 @@
       "eventName": "Etkinlik Adı",
       "eventDescription": "Etkinlik Açıklaması",
       "eventLanguage": "Etkinlik Dili",
-      "selectLanguage": "Dil Seçin"
+      "selectLanguage": "Dil Seçin",
+      "eventNameRequired": "Etkinlik Adı *",
+      "descriptionOptional": "Açıklama (İsteğe Bağlı)",
+      "eventLanguageRequired": "Etkinlik Dili *",
+      "languageHint": "Tüm kullanıcılar etkinliği bu dilde görecek",
+      "creating": "Oluşturuluyor...",
+      "updating": "Güncelleniyor...",
+      "updateEvent": "Etkinliği Güncelle",
+      "startNewEvent": "Yeni bir hackathon veya ideathon etkinliği başlatın",
+      "updateDetails": "Etkinlik detaylarını güncelleyin",
+      "placeholder": "örn. 2024 Bahar Hackathon'u",
+      "descriptionPlaceholder": "Etkinliğin kısa açıklaması..."
+    },
+    "eventList": {
+      "title": "Tüm Etkinlikler",
+      "description": "Aktif yapmak için bir etkinliğe tıklayın. Aktif etkinlik platform genelinde kullanılacaktır.",
+      "noEvents": "Henüz etkinlik yok",
+      "createFirst": "Başlamak için ilk etkinliğinizi oluşturun",
+      "active": "Aktif",
+      "created": "Oluşturulma:",
+      "confirmDelete": "Bu etkinliği silmek istediğinizden emin misiniz? Bu işlem tüm ilişkili takımları ve verileri de silecektir."
+    },
+    "eventHeader": {
+      "title": "Etkinlik Yönetimi",
+      "description": "Hackathon/ideathon etkinliklerini oluşturun ve yönetin",
+      "createButton": "Etkinlik Oluştur"
     },
     "teamForm": {
       "createTeam": "Takım Oluştur",

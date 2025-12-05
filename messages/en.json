@@ -92,7 +92,32 @@
       "eventName": "Event Name",
       "eventDescription": "Event Description",
       "eventLanguage": "Event Language",
-      "selectLanguage": "Select Language"
+      "selectLanguage": "Select Language",
+      "eventNameRequired": "Event Name *",
+      "descriptionOptional": "Description (Optional)",
+      "eventLanguageRequired": "Event Language *",
+      "languageHint": "All users will see the event in this language",
+      "creating": "Creating...",
+      "updating": "Updating...",
+      "updateEvent": "Update Event",
+      "startNewEvent": "Start a new hackathon or ideathon event",
+      "updateDetails": "Update event details",
+      "placeholder": "e.g., Spring 2024 Hackathon",
+      "descriptionPlaceholder": "Brief description of the event..."
+    },
+    "eventList": {
+      "title": "All Events",
+      "description": "Click on an event to make it active. The active event will be used across the platform.",
+      "noEvents": "No events yet",
+      "createFirst": "Create your first event to get started",
+      "active": "Active",
+      "created": "Created:",
+      "confirmDelete": "Are you sure you want to delete this event? This will also delete all associated teams and data."
+    },
+    "eventHeader": {
+      "title": "Event Management",
+      "description": "Create and manage hackathon/ideathon events",
+      "createButton": "Create Event"
     },
     "teamForm": {
       "createTeam": "Create Team",
