@@ -21,6 +21,7 @@ import { CanvasContributionWithUser, TeamDecision } from '@/types'
 import { Loader2, Users, Crown, FileText, Upload, LogOut, AlertCircle, Lightbulb, Target, Star, Zap, DollarSign, Save, CheckCircle } from 'lucide-react'
 import { useLanguage } from '@/lib/i18n/language-provider'
 import { Locale } from '@/lib/i18n/config'
+import { useTranslations } from 'next-intl'
 
 interface TeamMember {
   user_id: string
@@ -34,6 +35,8 @@ export default function StudentPage() {
   const router = useRouter()
   const supabase = createClient()
   const { setLocale } = useLanguage()
+  const t = useTranslations('student')
+  const tCommon = useTranslations('common')
 
   const [isLoading, setIsLoading] = useState(true)
   const [currentEvent, setCurrentEvent] = useState<Event | null>(null)
@@ -377,7 +380,7 @@ export default function StudentPage() {
   if (!team || !profile) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <p>No team found. Redirecting...</p>
+        <p>{t('noTeamFound')}</p>
       </div>
     )
   }
@@ -396,19 +399,19 @@ export default function StudentPage() {
             <h1 className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
               {team.name}
             </h1>
-            <p className="text-muted-foreground">Table {team.table_number}</p>
+            <p className="text-muted-foreground">{t('table')} {team.table_number}</p>
             {profile?.personal_code && (
               <div className="mt-2 inline-flex items-center gap-2 px-3 py-1 bg-purple-100 border border-purple-300 rounded-lg">
                 <Users className="h-3 w-3 text-purple-600" />
                 <span className="text-xs text-purple-900">
-                  Your Code: <span className="font-mono font-bold">{profile.personal_code}</span>
+                  {t('yourCode')}: <span className="font-mono font-bold">{profile.personal_code}</span>
                 </span>
               </div>
             )}
           </div>
           <Button variant="outline" onClick={handleSignOut}>
             <LogOut className="mr-2 h-4 w-4" />
-            Sign Out
+            {tCommon('signOut')}
           </Button>
         </div>
 
@@ -416,16 +419,16 @@ export default function StudentPage() {
         {isWaiting ? (
           <Card>
             <CardHeader>
-              <CardTitle>Welcome to {team.name}!</CardTitle>
+              <CardTitle>{t('welcome')} {team.name}!</CardTitle>
               <CardDescription>
-                Waiting for the event to start...
+                {t('waitingForEvent')}
               </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="text-center py-8">
                 <Loader2 className="h-12 w-12 mx-auto mb-4 animate-spin text-purple-600" />
                 <p className="text-muted-foreground">
-                  The admin will start the ideation phase soon. Get ready to work on your canvas!
+                  {t('waitingMessage')}
                 </p>
               </div>
             </CardContent>
@@ -433,9 +436,9 @@ export default function StudentPage() {
         ) : isIdeation ? (
           <Tabs defaultValue="canvas" className="space-y-4">
             <TabsList className="grid w-full grid-cols-3">
-              <TabsTrigger value="canvas">Canvas</TabsTrigger>
-              <TabsTrigger value="team">Team</TabsTrigger>
-              <TabsTrigger value="presentation">Presentation</TabsTrigger>
+              <TabsTrigger value="canvas">{t('tabs.canvas')}</TabsTrigger>
+              <TabsTrigger value="team">{t('tabs.team')}</TabsTrigger>
+              <TabsTrigger value="presentation">{t('tabs.presentation')}</TabsTrigger>
             </TabsList>
 
             {/* Canvas Tab */}
@@ -446,8 +449,8 @@ export default function StudentPage() {
                   <CardContent className="pt-6">
                     <div className="flex items-start justify-between">
                       <div>
-                        <h3 className="text-xl font-bold text-purple-900">Collaborative Lean Canvas</h3>
-                        <p className="text-sm text-purple-700">Each team member can add their ideas • All contributions are visible to everyone</p>
+                        <h3 className="text-xl font-bold text-purple-900">{t('collaborativeCanvas')}</h3>
+                        <p className="text-sm text-purple-700">{t('canvasDescription')}</p>
                       </div>
                       {team && (
                         <CanvasPdfExport
@@ -468,9 +471,9 @@ export default function StudentPage() {
                       teamId={team.id}
                       currentUserId={currentUserId}
                       section="problem"
-                      title="Problem"
-                      description="What problem are you solving?"
-                      placeholder="Describe the main problem your target audience faces..."
+                      title={t('canvas.problem')}
+                      description={t('canvas.problemDesc')}
+                      placeholder={t('canvas.problemPlaceholder')}
                       icon={<AlertCircle className="h-5 w-5 text-red-600" />}
                       colorClasses={{
                         border: 'border-l-4 border-red-400',
@@ -488,9 +491,9 @@ export default function StudentPage() {
                       teamId={team.id}
                       currentUserId={currentUserId}
                       section="solution"
-                      title="Solution"
-                      description="How does it work?"
-                      placeholder="Explain your solution and how it addresses the problem..."
+                      title={t('canvas.solution')}
+                      description={t('canvas.solutionDesc')}
+                      placeholder={t('canvas.solutionPlaceholder')}
                       icon={<Lightbulb className="h-5 w-5 text-yellow-600" />}
                       colorClasses={{
                         border: 'border-l-4 border-yellow-400',
@@ -508,9 +511,9 @@ export default function StudentPage() {
                       teamId={team.id}
                       currentUserId={currentUserId}
                       section="value_proposition"
-                      title="Unique Value"
-                      description="Why choose you?"
-                      placeholder="What makes your solution unique and better than alternatives?"
+                      title={t('canvas.uniqueValue')}
+                      description={t('canvas.uniqueValueDesc')}
+                      placeholder={t('canvas.uniqueValuePlaceholder')}
                       icon={<Star className="h-5 w-5 text-purple-600" />}
                       colorClasses={{
                         border: 'border-l-4 border-purple-400',
@@ -528,9 +531,9 @@ export default function StudentPage() {
                       teamId={team.id}
                       currentUserId={currentUserId}
                       section="target_audience"
-                      title="Target Customers"
-                      description="Who are they?"
-                      placeholder="Describe your ideal customers, their demographics, and behaviors..."
+                      title={t('canvas.targetAudience')}
+                      description={t('canvas.targetAudienceDesc')}
+                      placeholder={t('canvas.targetAudiencePlaceholder')}
                       icon={<Target className="h-5 w-5 text-blue-600" />}
                       colorClasses={{
                         border: 'border-l-4 border-blue-400',
@@ -548,9 +551,9 @@ export default function StudentPage() {
                       teamId={team.id}
                       currentUserId={currentUserId}
                       section="key_features"
-                      title="Key Features"
-                      description="Top 3 features"
-                      placeholder="List your top 3 key features that deliver the most value..."
+                      title={t('canvas.keyFeatures')}
+                      description={t('canvas.keyFeaturesDesc')}
+                      placeholder={t('canvas.keyFeaturesPlaceholder')}
                       icon={<Zap className="h-5 w-5 text-green-600" />}
                       colorClasses={{
                         border: 'border-l-4 border-green-400',
@@ -568,9 +571,9 @@ export default function StudentPage() {
                       teamId={team.id}
                       currentUserId={currentUserId}
                       section="revenue_model"
-                      title="Revenue Model"
-                      description="How to monetize?"
-                      placeholder="Explain how you will make money from your solution..."
+                      title={t('canvas.revenueModel')}
+                      description={t('canvas.revenueModelDesc')}
+                      placeholder={t('canvas.revenueModelPlaceholder')}
                       icon={<DollarSign className="h-5 w-5 text-orange-600" />}
                       colorClasses={{
                         border: 'border-l-4 border-orange-400',
@@ -591,9 +594,9 @@ export default function StudentPage() {
             <TabsContent value="team">
               <Card>
                 <CardHeader>
-                  <CardTitle>Team Members ({members.length})</CardTitle>
+                  <CardTitle>{t('teamMembers')} ({members.length})</CardTitle>
                   <CardDescription>
-                    Your team composition
+                    {t('teamComposition')}
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -612,14 +615,14 @@ export default function StudentPage() {
                               {member.is_captain && (
                                 <span className="flex items-center gap-1 text-xs bg-yellow-100 text-yellow-800 px-2 py-1 rounded">
                                   <Crown className="h-3 w-3" />
-                                  Captain
+                                  {t('captain')}
                                 </span>
                               )}
                             </div>
                             <p className="text-sm text-muted-foreground">{member.role}</p>
                           </div>
                           <p className="text-xs text-muted-foreground">
-                            Joined {new Date(member.joined_at).toLocaleDateString()}
+                            {t('joined')} {new Date(member.joined_at).toLocaleDateString()}
                           </p>
                         </div>
                       </div>
@@ -628,13 +631,13 @@ export default function StudentPage() {
                     {members.length === 0 && (
                       <div className="text-center py-8 text-muted-foreground">
                         <Users className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                        <p>No team members yet</p>
+                        <p>{t('noTeamMembers')}</p>
                       </div>
                     )}
 
                     <div className="pt-4 border-t">
                       <p className="text-sm text-muted-foreground text-center">
-                        Share your activation code with teammates: <br />
+                        {t('shareActivationCode')} <br />
                         <span className="text-lg font-mono font-bold text-purple-600">{team.activation_code}</span>
                       </p>
                     </div>
@@ -655,8 +658,8 @@ export default function StudentPage() {
         ) : isPitching ? (
           <Tabs defaultValue="pitch" className="space-y-4">
             <TabsList className="grid w-full grid-cols-2">
-              <TabsTrigger value="pitch">Current Pitch</TabsTrigger>
-              <TabsTrigger value="notes">My Notes</TabsTrigger>
+              <TabsTrigger value="pitch">{t('currentPitch')}</TabsTrigger>
+              <TabsTrigger value="notes">{t('myNotes')}</TabsTrigger>
             </TabsList>
 
             <TabsContent value="pitch">
@@ -672,10 +675,9 @@ export default function StudentPage() {
         ) : (
           <Card>
             <CardHeader>
-              <CardTitle>Event Status: {currentEvent?.status}</CardTitle>
+              <CardTitle>{t('eventEnded')}</CardTitle>
               <CardDescription>
-                {currentEvent?.status === 'LOCKED' && 'Preparing for pitches...'}
-                {currentEvent?.status === 'COMPLETED' && 'Event completed! Check the results.'}
+                {t('thankYouParticipation')}
               </CardDescription>
             </CardHeader>
           </Card>
