@@ -1,13 +1,13 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Team, MentorFeedbackWithMentor, Profile, CanvasContributionWithUser } from '@/types'
+import { Team, MentorFeedbackWithMentor, Profile, CanvasContributionWithUser, TeamDecision } from '@/types'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import { createClient } from '@/lib/supabase/client'
-import { AlertCircle, Lightbulb, Target, Star, Zap, DollarSign, MessageSquare, Send, Loader2, Users, Crown, UserCircle } from 'lucide-react'
+import { AlertCircle, Lightbulb, Target, Star, Zap, DollarSign, MessageSquare, Send, Loader2, Users, Crown, UserCircle, CheckCircle } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 
 interface TeamCanvasViewProps {
@@ -108,6 +108,14 @@ export function TeamCanvasView({ team, onClose }: TeamCanvasViewProps) {
     revenue_model: [],
   })
   const [isLoadingContributions, setIsLoadingContributions] = useState(true)
+  const [teamDecisions, setTeamDecisions] = useState<Record<CanvasSection, TeamDecision | null>>({
+    problem: null,
+    solution: null,
+    value_proposition: null,
+    target_audience: null,
+    key_features: null,
+    revenue_model: null,
+  })
 
   const members = (team.team_members as any[]) || []
   const canvasData = team.canvas_data || {}
@@ -116,6 +124,7 @@ export function TeamCanvasView({ team, onClose }: TeamCanvasViewProps) {
     loadFeedback()
     getCurrentMentor()
     loadContributions()
+    loadTeamDecisions()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
@@ -156,6 +165,29 @@ export function TeamCanvasView({ team, onClose }: TeamCanvasViewProps) {
         },
         () => {
           loadContributions()
+        }
+      )
+      .subscribe()
+
+    return () => {
+      supabase.removeChannel(channel)
+    }
+  }, [team.id, supabase])
+
+  // Real-time subscription for team decisions
+  useEffect(() => {
+    const channel = supabase
+      .channel(`mentor-decisions-${team.id}`)
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'team_decisions',
+          filter: `team_id=eq.${team.id}`,
+        },
+        () => {
+          loadTeamDecisions()
         }
       )
       .subscribe()
@@ -230,6 +262,34 @@ export function TeamCanvasView({ team, onClose }: TeamCanvasViewProps) {
     }
   }
 
+  const loadTeamDecisions = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('team_decisions')
+        .select('*')
+        .eq('team_id', team.id)
+
+      if (error) throw error
+
+      const decisionsMap: Record<CanvasSection, TeamDecision | null> = {
+        problem: null,
+        solution: null,
+        value_proposition: null,
+        target_audience: null,
+        key_features: null,
+        revenue_model: null,
+      }
+
+      ;(data || []).forEach((decision: TeamDecision) => {
+        decisionsMap[decision.section as CanvasSection] = decision
+      })
+
+      setTeamDecisions(decisionsMap)
+    } catch (error) {
+      console.error('Failed to load team decisions:', error)
+    }
+  }
+
   const handleSubmitFeedback = async () => {
     if (!feedbackText.trim() || !selectedSection || !currentMentorId) return
 
@@ -295,11 +355,12 @@ export function TeamCanvasView({ team, onClose }: TeamCanvasViewProps) {
         {sectionConfigs.map((config) => {
           const sectionContributions = contributions[config.key] || []
           const sectionFeedback = getFeedbackForSection(config.key)
+          const teamDecision = teamDecisions[config.key]
 
           return (
             <Card
               key={config.key}
-              className={`border-l-4 ${config.borderColor} hover:shadow-lg transition-shadow`}
+              className={`border-l-4 ${teamDecision ? 'border-green-500 ring-2 ring-green-200' : config.borderColor} hover:shadow-lg transition-shadow`}
             >
               <CardHeader className="pb-3">
                 <div className="flex items-center justify-between">
@@ -311,6 +372,12 @@ export function TeamCanvasView({ team, onClose }: TeamCanvasViewProps) {
                     </div>
                   </div>
                   <div className="flex items-center gap-2">
+                    {teamDecision && (
+                      <Badge className="text-xs bg-green-100 text-green-700 border-green-300">
+                        <CheckCircle className="h-3 w-3 mr-1" />
+                        Decision
+                      </Badge>
+                    )}
                     {sectionContributions.length > 0 && (
                       <Badge variant="outline" className="text-xs">
                         {sectionContributions.length} ideas
@@ -325,6 +392,25 @@ export function TeamCanvasView({ team, onClose }: TeamCanvasViewProps) {
                 </div>
               </CardHeader>
               <CardContent className="space-y-3">
+                {/* Team Decision - Highlighted at top */}
+                {teamDecision && (
+                  <div className="p-3 bg-green-50 border-2 border-green-400 rounded-lg">
+                    <div className="flex items-center gap-2 mb-2">
+                      <CheckCircle className="h-4 w-4 text-green-600" />
+                      <span className="text-sm font-semibold text-green-800">Team Decision</span>
+                    </div>
+                    <p className="text-sm text-green-900 whitespace-pre-wrap">{teamDecision.content}</p>
+                    <p className="text-xs text-green-600 mt-2">
+                      Updated: {new Date(teamDecision.updated_at).toLocaleString('en-US', {
+                        month: 'short',
+                        day: 'numeric',
+                        hour: '2-digit',
+                        minute: '2-digit',
+                      })}
+                    </p>
+                  </div>
+                )}
+
                 {/* Student Contributions */}
                 <div className={`p-3 ${config.bgColor} rounded-md min-h-[120px] max-h-[300px] overflow-y-auto space-y-2`}>
                   {isLoadingContributions ? (
