@@ -12,6 +12,7 @@ import { createClient } from '@/lib/supabase/client'
 import { Plus, Users, Loader2, UserCheck, Mail, Copy, Check, Eye, EyeOff, KeyRound } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { createUser } from '@/app/actions/create-user'
+import { useTranslations } from 'next-intl'
 
 interface MentorManagementProps {
   event: Event | null
@@ -32,6 +33,7 @@ export function MentorManagement({ event, teams, onUpdate }: MentorManagementPro
   const [showCredentialsDialog, setShowCredentialsDialog] = useState(false)
   const [visiblePasswords, setVisiblePasswords] = useState<Set<string>>(new Set())
   const supabase = createClient()
+  const t = useTranslations('admin.mentorManagement')
 
   // Form fields
   const [mentorName, setMentorName] = useState('')
@@ -272,26 +274,26 @@ export function MentorManagement({ event, teams, onUpdate }: MentorManagementPro
         <CardHeader>
           <div className="flex items-center justify-between">
             <div>
-              <CardTitle className="text-purple-900">Mentor Management</CardTitle>
-              <CardDescription>Create mentors and assign them to teams</CardDescription>
+              <CardTitle className="text-purple-900">{t('title')}</CardTitle>
+              <CardDescription>{t('description')}</CardDescription>
             </div>
             <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
               <DialogTrigger asChild>
                 <Button>
                   <Plus className="mr-2 h-4 w-4" />
-                  Create Mentor
+                  {t('createMentor')}
                 </Button>
               </DialogTrigger>
               <DialogContent>
                 <DialogHeader>
-                  <DialogTitle>Create New Mentor</DialogTitle>
+                  <DialogTitle>{t('createNewMentor')}</DialogTitle>
                   <DialogDescription>
-                    Create a mentor account. A random password will be generated.
+                    {t('createMentorDesc')}
                   </DialogDescription>
                 </DialogHeader>
                 <form onSubmit={createMentor} className="space-y-4">
                   <div className="space-y-2">
-                    <Label htmlFor="mentorName">Full Name</Label>
+                    <Label htmlFor="mentorName">{t('fullName')}</Label>
                     <Input
                       id="mentorName"
                       placeholder="e.g., Dr. Ayşe Yılmaz"
@@ -303,7 +305,7 @@ export function MentorManagement({ event, teams, onUpdate }: MentorManagementPro
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="mentorEmail">Email</Label>
+                    <Label htmlFor="mentorEmail">{t('email')}</Label>
                     <Input
                       id="mentorEmail"
                       type="email"
@@ -324,10 +326,10 @@ export function MentorManagement({ event, teams, onUpdate }: MentorManagementPro
                     {isCreating ? (
                       <>
                         <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                        Creating...
+                        {t('creating')}
                       </>
                     ) : (
-                      'Create Mentor'
+                      t('createMentor')
                     )}
                   </Button>
                 </form>
@@ -340,14 +342,14 @@ export function MentorManagement({ event, teams, onUpdate }: MentorManagementPro
       {/* Mentors List */}
       <Card>
         <CardHeader>
-          <CardTitle>Mentors ({mentors.length})</CardTitle>
-          <CardDescription>View and manage mentor assignments</CardDescription>
+          <CardTitle>{t('mentorsList')} ({mentors.length})</CardTitle>
+          <CardDescription>{t('viewManageAssignments')}</CardDescription>
         </CardHeader>
         <CardContent>
           {mentors.length === 0 ? (
             <div className="text-center py-12 text-muted-foreground">
               <UserCheck className="h-12 w-12 mx-auto mb-4 opacity-50" />
-              <p>No mentors yet. Create your first mentor above.</p>
+              <p>{t('noMentors')}</p>
             </div>
           ) : (
             <div className="space-y-4">
@@ -384,13 +386,13 @@ export function MentorManagement({ event, teams, onUpdate }: MentorManagementPro
                       </div>
                       <Badge variant="secondary" className="flex items-center gap-1">
                         <Users className="h-3 w-3" />
-                        {mentor.assignment_count} team{mentor.assignment_count !== 1 ? 's' : ''}
+                        {mentor.assignment_count} {mentor.assignment_count !== 1 ? t('teams') : t('team')}
                       </Badge>
                     </div>
                   </CardHeader>
                   <CardContent>
                     <div className="space-y-2">
-                      <Label className="text-sm font-medium">Assigned Teams</Label>
+                      <Label className="text-sm font-medium">{t('assignedTeams')}</Label>
                       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2">
                         {teams.map((team) => {
                           const isAssigned = mentor.assigned_teams.includes(team.id)
@@ -413,7 +415,7 @@ export function MentorManagement({ event, teams, onUpdate }: MentorManagementPro
                       </div>
                       {teams.length === 0 && (
                         <p className="text-sm text-muted-foreground">
-                          No teams available. Create teams first.
+                          {t('noTeamsAvailable')}
                         </p>
                       )}
                     </div>
@@ -429,14 +431,14 @@ export function MentorManagement({ event, teams, onUpdate }: MentorManagementPro
       <Dialog open={showCredentialsDialog} onOpenChange={setShowCredentialsDialog}>
         <DialogContent className="max-w-md">
           <DialogHeader>
-            <DialogTitle>Mentor Created Successfully!</DialogTitle>
+            <DialogTitle>{t('credentialsTitle')}</DialogTitle>
             <DialogDescription>
-              Save these credentials and share them with the mentor securely.
+              {t('credentialsDescription')}
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4">
             <div className="space-y-2">
-              <Label>Email</Label>
+              <Label>{t('email')}</Label>
               <div className="flex gap-2">
                 <Input value={createdEmail} readOnly className="font-mono" />
                 <Button
@@ -452,7 +454,7 @@ export function MentorManagement({ event, teams, onUpdate }: MentorManagementPro
             </div>
 
             <div className="space-y-2">
-              <Label>Password (Save this!)</Label>
+              <Label>{t('password')}</Label>
               <div className="flex gap-2">
                 <Input value={createdPassword} readOnly className="font-mono" />
                 <Button
@@ -469,7 +471,7 @@ export function MentorManagement({ event, teams, onUpdate }: MentorManagementPro
 
             <div className="p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
               <p className="text-sm text-yellow-800">
-                ⚠️ <strong>Important:</strong> This password will not be shown again. Copy it now and share it with the mentor securely.
+                {t('credentialsWarning')}
               </p>
             </div>
 
@@ -477,7 +479,7 @@ export function MentorManagement({ event, teams, onUpdate }: MentorManagementPro
               onClick={() => setShowCredentialsDialog(false)}
               className="w-full"
             >
-              I've Saved the Credentials
+              {t('savedCredentials')}
             </Button>
           </div>
         </DialogContent>
