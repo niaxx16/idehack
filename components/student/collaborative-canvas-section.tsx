@@ -9,6 +9,7 @@ import { Textarea } from '@/components/ui/textarea'
 import { Badge } from '@/components/ui/badge'
 import { Loader2, Send, Crown, UserCircle, Trash2, CheckCircle, Edit3, Save } from 'lucide-react'
 import { FeedbackDialog } from './feedback-dialog'
+import { useTranslations } from 'next-intl'
 
 interface TeamMember {
   user_id: string
@@ -50,6 +51,7 @@ export function CollaborativeCanvasSection({
   onMarkFeedbackAsRead,
 }: CollaborativeCanvasSectionProps) {
   const supabase = createClient()
+  const t = useTranslations('student')
   const [contributions, setContributions] = useState<CanvasContributionWithUser[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [newContent, setNewContent] = useState('')
@@ -248,8 +250,8 @@ export function CollaborativeCanvasSection({
     }
   }
 
-  const handleDelete = async (contributionId: string) => {
-    if (!confirm('Are you sure you want to delete this idea?')) return
+  const handleDelete = async (contributionId: string, confirmMessage: string) => {
+    if (!confirm(confirmMessage)) return
 
     try {
       const { error } = await supabase
@@ -279,7 +281,7 @@ export function CollaborativeCanvasSection({
           </div>
           {feedbacks && feedbacks.length > 0 && (
             <Badge variant="secondary" className="text-xs">
-              {feedbacks.length} feedback
+              {feedbacks.length} {t('canvas.feedback')}
             </Badge>
           )}
         </div>
@@ -294,7 +296,7 @@ export function CollaborativeCanvasSection({
             </div>
           ) : contributions.length === 0 ? (
             <div className="text-center py-8 text-sm text-muted-foreground italic">
-              No ideas yet. Be the first to contribute!
+              {t('canvas.noIdeas')}
             </div>
           ) : (
             <>
@@ -321,7 +323,7 @@ export function CollaborativeCanvasSection({
                           </p>
                           {contrib.user_id === currentUserId && (
                             <Badge variant="secondary" className="text-[10px] px-1.5 py-0">
-                              You
+                              {t('canvas.you')}
                             </Badge>
                           )}
                         </div>
@@ -340,7 +342,7 @@ export function CollaborativeCanvasSection({
                           variant="ghost"
                           size="icon"
                           className="h-6 w-6 text-red-500 hover:text-red-700 hover:bg-red-50"
-                          onClick={() => handleDelete(contrib.id)}
+                          onClick={() => handleDelete(contrib.id, t('canvas.confirmDelete'))}
                         >
                           <Trash2 className="h-3 w-3" />
                         </Button>
@@ -381,12 +383,12 @@ export function CollaborativeCanvasSection({
               {isSubmitting ? (
                 <>
                   <Loader2 className="h-3 w-3 animate-spin" />
-                  Adding...
+                  {t('canvas.adding')}
                 </>
               ) : (
                 <>
                   <Send className="h-3 w-3" />
-                  Add Idea
+                  {t('canvas.addIdea')}
                 </>
               )}
             </Button>
@@ -401,10 +403,10 @@ export function CollaborativeCanvasSection({
           <div className="flex items-center justify-between mb-3">
             <div className="flex items-center gap-2">
               <CheckCircle className="h-4 w-4 text-green-600" />
-              <h4 className="text-sm font-semibold text-gray-900">Team Decision</h4>
+              <h4 className="text-sm font-semibold text-gray-900">{t('canvas.teamDecision')}</h4>
               {isCaptain && (
                 <Badge variant="outline" className="text-[10px] bg-yellow-50 border-yellow-300 text-yellow-700">
-                  Captain
+                  {t('canvas.captain')}
                 </Badge>
               )}
             </div>
@@ -416,7 +418,7 @@ export function CollaborativeCanvasSection({
                 onClick={() => setIsEditingDecision(true)}
               >
                 <Edit3 className="h-3 w-3" />
-                {teamDecision ? 'Edit' : 'Write Decision'}
+                {teamDecision ? t('canvas.edit') : t('canvas.writeDecision')}
               </Button>
             )}
           </div>
@@ -424,7 +426,7 @@ export function CollaborativeCanvasSection({
           {isEditingDecision && isCaptain ? (
             <div className="space-y-2">
               <Textarea
-                placeholder="Review your team's ideas and write the final team decision here..."
+                placeholder={t('canvas.decisionPlaceholder')}
                 value={decisionContent}
                 onChange={(e) => setDecisionContent(e.target.value)}
                 rows={4}
@@ -445,7 +447,7 @@ export function CollaborativeCanvasSection({
                       setDecisionContent(teamDecision?.content || '')
                     }}
                   >
-                    Cancel
+                    {t('canvas.cancel')}
                   </Button>
                   <Button
                     size="sm"
@@ -456,12 +458,12 @@ export function CollaborativeCanvasSection({
                     {isSavingDecision ? (
                       <>
                         <Loader2 className="h-3 w-3 animate-spin" />
-                        Saving...
+                        {t('canvas.savingDecision')}
                       </>
                     ) : (
                       <>
                         <Save className="h-3 w-3" />
-                        Save
+                        {t('canvas.save')}
                       </>
                     )}
                   </Button>
@@ -474,15 +476,15 @@ export function CollaborativeCanvasSection({
                 {teamDecision.content}
               </p>
               <p className="text-[10px] text-green-600 mt-2">
-                Last updated: {new Date(teamDecision.updated_at).toLocaleString()}
+                {t('canvas.lastUpdated')} {new Date(teamDecision.updated_at).toLocaleString()}
               </p>
             </div>
           ) : (
             <div className="bg-gray-50 border border-dashed border-gray-300 rounded-lg p-4 text-center">
               <p className="text-sm text-muted-foreground">
                 {isCaptain
-                  ? 'No team decision yet. Review your team\'s ideas and write the final decision.'
-                  : 'The team captain has not written a decision for this section yet.'}
+                  ? t('canvas.noDecisionCaptain')
+                  : t('canvas.noDecisionMember')}
               </p>
             </div>
           )}
