@@ -272,7 +272,11 @@
       "noDecisionMember": "Takım kaptanı henüz bu bölüm için karar yazmadı.",
       "mentorFeedback": "Mentor Geri Bildirimi",
       "feedback": "geri bildirim",
-      "confirmDelete": "Bu fikri silmek istediğinizden emin misiniz?"
+      "confirmDelete": "Bu fikri silmek istediğinizden emin misiniz?",
+      "mentorFeedbackFor": "Mentor Geri Bildirimi: {section}",
+      "feedbackDescription": "Mentörleriniz bu bölümü geliştirmenize yardımcı olacak rehberlik sağladı",
+      "markAsRead": "Okundu İşaretle",
+      "read": "Okundu"
     },
     "notes": {
       "title": "Notlarım",

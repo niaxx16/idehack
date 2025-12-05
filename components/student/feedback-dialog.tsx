@@ -6,7 +6,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { MessageSquare, Check } from 'lucide-react'
-import { createClient } from '@/lib/supabase/client'
+import { useTranslations } from 'next-intl'
 
 interface FeedbackDialogProps {
   sectionKey: string
@@ -23,6 +23,7 @@ export function FeedbackDialog({
   feedbacks,
   onMarkAsRead,
 }: FeedbackDialogProps) {
+  const t = useTranslations('student')
   const unreadCount = feedbacks.filter((f) => !f.is_read).length
   const [open, setOpen] = useState(false)
 
@@ -35,7 +36,7 @@ export function FeedbackDialog({
       <DialogTrigger asChild>
         <Button variant="outline" size="sm" className="w-full mt-2 relative">
           <MessageSquare className="mr-2 h-4 w-4" />
-          Mentor Feedback
+          {t('canvas.mentorFeedback')}
           {unreadCount > 0 && (
             <Badge
               variant="destructive"
@@ -48,9 +49,9 @@ export function FeedbackDialog({
       </DialogTrigger>
       <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>Mentor Feedback: {sectionTitle}</DialogTitle>
+          <DialogTitle>{t('canvas.mentorFeedbackFor', { section: sectionTitle })}</DialogTitle>
           <DialogDescription>
-            Your mentors have provided guidance to help improve this section
+            {t('canvas.feedbackDescription')}
           </DialogDescription>
         </DialogHeader>
 
@@ -86,13 +87,13 @@ export function FeedbackDialog({
                     className="text-purple-600 hover:text-purple-700"
                   >
                     <Check className="mr-1 h-4 w-4" />
-                    Mark as Read
+                    {t('canvas.markAsRead')}
                   </Button>
                 )}
               </div>
               <p className="text-sm whitespace-pre-wrap">{feedback.feedback_text}</p>
               {feedback.is_read && (
-                <p className="text-xs text-green-600 mt-2">✓ Read</p>
+                <p className="text-xs text-green-600 mt-2">✓ {t('canvas.read')}</p>
               )}
             </div>
           ))}
