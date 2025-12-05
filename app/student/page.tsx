@@ -177,9 +177,15 @@ export default function StudentPage() {
 
       // Generate signed URL for presentation if exists
       if (teamData.presentation_url) {
+        // Extract file path if full URL is stored
+        let filePath = teamData.presentation_url
+        if (filePath.includes('/team-presentations/')) {
+          filePath = filePath.split('/team-presentations/').pop() || filePath
+        }
+
         const { data: signedUrlData } = await supabase.storage
           .from('team-presentations')
-          .createSignedUrl(teamData.presentation_url, 3600) // 1 hour expiry
+          .createSignedUrl(filePath, 3600) // 1 hour expiry
 
         if (signedUrlData) {
           setPresentationSignedUrl(signedUrlData.signedUrl)
