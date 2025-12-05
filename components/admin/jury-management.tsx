@@ -11,6 +11,7 @@ import { createClient } from '@/lib/supabase/client'
 import { Plus, UserCheck, Loader2, Copy, Gavel, Eye, EyeOff, KeyRound } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { createUser } from '@/app/actions/create-user'
+import { useTranslations } from 'next-intl'
 
 interface JuryManagementProps {
   event: Event | null
@@ -25,6 +26,7 @@ export function JuryManagement({ event, onUpdate }: JuryManagementProps) {
   const [showCredentialsDialog, setShowCredentialsDialog] = useState(false)
   const [visiblePasswords, setVisiblePasswords] = useState<Set<string>>(new Set())
   const supabase = createClient()
+  const t = useTranslations('admin.juryManagement')
 
   // Form fields
   const [juryName, setJuryName] = useState('')
@@ -182,29 +184,29 @@ export function JuryManagement({ event, onUpdate }: JuryManagementProps) {
             <div>
               <CardTitle className="flex items-center gap-2">
                 <Gavel className="h-5 w-5" />
-                Jury Management
+                {t('title')}
               </CardTitle>
               <CardDescription>
-                Create and manage jury members who will score team presentations
+                {t('description')}
               </CardDescription>
             </div>
             <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
               <DialogTrigger asChild>
                 <Button>
                   <Plus className="h-4 w-4 mr-2" />
-                  Create Jury Member
+                  {t('createJury')}
                 </Button>
               </DialogTrigger>
               <DialogContent>
                 <DialogHeader>
-                  <DialogTitle>Create New Jury Member</DialogTitle>
+                  <DialogTitle>{t('createNewJury')}</DialogTitle>
                   <DialogDescription>
-                    Add a new jury member to evaluate team presentations
+                    {t('createJuryDesc')}
                   </DialogDescription>
                 </DialogHeader>
                 <form onSubmit={createJury} className="space-y-4">
                   <div className="space-y-2">
-                    <Label htmlFor="juryName">Full Name</Label>
+                    <Label htmlFor="juryName">{t('fullName')}</Label>
                     <Input
                       id="juryName"
                       placeholder="e.g., Dr. Jane Smith"
@@ -214,7 +216,7 @@ export function JuryManagement({ event, onUpdate }: JuryManagementProps) {
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="juryEmail">Email</Label>
+                    <Label htmlFor="juryEmail">{t('email')}</Label>
                     <Input
                       id="juryEmail"
                       type="email"
@@ -231,10 +233,10 @@ export function JuryManagement({ event, onUpdate }: JuryManagementProps) {
                     {isCreating ? (
                       <>
                         <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                        Creating...
+                        {t('creating')}
                       </>
                     ) : (
-                      'Create Jury Member'
+                      t('createJury')
                     )}
                   </Button>
                 </form>
@@ -248,14 +250,14 @@ export function JuryManagement({ event, onUpdate }: JuryManagementProps) {
       <Dialog open={showCredentialsDialog} onOpenChange={setShowCredentialsDialog}>
         <DialogContent className="max-w-md">
           <DialogHeader>
-            <DialogTitle>Jury Member Created Successfully</DialogTitle>
+            <DialogTitle>{t('credentialsTitle')}</DialogTitle>
             <DialogDescription>
-              Save these credentials and share them with the jury member. They cannot be recovered later.
+              {t('credentialsDescription')}
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4">
             <div className="space-y-2">
-              <Label>Email</Label>
+              <Label>{t('email')}</Label>
               <div className="flex gap-2">
                 <Input value={createdEmail} readOnly className="font-mono" />
                 <Button
@@ -269,7 +271,7 @@ export function JuryManagement({ event, onUpdate }: JuryManagementProps) {
               </div>
             </div>
             <div className="space-y-2">
-              <Label>Password (Save this!)</Label>
+              <Label>{t('password')}</Label>
               <div className="flex gap-2">
                 <Input value={createdPassword} readOnly className="font-mono" />
                 <Button
@@ -284,7 +286,7 @@ export function JuryManagement({ event, onUpdate }: JuryManagementProps) {
             </div>
             <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3">
               <p className="text-sm text-yellow-800">
-                ⚠️ Make sure to save this password! It won't be shown again.
+                {t('credentialsWarning')}
               </p>
             </div>
           </div>
@@ -294,9 +296,9 @@ export function JuryManagement({ event, onUpdate }: JuryManagementProps) {
       {/* Jury Members List */}
       <Card>
         <CardHeader>
-          <CardTitle>Jury Members ({juryMembers.length})</CardTitle>
+          <CardTitle>{t('juryMembers')} ({juryMembers.length})</CardTitle>
           <CardDescription>
-            All registered jury members for this hackathon
+            {t('allJuryMembers')}
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -307,8 +309,8 @@ export function JuryManagement({ event, onUpdate }: JuryManagementProps) {
           ) : juryMembers.length === 0 ? (
             <div className="text-center py-8 text-muted-foreground">
               <Gavel className="h-12 w-12 mx-auto mb-2 opacity-50" />
-              <p>No jury members yet</p>
-              <p className="text-sm">Create your first jury member to get started</p>
+              <p>{t('noJuryMembers')}</p>
+              <p className="text-sm">{t('createFirst')}</p>
             </div>
           ) : (
             <div className="grid gap-4">
@@ -321,7 +323,7 @@ export function JuryManagement({ event, onUpdate }: JuryManagementProps) {
                           <UserCheck className="h-5 w-5 text-purple-600" />
                         </div>
                         <div className="space-y-1">
-                          <h3 className="font-semibold">{jury.full_name || 'Anonymous Jury'}</h3>
+                          <h3 className="font-semibold">{jury.full_name || t('anonymousJury')}</h3>
                           <p className="text-sm text-muted-foreground">{jury.email}</p>
                           {jury.display_password && (
                             <div className="flex items-center gap-2 mt-1">
@@ -346,7 +348,7 @@ export function JuryManagement({ event, onUpdate }: JuryManagementProps) {
                         </div>
                       </div>
                       <Badge variant="outline" className="bg-purple-50 text-purple-700 border-purple-200">
-                        Jury
+                        {t('juryBadge')}
                       </Badge>
                     </div>
                   </CardContent>

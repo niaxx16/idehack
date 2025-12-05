@@ -237,8 +237,23 @@
     },
     "juryManagement": {
       "title": "Jüri Yönetimi",
-      "description": "Değerlendirme için jüri üyeleri oluşturun",
-      "createJury": "Jüri Üyesi Oluştur"
+      "description": "Takım sunumlarını puanlayacak jüri üyelerini oluşturun ve yönetin",
+      "createJury": "Jüri Üyesi Oluştur",
+      "createNewJury": "Yeni Jüri Üyesi Oluştur",
+      "createJuryDesc": "Takım sunumlarını değerlendirecek yeni bir jüri üyesi ekleyin",
+      "fullName": "Ad Soyad",
+      "email": "E-posta",
+      "creating": "Oluşturuluyor...",
+      "juryMembers": "Jüri Üyeleri",
+      "allJuryMembers": "Bu hackathon için kayıtlı tüm jüri üyeleri",
+      "noJuryMembers": "Henüz jüri üyesi yok",
+      "createFirst": "Başlamak için ilk jüri üyenizi oluşturun",
+      "juryBadge": "Jüri",
+      "anonymousJury": "Anonim Jüri",
+      "credentialsTitle": "Jüri Üyesi Başarıyla Oluşturuldu",
+      "credentialsDescription": "Bu bilgileri kaydedin ve jüri üyesiyle paylaşın. Daha sonra kurtarılamazlar.",
+      "password": "Şifre (Bunu kaydedin!)",
+      "credentialsWarning": "⚠️ Bu şifreyi kaydettiğinizden emin olun! Bir daha gösterilmeyecek."
     }
   },
   "student": {

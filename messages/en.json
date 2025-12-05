@@ -237,8 +237,23 @@
     },
     "juryManagement": {
       "title": "Jury Management",
-      "description": "Create jury members for evaluation",
-      "createJury": "Create Jury Member"
+      "description": "Create and manage jury members who will score team presentations",
+      "createJury": "Create Jury Member",
+      "createNewJury": "Create New Jury Member",
+      "createJuryDesc": "Add a new jury member to evaluate team presentations",
+      "fullName": "Full Name",
+      "email": "Email",
+      "creating": "Creating...",
+      "juryMembers": "Jury Members",
+      "allJuryMembers": "All registered jury members for this hackathon",
+      "noJuryMembers": "No jury members yet",
+      "createFirst": "Create your first jury member to get started",
+      "juryBadge": "Jury",
+      "anonymousJury": "Anonymous Jury",
+      "credentialsTitle": "Jury Member Created Successfully",
+      "credentialsDescription": "Save these credentials and share them with the jury member. They cannot be recovered later.",
+      "password": "Password (Save this!)",
+      "credentialsWarning": "⚠️ Make sure to save this password! It won't be shown again."
     }
   },
   "student": {
