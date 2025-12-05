@@ -83,11 +83,11 @@ const sectionConfigs: SectionConfig[] = [
     key: 'revenue_model',
     title: 'Revenue Model',
     description: 'How to monetize?',
-    icon: <DollarSign className="h-5 w-5 text-emerald-600" />,
-    color: 'text-emerald-600',
-    borderColor: 'border-emerald-400',
-    bgColor: 'bg-emerald-50',
-    iconBgColor: 'bg-emerald-100',
+    icon: <DollarSign className="h-5 w-5 text-orange-600" />,
+    color: 'text-orange-600',
+    borderColor: 'border-orange-400',
+    bgColor: 'bg-orange-50',
+    iconBgColor: 'bg-orange-100',
   },
 ]
 

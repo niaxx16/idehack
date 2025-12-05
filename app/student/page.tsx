@@ -482,12 +482,12 @@ export default function StudentPage() {
                       title="Revenue Model"
                       description="How to monetize?"
                       placeholder="Explain how you will make money from your solution..."
-                      icon={<DollarSign className="h-5 w-5 text-emerald-600" />}
+                      icon={<DollarSign className="h-5 w-5 text-orange-600" />}
                       colorClasses={{
-                        border: 'border-l-4 border-emerald-400',
-                        bg: 'bg-emerald-50',
-                        iconBg: 'bg-emerald-100',
-                        badgeBg: 'bg-emerald-100',
+                        border: 'border-l-4 border-orange-400',
+                        bg: 'bg-orange-50',
+                        iconBg: 'bg-orange-100',
+                        badgeBg: 'bg-orange-100',
                       }}
                       teamMembers={members}
                       feedbacks={getFeedbackForSection('revenue_model')}
