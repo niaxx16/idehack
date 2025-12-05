@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
 import { LanguageProvider } from "@/lib/i18n/language-provider";
+import { InactivityHandler } from "@/components/auth/inactivity-handler";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -45,7 +46,9 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <LanguageProvider>
-          {children}
+          <InactivityHandler>
+            {children}
+          </InactivityHandler>
         </LanguageProvider>
       </body>
     </html>

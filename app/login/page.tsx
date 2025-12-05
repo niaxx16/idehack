@@ -1,16 +1,19 @@
 'use client'
 
-import { useState } from 'react'
-import { useRouter } from 'next/navigation'
+import { useState, useEffect } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { useAuth } from '@/hooks/use-auth'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Label } from '@/components/ui/label'
 import { useTranslations } from 'next-intl'
+import { Alert, AlertDescription } from '@/components/ui/alert'
+import { Clock } from 'lucide-react'
 
 export default function LoginPage() {
   const router = useRouter()
+  const searchParams = useSearchParams()
   const { signInWithEmail, signInAnonymously } = useAuth()
   const t = useTranslations('auth')
   const tCommon = useTranslations('common')
@@ -19,6 +22,13 @@ export default function LoginPage() {
   const [password, setPassword] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [inactivityMessage, setInactivityMessage] = useState(false)
+
+  useEffect(() => {
+    if (searchParams.get('reason') === 'inactivity') {
+      setInactivityMessage(true)
+    }
+  }, [searchParams])
 
   const handleEmailLogin = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -58,6 +68,14 @@ export default function LoginPage() {
           <CardDescription>{tHome('subtitle')}</CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
+          {inactivityMessage && (
+            <Alert className="border-amber-200 bg-amber-50">
+              <Clock className="h-4 w-4 text-amber-600" />
+              <AlertDescription className="text-amber-800">
+                You have been signed out due to inactivity. Please sign in again.
+              </AlertDescription>
+            </Alert>
+          )}
           <form onSubmit={handleEmailLogin} className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="email">{t('email')}</Label>
