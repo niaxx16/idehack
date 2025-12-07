@@ -1,123 +1,153 @@
-# InovaSprint - Hackathon Management Platform
+# InovaSprint - Hackathon Yönetim Platformu
 
-A comprehensive Progressive Web App (PWA) for managing high school hackathons with hybrid support for desktop kiosk mode, mobile student participation, and remote jury evaluation.
+Lise ideathon ve hackathon etkinliklerini yönetmek için kapsamlı bir Progressive Web App (PWA). Masaüstü kiosk modu, mobil öğrenci katılımı ve uzaktan jüri değerlendirmesi için hibrit destek sunar.
 
-## Features
+## Özellikler
 
-### Multi-Role System
-- **Admin Dashboard**: Event phase control, team management, pitch orchestration
-- **Team Captain (Desktop)**: Project canvas form, file uploads, QR code display
-- **Students (Mobile)**: Real-time pitch viewing, private notes, hype reactions, portfolio voting
-- **Remote Jury**: Live stream viewing, real-time scoring, project details
+### Çoklu Rol Sistemi
+- **Super Admin**: Tüm eventleri ve adminleri yönetir, sistem sahibi
+- **Admin**: Kendi oluşturduğu etkinlikleri, takımları, mentörleri ve jürileri yönetir
+- **Mentor**: Atandığı takımlara geri bildirim verir, canvas'ları inceler
+- **Jüri**: Canlı yayını izler, takımları puanlar
+- **Öğrenci (Mobil)**: Gerçek zamanlı sunum izleme, notlar, hype reaksiyonları, portföy oylaması
 
-### Key Capabilities
-- **Hybrid Onboarding**: QR code-based team joining with anonymous authentication
-- **Real-time Updates**: Powered by Supabase Realtime for live event status
-- **Canvas Framework**: Problem-Solution-Audience-Revenue model
-- **File Upload**: Presentation files (PDF/PPT/DOCX) stored in Supabase Storage
-- **Hype System**: Live reaction animations using Realtime Broadcast (no DB writes)
-- **Portfolio Voting**: Students distribute virtual currency among teams
-- **Jury Scoring**: Multi-criteria evaluation (Innovation, Presentation, Feasibility, Impact)
-- **Leaderboard**: Weighted scoring combining jury votes (60%) and student investments (40%)
+### Temel Yetenekler
+- **Çoklu Dil Desteği**: Türkçe ve İngilizce - etkinlik bazında dil seçimi
+- **Admin İzolasyonu**: Her admin sadece kendi oluşturduğu etkinlikleri görür (güvenlik)
+- **Hibrit Katılım**: QR kod tabanlı takım katılımı, anonim kimlik doğrulama
+- **Gerçek Zamanlı Güncellemeler**: Supabase Realtime ile canlı etkinlik durumu
+- **İşbirlikçi Canvas**: Takım üyeleri birlikte fikir ekler, kaptan final kararı yazar
+- **Mentor Geri Bildirimi**: Mentörler canvas bölümlerine geri bildirim verir
+- **Dosya Yükleme**: Sunum dosyaları (PDF/PPT/DOCX) Supabase Storage'da saklanır
+- **Hype Sistemi**: Realtime Broadcast ile canlı reaksiyon animasyonları
+- **Portföy Oylaması**: Öğrenciler sanal para ile takımlara yatırım yapar
+- **Jüri Puanlama**: Çok kriterli değerlendirme (Yenilikçilik, Sunum, Uygulanabilirlik, Etki)
+- **Sıralama**: Jüri puanları (%70) ve öğrenci yatırımları (%30) ağırlıklı skor
 
-## Tech Stack
+## Teknoloji Yığını
 
 - **Frontend**: Next.js 14 (App Router), React, TypeScript, Tailwind CSS
-- **UI Components**: Shadcn/UI, Lucide React icons
+- **UI Bileşenleri**: Shadcn/UI, Lucide React ikonları
 - **Backend**: Supabase (PostgreSQL, Auth, Realtime, Storage)
-- **State Management**: Zustand
-- **Form Handling**: React Hook Form + Zod validation
-- **PWA**: next-pwa with service worker support
+- **Durum Yönetimi**: Zustand
+- **Çoklu Dil**: next-intl
+- **Form İşleme**: React Hook Form + Zod doğrulama
+- **PWA**: next-pwa ile service worker desteği
 
-## Setup Instructions
+## Kurulum Talimatları
 
-### 1. Prerequisites
-- Node.js 18+ and npm
-- Supabase account (free tier works)
+### 1. Gereksinimler
+- Node.js 18+ ve npm
+- Supabase hesabı (ücretsiz tier yeterli)
 
-### 2. Create Supabase Project
-1. Go to [supabase.com](https://supabase.com) and create a new project
-2. Wait for the database to be provisioned
+### 2. Supabase Projesi Oluştur
+1. [supabase.com](https://supabase.com) adresine gidin ve yeni proje oluşturun
+2. Veritabanının hazırlanmasını bekleyin
 
-### 3. Set Up Database
-1. In Supabase Dashboard, go to SQL Editor
-2. Copy the contents of `supabase/schema.sql`
-3. Paste and run the SQL to create all tables, functions, and policies
+### 3. Veritabanı Kurulumu
+1. Supabase Dashboard'da SQL Editor'a gidin
+2. `supabase/schema.sql` içeriğini kopyalayın
+3. SQL'i yapıştırın ve çalıştırın
+4. `supabase/migrations/` klasöründeki tüm migration dosyalarını sırayla çalıştırın
 
-### 4. Configure Storage Bucket
-1. Go to Storage in Supabase Dashboard
-2. Create a new bucket named `presentations`
-3. Set it to **Private** (not public)
+### 4. Storage Bucket Yapılandırması
+1. Supabase Dashboard'da Storage'a gidin
+2. `presentations` adında yeni bucket oluşturun
+3. **Private** olarak ayarlayın (public değil)
 
-### 5. Environment Variables
-1. Copy `.env.local.example` to `.env.local`
-2. Fill in your Supabase credentials from Settings > API
+### 5. Ortam Değişkenleri
+1. `.env.local.example` dosyasını `.env.local` olarak kopyalayın
+2. Supabase kimlik bilgilerinizi Settings > API'den alın ve doldurun
 
-### 6. Install & Run
+### 6. Kurulum & Çalıştırma
 ```bash
 npm install
 npm run dev
 ```
 
-Visit [http://localhost:3000](http://localhost:3000)
+[http://localhost:3000](http://localhost:3000) adresini ziyaret edin
 
-### 7. Create Admin User
-In Supabase Dashboard:
-1. Go to Authentication > Users
-2. Create a user with email/password
-3. Go to SQL Editor and run:
+### 7. Super Admin Oluşturma
+Supabase Dashboard'da:
+1. Authentication > Users'a gidin
+2. Email/şifre ile kullanıcı oluşturun
+3. SQL Editor'a gidin ve çalıştırın:
 ```sql
-UPDATE profiles SET role = 'admin' WHERE id = 'your-user-id';
+UPDATE profiles
+SET role = 'admin', is_super_admin = true
+WHERE id = 'kullanıcı-id-niz';
 ```
 
-## Usage Guide
+## Kullanım Kılavuzu
 
-### Event Flow
+### Etkinlik Akışı
+```
 WAITING → IDEATION → LOCKED → PITCHING → VOTING → COMPLETED
+(Bekleme)  (Fikir)   (Kilitli) (Sunum)   (Oylama)  (Tamamlandı)
+```
 
-### For Admins
-1. Login at `/login`
-2. Create teams in Teams tab
-3. Control event phases in Event Control
-4. Manage pitches in Pitch Control
-5. View results in Leaderboard
+### Admin Paneli
+1. `/login` adresinden giriş yapın
+2. **Adminler** sekmesinde yeni adminler oluşturun
+3. **Etkinlikler** sekmesinde etkinlik oluşturun (dil seçin)
+4. **Takımlar** sekmesinde takımları toplu oluşturun
+5. **Mentorlar** sekmesinde mentor ekleyip takımlara atayın
+6. **Jüri** sekmesinde jüri üyeleri oluşturun
+7. **Etkinlik Kontrolü** ile aşamaları yönetin
+8. **Sunum Kontrolü** ile sunumları yönetin
+9. **Sıralama** ile sonuçları görüntüleyin
 
-### For Team Captains
-1. Navigate to `/team`
-2. Fill Project Canvas
-3. Upload presentation
-4. Display QR code for members
+### Mentor Paneli
+1. `/login` adresinden mentor kimlik bilgileriyle giriş yapın
+2. Atanan takımları görüntüleyin
+3. Canvas bölümlerine geri bildirim verin
+4. Takım fikirlerini inceleyin
 
-### For Students
-1. Scan team QR code
-2. View pitches at `/student`
-3. Take notes during presentations
-4. Vote during voting phase
+### Jüri Paneli
+1. `/login` adresinden jüri kimlik bilgileriyle giriş yapın
+2. `/jury` sayfasında bölünmüş ekran görünümü
+3. Canlı yayını izleyin (admin stream URL ayarlar)
+4. Takımları gerçek zamanlı puanlayın
 
-### For Jury
-1. Login at `/login`
-2. View `/jury` for split-screen
-3. Score teams in real-time
+### Öğrenci/Takım Görünümü
+1. QR kodu tarayın veya `/join` adresinden katılın
+2. Takım adı belirleyin, Canvas üzerinde çalışın
+3. Sunum dosyası yükleyin
+4. Sunumları izleyin, not alın
+5. Oylama aşamasında yatırım yapın
 
-## Database Schema
+## Veritabanı Şeması
 
-Key tables:
-- `events`: Event status and metadata
-- `teams`: Team data, canvas, presentations
-- `profiles`: User profiles and roles
-- `user_notes`: Private student notes
-- `transactions`: Portfolio investments
-- `jury_scores`: Jury evaluations
+### Temel Tablolar
+- `events`: Etkinlik durumu, dil, created_by (admin izolasyonu)
+- `teams`: Takım verileri, canvas, sunumlar
+- `profiles`: Kullanıcı profilleri, roller, event_id
+- `user_notes`: Öğrenci özel notları
+- `transactions`: Portföy yatırımları
+- `jury_scores`: Jüri değerlendirmeleri
+- `canvas_contributions`: İşbirlikçi canvas katkıları
+- `team_decisions`: Takım kaptanı kararları
+- `mentor_assignments`: Mentor-takım atamaları
+- `mentor_feedback`: Mentor geri bildirimleri
 
-## Deployment
+### Güvenlik (RLS)
+- Admin izolasyonu: Her admin sadece kendi event'lerini görür
+- Super admin: Tüm verilere erişim
+- Mentor/Jüri: Sadece atandıkları event'e erişim
 
-Deploy to Vercel:
+## Dağıtım
+
+Vercel'e dağıtım:
 ```bash
 npm run build
 ```
 
-Update `NEXT_PUBLIC_APP_URL` in production environment variables.
+Production ortam değişkenlerinde `NEXT_PUBLIC_APP_URL`'i güncelleyin.
 
-## License
+## Lisans
 
-MIT License
+MIT Lisansı
+
+---
+
+Bu uygulama Bursa İl Milli Eğitim Müdürlüğü Ar-Ge Birimi tarafından vibe coding yöntemiyle geliştirilmiştir.

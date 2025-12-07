@@ -1,59 +1,59 @@
-# Quick Start Guide - InovaSprint
+# Hızlı Başlangıç Kılavuzu - InovaSprint
 
-Your development server is now running! Follow these steps to get everything working.
+Geliştirme sunucunuz çalışıyor! Her şeyin çalışması için bu adımları izleyin.
 
-## ✅ Already Completed
-- ✅ Environment variables configured
-- ✅ Development server running at http://localhost:3000
-- ✅ Dependencies installed
+## Tamamlandı
+- Ortam değişkenleri yapılandırıldı
+- Geliştirme sunucusu http://localhost:3000 adresinde çalışıyor
+- Bağımlılıklar yüklendi
 
-## 🚀 Next Steps (Required)
+## Gerekli Adımlar
 
-### Step 1: Set Up Database (5 minutes)
+### Adım 1: Veritabanı Kurulumu (5 dakika)
 
-1. Open your **Supabase Dashboard**: https://udlkyxytmyxxktflzfpi.supabase.co
+1. **Supabase Dashboard**'unuzu açın
 
-2. Go to **SQL Editor** in the left sidebar
+2. Sol kenar çubuğunda **SQL Editor**'a gidin
 
-3. Click **"New query"**
+3. **"New query"** butonuna tıklayın
 
-4. Copy the contents of `supabase/schema.sql` and paste into the editor
+4. `supabase/schema.sql` içeriğini kopyalayıp editöre yapıştırın
 
-5. Click **"Run"** (or Ctrl/Cmd + Enter)
+5. **"Run"** butonuna tıklayın (veya Ctrl/Cmd + Enter)
 
-6. You should see: ✅ "Success. No rows returned"
+6. "Success. No rows returned" mesajını görmelisiniz
 
-This creates all tables, policies, functions, and triggers needed.
+7. `supabase/migrations/` klasöründeki tüm dosyaları sırayla çalıştırın
 
-### Step 2: Enable Anonymous Authentication
+### Adım 2: Anonim Kimlik Doğrulamayı Etkinleştir
 
-1. In Supabase Dashboard, go to **Authentication** → **Providers**
+1. Supabase Dashboard'da **Authentication** → **Providers**'a gidin
 
-2. Scroll down to find **Anonymous** provider
+2. Aşağı kaydırıp **Anonymous** provider'ı bulun
 
-3. Toggle it **ON**
+3. **ON** durumuna getirin
 
-4. Click **Save**
+4. **Save** butonuna tıklayın
 
-This allows students to join teams without creating accounts.
+Bu, öğrencilerin hesap oluşturmadan takımlara katılmasını sağlar.
 
-### Step 3: Create Storage Bucket for Presentations
+### Adım 3: Sunumlar için Storage Bucket Oluştur
 
-1. Go to **Storage** in the sidebar
+1. Kenar çubuğunda **Storage**'a gidin
 
-2. Click **"New bucket"**
+2. **"New bucket"** butonuna tıklayın
 
-3. Name it: `presentations`
+3. Adını `presentations` yapın
 
-4. Keep it **Private** (uncheck "Public bucket")
+4. **Private** tutun ("Public bucket" işaretlemeyin)
 
-5. Click **"Create bucket"**
+5. **"Create bucket"** butonuna tıklayın
 
-6. Click on the `presentations` bucket
+6. `presentations` bucket'ına tıklayın
 
-7. Go to **Policies** tab → **"New policy"** → **"For full customization"**
+7. **Policies** sekmesine gidin → **"New policy"** → **"For full customization"**
 
-8. Paste this SQL:
+8. Bu SQL'i yapıştırın:
    ```sql
    CREATE POLICY "Users can upload presentations"
    ON storage.objects FOR INSERT
@@ -63,139 +63,153 @@ This allows students to join teams without creating accounts.
    );
    ```
 
-9. Add another policy for reading:
+9. Okuma için başka bir politika ekleyin:
    ```sql
    CREATE POLICY "Anyone can read presentations"
    ON storage.objects FOR SELECT
    USING (bucket_id = 'presentations');
    ```
 
-### Step 4: Create Your First Admin User
+### Adım 4: İlk Super Admin Kullanıcınızı Oluşturun
 
-1. In Supabase Dashboard, go to **Authentication** → **Users**
+1. Supabase Dashboard'da **Authentication** → **Users**'a gidin
 
-2. Click **"Add user"** → **"Create new user"**
+2. **"Add user"** → **"Create new user"** seçin
 
-3. Fill in:
-   - **Email**: `admin@example.com` (or your email)
-   - **Password**: Choose a secure password (min 6 characters)
+3. Doldurun:
+   - **Email**: `admin@example.com` (veya kendi email'iniz)
+   - **Password**: Güvenli bir şifre seçin (min 6 karakter)
 
-4. Click **"Create user"**
+4. **"Create user"** butonuna tıklayın
 
-5. Copy the **User UID** from the user list (long UUID string)
+5. Kullanıcı listesinden **User UID**'yi kopyalayın (uzun UUID string)
 
-6. Go back to **SQL Editor**
+6. **SQL Editor**'a geri dönün
 
-7. Run this SQL (replace with your user ID):
+7. Bu SQL'i çalıştırın (kullanıcı ID'nizi yapıştırın):
    ```sql
    UPDATE profiles
-   SET role = 'admin'
-   WHERE id = 'paste-your-user-id-here';
+   SET role = 'admin', is_super_admin = true
+   WHERE id = 'kullanici-id-buraya';
    ```
 
-### Step 5: Enable Realtime (Optional but Recommended)
+### Adım 5: Realtime'ı Etkinleştir (Önerilen)
 
-1. Go to **Database** → **Replication** in sidebar
+1. Kenar çubuğunda **Database** → **Replication**'a gidin
 
-2. Find the `supabase_realtime` publication
+2. `supabase_realtime` yayınını bulun
 
-3. Ensure these tables are checked:
-   - ☑ events
-   - ☑ teams
-   - ☑ profiles
+3. Bu tabloların işaretli olduğundan emin olun:
+   - events
+   - teams
+   - profiles
+   - canvas_contributions
+   - team_decisions
+   - mentor_assignments
+   - mentor_feedback
 
-4. If not checked, click on the publication and add them
+4. İşaretli değilse, yayına tıklayıp ekleyin
 
-## 🎉 Ready to Test!
+## Test Etmeye Hazır!
 
-Now visit: **http://localhost:3000**
+Şimdi ziyaret edin: **http://localhost:3000**
 
-### Test the Admin Flow:
+### Admin Akışını Test Edin:
 
-1. Click **"Admin / Jury Login"**
-2. Enter your admin credentials
-3. You'll be redirected to `/admin`
-4. Try creating a team:
-   - Go to **Teams** tab
-   - Fill in team name (e.g., "Team Alpha")
-   - Table number (e.g., 1)
-   - Click **"Create Team"**
-5. Click **"Show QR Code"** to see the join link
+1. **"Admin / Jüri Girişi"** butonuna tıklayın
+2. Admin kimlik bilgilerinizi girin
+3. `/admin` sayfasına yönlendirileceksiniz
+4. **Etkinlikler** sekmesine gidin:
+   - **"Etkinlik Oluştur"** butonuna tıklayın
+   - Etkinlik adı girin (ör. "Test Hackathon")
+   - Dil seçin (Türkçe veya İngilizce)
+   - **"Oluştur"** butonuna tıklayın
+5. **Takımlar** sekmesine gidin:
+   - **"Toplu Takım Oluştur"** butonuna tıklayın
+   - Ön ek girin (ör. "Takım")
+   - Takım sayısı girin (ör. 10)
+   - **"Oluştur"** butonuna tıklayın
+6. Bir takımın **"QR Kodu"** butonuna tıklayarak katılım linkini görün
 
-### Test the Student Flow:
+### Öğrenci Akışını Test Edin:
 
-1. Copy the join URL from the QR code dialog
-2. Open it in a private/incognito window (or different browser)
-3. Enter your name
-4. Click **"Join Team"**
-5. You'll see the student view
+1. QR kod diyalogundan katılım URL'sini kopyalayın
+2. Gizli pencerede (veya farklı tarayıcıda) açın
+3. Adınızı girin
+4. **"Takıma Katıl"** butonuna tıklayın
+5. Öğrenci görünümünü göreceksiniz
 
-### Test Event Phases:
+### Etkinlik Aşamalarını Test Edin:
 
-1. As admin, go to **Event Control**
-2. Click through the phases:
-   - **Start Ideation** → Teams can now edit their canvas
-   - **Lock Submissions** → Teams can't edit anymore
-   - **Start Pitching** → Go to Pitch Control, select a team, start timer
-   - **Start Voting** → Students can now vote
-   - **Complete Event** → View leaderboard
+1. Admin olarak **Etkinlik Kontrolü**'ne gidin
+2. Aşamalar arasında geçiş yapın:
+   - **Fikir Geliştirme Başlat** → Takımlar canvas'ı düzenleyebilir
+   - **Gönderimler Kilitle** → Takımlar artık düzenleyemez
+   - **Sunum Başlat** → Sunum Kontrolü'ne gidin, takım seçin, zamanlayıcı başlatın
+   - **Oylama Başlat** → Öğrenciler şimdi oy verebilir
+   - **Etkinlik Tamamla** → Sıralamayı görüntüleyin
 
-## 📱 Testing on Mobile
+## Mobil Test
 
-1. Find your computer's local IP address:
-   - Windows: `ipconfig` (look for IPv4)
-   - Mac/Linux: `ifconfig` or `ip addr`
+1. Bilgisayarınızın yerel IP adresini bulun:
+   - Windows: `ipconfig` (IPv4 arayın)
+   - Mac/Linux: `ifconfig` veya `ip addr`
 
-2. Update `.env.local`:
+2. `.env.local` dosyasını güncelleyin:
    ```env
-   NEXT_PUBLIC_APP_URL=http://YOUR-IP:3000
+   NEXT_PUBLIC_APP_URL=http://IP-ADRESINIZ:3000
    ```
 
-3. Restart the dev server (Ctrl+C, then `npm run dev`)
+3. Dev sunucusunu yeniden başlatın (Ctrl+C, sonra `npm run dev`)
 
-4. On your mobile (same WiFi), visit: `http://YOUR-IP:3000`
+4. Mobil cihazınızda (aynı WiFi): `http://IP-ADRESINIZ:3000` adresini ziyaret edin
 
-5. Scan the QR code to test the join flow!
+5. Katılım akışını test etmek için QR kodu tarayın!
 
-## ⚠️ Troubleshooting
+## Sorun Giderme
 
-### "Invalid API key" error
-- Double-check credentials in `.env.local`
-- Ensure you copied the **anon** key (not service_role)
-- Restart dev server after changing env variables
+### "Invalid API key" hatası
+- `.env.local` içindeki kimlik bilgilerini kontrol edin
+- **anon** key'i kopyaladığınızdan emin olun (service_role değil)
+- Ortam değişkenlerini değiştirdikten sonra dev sunucusunu yeniden başlatın
 
-### Database tables don't exist
-- Run the SQL schema again
-- Check for errors in the SQL Editor
-- Ensure all SQL statements completed successfully
+### Veritabanı tabloları yok
+- SQL şemasını tekrar çalıştırın
+- SQL Editor'da hata olup olmadığını kontrol edin
+- Tüm SQL ifadelerinin başarıyla tamamlandığından emin olun
 
-### Can't join team via QR code
-- Check that Anonymous auth is enabled
-- Verify the join URL has the correct domain
-- Check browser console for errors
+### QR kod ile takıma katılamıyorum
+- Anonymous auth'un etkin olduğunu kontrol edin
+- Katılım URL'sinin doğru domain'e sahip olduğunu doğrulayın
+- Tarayıcı konsolunda hata olup olmadığını kontrol edin
 
-### File upload fails
-- Ensure storage bucket `presentations` exists
-- Verify storage policies are set
-- Check file is under 50MB
+### Dosya yükleme başarısız
+- `presentations` storage bucket'ının var olduğundan emin olun
+- Storage politikalarının ayarlandığını doğrulayın
+- Dosyanın 50MB'ın altında olduğunu kontrol edin
 
-## 📚 What's Next?
+## Sırada Ne Var?
 
-- Read `README.md` for full feature list
-- Check `SETUP_GUIDE.md` for detailed explanations
-- Explore the codebase structure
-- Customize colors and branding
-- Test the full event flow with friends
+- Tam özellik listesi için `README.md` okuyun
+- Detaylı açıklamalar için `SETUP_GUIDE.md` inceleyin
+- Kod yapısını keşfedin
+- Renkleri ve markalaşmayı özelleştirin
+- Arkadaşlarla tam etkinlik akışını test edin
 
-## 🎯 Quick Reference
+## Hızlı Referans
 
-- **Home**: http://localhost:3000
-- **Admin**: http://localhost:3000/admin
-- **Team View**: http://localhost:3000/team
-- **Student View**: http://localhost:3000/student
-- **Jury View**: http://localhost:3000/jury
-- **Login**: http://localhost:3000/login
+| Sayfa | URL |
+|-------|-----|
+| Ana Sayfa | http://localhost:3000 |
+| Admin | http://localhost:3000/admin |
+| Takım Görünümü | http://localhost:3000/team |
+| Öğrenci Görünümü | http://localhost:3000/student |
+| Jüri Görünümü | http://localhost:3000/jury |
+| Mentor Görünümü | http://localhost:3000/mentor |
+| Giriş | http://localhost:3000/login |
+| Takıma Katıl | http://localhost:3000/join |
+| Tekrar Katıl | http://localhost:3000/rejoin |
 
 ---
 
-Need help? Check the troubleshooting sections in `README.md` and `SETUP_GUIDE.md`!
+Yardıma mı ihtiyacınız var? `README.md` ve `SETUP_GUIDE.md` dosyalarındaki sorun giderme bölümlerini kontrol edin!
