@@ -112,16 +112,19 @@ export default function MentorPage() {
 
       setProfile(profileData)
 
-      // Load current event
-      const { data: eventData } = await supabase
-        .from('events')
-        .select('*')
-        .order('created_at', { ascending: false })
-        .limit(1)
-        .single()
+      // Load event based on mentor's event_id
+      if (profileData.event_id) {
+        const { data: eventData } = await supabase
+          .from('events')
+          .select('*')
+          .eq('id', profileData.event_id)
+          .single()
 
-      if (eventData) {
-        setCurrentEvent(eventData)
+        if (eventData) {
+          setCurrentEvent(eventData)
+        }
+      } else {
+        setCurrentEvent(null)
       }
 
       // Get mentor assignments with team details

@@ -91,15 +91,20 @@ export default function JuryPage() {
     setIsLoading(true)
 
     try {
-      const { data: eventData } = await supabase
-        .from('events')
-        .select('*')
-        .order('created_at', { ascending: false })
-        .limit(1)
-        .single()
+      // Jüri kendi event_id'sine göre event'i yüklemeli
+      if (profile?.event_id) {
+        const { data: eventData } = await supabase
+          .from('events')
+          .select('*')
+          .eq('id', profile.event_id)
+          .single()
 
-      if (eventData) {
-        setCurrentEvent(eventData)
+        if (eventData) {
+          setCurrentEvent(eventData)
+        }
+      } else {
+        // event_id yoksa event bulunamadı
+        setCurrentEvent(null)
       }
     } catch (error) {
       console.error('Failed to load event data:', error)
