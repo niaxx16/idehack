@@ -72,16 +72,22 @@ export default function AdminPage() {
     let eventToUse = selectedEvent || currentEvent
 
     if (!eventToUse) {
-      const { data: eventData } = await supabase
+      // Don't use .single() - it throws error when no rows returned
+      const { data: eventsData } = await supabase
         .from('events')
         .select('*')
         .order('created_at', { ascending: false })
         .limit(1)
-        .single()
 
-      if (eventData) {
-        eventToUse = eventData
-        setCurrentEvent(eventData)
+      if (eventsData && eventsData.length > 0) {
+        eventToUse = eventsData[0]
+        setCurrentEvent(eventsData[0])
+      } else {
+        // No events available for this admin
+        setCurrentEvent(null)
+        setTeams([])
+        setIsLoadingData(false)
+        return
       }
     } else {
       // Refresh the event from database to get latest status
