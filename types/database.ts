@@ -17,6 +17,7 @@ export type Database = {
           current_team_id: string | null
           stream_url: string | null
           pitch_timer_end: string | null
+          created_by: string | null
           created_at: string
           updated_at: string
         }
@@ -27,6 +28,7 @@ export type Database = {
           current_team_id?: string | null
           stream_url?: string | null
           pitch_timer_end?: string | null
+          created_by?: string | null
           created_at?: string
           updated_at?: string
         }
@@ -37,6 +39,7 @@ export type Database = {
           current_team_id?: string | null
           stream_url?: string | null
           pitch_timer_end?: string | null
+          created_by?: string | null
           created_at?: string
           updated_at?: string
         }

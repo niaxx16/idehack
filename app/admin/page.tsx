@@ -171,6 +171,7 @@ export default function AdminPage() {
               currentEvent={currentEvent}
               onEventSelect={handleEventSelect}
               onUpdate={loadData}
+              adminProfile={profile}
             />
           </TabsContent>
 

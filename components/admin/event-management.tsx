@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Event } from '@/types'
+import { Event, Profile } from '@/types'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -19,9 +19,10 @@ interface EventManagementProps {
   currentEvent: Event | null
   onEventSelect: (event: Event) => void
   onUpdate: () => void
+  adminProfile?: Profile | null
 }
 
-export function EventManagement({ currentEvent, onEventSelect, onUpdate }: EventManagementProps) {
+export function EventManagement({ currentEvent, onEventSelect, onUpdate, adminProfile }: EventManagementProps) {
   const [events, setEvents] = useState<Event[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [isCreating, setIsCreating] = useState(false)
@@ -67,6 +68,9 @@ export function EventManagement({ currentEvent, onEventSelect, onUpdate }: Event
     setError(null)
 
     try {
+      // Get current user id for created_by field
+      const { data: { user } } = await supabase.auth.getUser()
+
       const { data, error } = await supabase
         .from('events')
         .insert({
@@ -75,6 +79,7 @@ export function EventManagement({ currentEvent, onEventSelect, onUpdate }: Event
           language: eventLanguage,
           status: 'WAITING',
           current_team_id: null,
+          created_by: user?.id || null,
         })
         .select()
         .single()
