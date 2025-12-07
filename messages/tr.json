@@ -192,11 +192,24 @@
       "openPresentation": "Sunumu Aç",
       "stopPitch": "Sunumu Durdur",
       "projectDetails": "Proje Detayları",
+      "projectDetailsDesc": "Takım kararları vurgulanmıştır",
       "problem": "Problem",
       "solution": "Çözüm",
+      "uniqueValue": "Benzersiz Değer",
+      "keyFeatures": "Temel Özellikler",
       "targetAudience": "Hedef Kitle",
       "revenueModel": "Gelir Modeli",
-      "notSpecified": "Belirtilmedi"
+      "notSpecified": "Belirtilmedi",
+      "teamDecision": "Takım Kararı",
+      "downloadPresentation": "Sunumu İndir",
+      "streamConfig": {
+        "title": "Yayın Ayarları",
+        "description": "Jüri üyelerinin sunumları izlemesi için canlı yayın URL'sini ayarlayın",
+        "urlLabel": "Yayın URL'si (YouTube, Zoom, vb.)",
+        "update": "Güncelle",
+        "saving": "Kaydediliyor...",
+        "configured": "Yayın URL'si yapılandırıldı ve jüri üyeleri tarafından görülebilir"
+      }
     },
     "leaderboard": {
       "title": "Sıralama",

@@ -192,11 +192,24 @@
       "openPresentation": "Open Presentation",
       "stopPitch": "Stop Pitch",
       "projectDetails": "Project Details",
+      "projectDetailsDesc": "Team decisions are highlighted",
       "problem": "Problem",
       "solution": "Solution",
+      "uniqueValue": "Unique Value",
+      "keyFeatures": "Key Features",
       "targetAudience": "Target Audience",
       "revenueModel": "Revenue Model",
-      "notSpecified": "Not specified"
+      "notSpecified": "Not specified",
+      "teamDecision": "Team Decision",
+      "downloadPresentation": "Download Presentation",
+      "streamConfig": {
+        "title": "Stream Configuration",
+        "description": "Set the live stream URL for jury members to watch presentations",
+        "urlLabel": "Stream URL (YouTube, Zoom, etc.)",
+        "update": "Update",
+        "saving": "Saving...",
+        "configured": "Stream URL is configured and visible to jury members"
+      }
     },
     "leaderboard": {
       "title": "Leaderboard",

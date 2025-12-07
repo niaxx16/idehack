@@ -419,15 +419,15 @@ export function PitchControl({ event, teams, onUpdate }: PitchControlProps) {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Video className="h-5 w-5" />
-            Stream Configuration
+            {t('streamConfig.title')}
           </CardTitle>
           <CardDescription>
-            Set the live stream URL for jury members to watch presentations
+            {t('streamConfig.description')}
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-3">
           <div className="space-y-2">
-            <Label htmlFor="streamUrl">Stream URL (YouTube, Zoom, etc.)</Label>
+            <Label htmlFor="streamUrl">{t('streamConfig.urlLabel')}</Label>
             <div className="flex gap-2">
               <Input
                 id="streamUrl"
@@ -444,10 +444,10 @@ export function PitchControl({ event, teams, onUpdate }: PitchControlProps) {
                 {isUpdatingStream ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Saving...
+                    {t('streamConfig.saving')}
                   </>
                 ) : (
-                  'Update'
+                  t('streamConfig.update')
                 )}
               </Button>
             </div>
@@ -455,7 +455,7 @@ export function PitchControl({ event, teams, onUpdate }: PitchControlProps) {
           {event?.stream_url && (
             <div className="flex items-center gap-2 p-2 bg-green-50 border border-green-200 rounded text-sm text-green-700">
               <CheckCircle className="h-4 w-4" />
-              <span>Stream URL is configured and visible to jury members</span>
+              <span>{t('streamConfig.configured')}</span>
             </div>
           )}
         </CardContent>
@@ -523,7 +523,7 @@ export function PitchControl({ event, teams, onUpdate }: PitchControlProps) {
                 {currentTeam.presentation_url && (
                   <Button onClick={downloadPresentation} variant="outline">
                     <Download className="mr-2 h-4 w-4" />
-                    Download Presentation
+                    {t('downloadPresentation')}
                   </Button>
                 )}
                 <Button
@@ -545,7 +545,7 @@ export function PitchControl({ event, teams, onUpdate }: PitchControlProps) {
           <CardHeader>
             <CardTitle>{t('projectDetails')}</CardTitle>
             <CardDescription>
-              Team decisions are highlighted
+              {t('projectDetailsDesc')}
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
@@ -559,7 +559,7 @@ export function PitchControl({ event, teams, onUpdate }: PitchControlProps) {
                 <div className="bg-green-50 border-2 border-green-400 rounded-lg p-3 mb-2">
                   <div className="flex items-center gap-2 mb-2">
                     <CheckCircle className="h-4 w-4 text-green-600" />
-                    <span className="text-xs font-semibold text-green-700">Team Decision</span>
+                    <span className="text-xs font-semibold text-green-700">{t('teamDecision')}</span>
                   </div>
                   <p className="text-sm font-medium">{teamDecisions.problem.content}</p>
                 </div>
@@ -595,7 +595,7 @@ export function PitchControl({ event, teams, onUpdate }: PitchControlProps) {
                 <div className="bg-green-50 border-2 border-green-400 rounded-lg p-3 mb-2">
                   <div className="flex items-center gap-2 mb-2">
                     <CheckCircle className="h-4 w-4 text-green-600" />
-                    <span className="text-xs font-semibold text-green-700">Team Decision</span>
+                    <span className="text-xs font-semibold text-green-700">{t('teamDecision')}</span>
                   </div>
                   <p className="text-sm font-medium">{teamDecisions.solution.content}</p>
                 </div>
@@ -625,13 +625,13 @@ export function PitchControl({ event, teams, onUpdate }: PitchControlProps) {
             <div>
               <h4 className="font-medium mb-2 flex items-center gap-2">
                 <div className="w-1 h-4 bg-purple-500 rounded"></div>
-                Unique Value
+                {t('uniqueValue')}
               </h4>
               {teamDecisions.value_proposition ? (
                 <div className="bg-green-50 border-2 border-green-400 rounded-lg p-3 mb-2">
                   <div className="flex items-center gap-2 mb-2">
                     <CheckCircle className="h-4 w-4 text-green-600" />
-                    <span className="text-xs font-semibold text-green-700">Team Decision</span>
+                    <span className="text-xs font-semibold text-green-700">{t('teamDecision')}</span>
                   </div>
                   <p className="text-sm font-medium">{teamDecisions.value_proposition.content}</p>
                 </div>
@@ -667,7 +667,7 @@ export function PitchControl({ event, teams, onUpdate }: PitchControlProps) {
                 <div className="bg-green-50 border-2 border-green-400 rounded-lg p-3 mb-2">
                   <div className="flex items-center gap-2 mb-2">
                     <CheckCircle className="h-4 w-4 text-green-600" />
-                    <span className="text-xs font-semibold text-green-700">Team Decision</span>
+                    <span className="text-xs font-semibold text-green-700">{t('teamDecision')}</span>
                   </div>
                   <p className="text-sm font-medium">{teamDecisions.target_audience.content}</p>
                 </div>
@@ -697,13 +697,13 @@ export function PitchControl({ event, teams, onUpdate }: PitchControlProps) {
             <div>
               <h4 className="font-medium mb-2 flex items-center gap-2">
                 <div className="w-1 h-4 bg-green-500 rounded"></div>
-                Key Features
+                {t('keyFeatures')}
               </h4>
               {teamDecisions.key_features ? (
                 <div className="bg-green-50 border-2 border-green-400 rounded-lg p-3 mb-2">
                   <div className="flex items-center gap-2 mb-2">
                     <CheckCircle className="h-4 w-4 text-green-600" />
-                    <span className="text-xs font-semibold text-green-700">Team Decision</span>
+                    <span className="text-xs font-semibold text-green-700">{t('teamDecision')}</span>
                   </div>
                   <p className="text-sm font-medium">{teamDecisions.key_features.content}</p>
                 </div>
@@ -739,7 +739,7 @@ export function PitchControl({ event, teams, onUpdate }: PitchControlProps) {
                 <div className="bg-green-50 border-2 border-green-400 rounded-lg p-3 mb-2">
                   <div className="flex items-center gap-2 mb-2">
                     <CheckCircle className="h-4 w-4 text-green-600" />
-                    <span className="text-xs font-semibold text-green-700">Team Decision</span>
+                    <span className="text-xs font-semibold text-green-700">{t('teamDecision')}</span>
                   </div>
                   <p className="text-sm font-medium">{teamDecisions.revenue_model.content}</p>
                 </div>
