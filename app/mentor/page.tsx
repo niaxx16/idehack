@@ -11,11 +11,14 @@ import { Loader2, LogOut, Users, FileText, MessageSquare } from 'lucide-react'
 import { TeamCanvasView } from '@/components/mentor/team-canvas-view'
 import { useLanguage } from '@/lib/i18n/language-provider'
 import { Locale } from '@/lib/i18n/config'
+import { useTranslations } from 'next-intl'
 
 export default function MentorPage() {
   const router = useRouter()
   const supabase = createClient()
   const { setLocale } = useLanguage()
+  const t = useTranslations('mentor')
+  const tCommon = useTranslations('common')
 
   const [isLoading, setIsLoading] = useState(true)
   const [currentEvent, setCurrentEvent] = useState<Event | null>(null)
@@ -171,13 +174,13 @@ export default function MentorPage() {
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
-              Mentor Dashboard
+              {t('dashboard')}
             </h1>
-            <p className="text-muted-foreground">Welcome, {profile.full_name}</p>
+            <p className="text-muted-foreground">{t('welcome')}, {profile.full_name}</p>
           </div>
           <Button variant="outline" onClick={handleSignOut}>
             <LogOut className="mr-2 h-4 w-4" />
-            Sign Out
+            {tCommon('signOut')}
           </Button>
         </div>
 
@@ -185,12 +188,12 @@ export default function MentorPage() {
         {currentEvent && (
           <Card className="border-purple-200 bg-purple-50/50">
             <CardHeader>
-              <CardTitle className="text-purple-900">Current Event</CardTitle>
+              <CardTitle className="text-purple-900">{t('currentEvent')}</CardTitle>
               <CardDescription>{currentEvent.name}</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="flex items-center gap-2">
-                <span className="text-sm font-medium">Phase:</span>
+                <span className="text-sm font-medium">{t('phase')}:</span>
                 <span className="text-sm bg-purple-100 text-purple-700 px-2 py-1 rounded">
                   {currentEvent.status}
                 </span>
@@ -202,16 +205,16 @@ export default function MentorPage() {
         {/* Mentor Role Guide */}
         <Card className="border-amber-200 bg-amber-50/50">
           <CardHeader className="pb-3">
-            <CardTitle className="text-amber-900">Mentor Role</CardTitle>
+            <CardTitle className="text-amber-900">{t('mentorRole')}</CardTitle>
           </CardHeader>
           <CardContent className="space-y-2">
             <p className="text-sm text-amber-800 font-medium">
-              A mentor is not someone who gives solutions, but a guide who deepens the team's thinking process.
+              {t('mentorRoleDesc')}
             </p>
             <ul className="text-sm text-amber-700 space-y-1 list-disc list-inside">
-              <li>Ask questions throughout the process</li>
-              <li>Help teams make their ideas clearer, more applicable, and more impactful</li>
-              <li>Stay neutral, guide without making decisions for them</li>
+              <li>{t('mentorTips.askQuestions')}</li>
+              <li>{t('mentorTips.helpTeams')}</li>
+              <li>{t('mentorTips.stayNeutral')}</li>
             </ul>
           </CardContent>
         </Card>
@@ -220,26 +223,26 @@ export default function MentorPage() {
         {selectedTeam ? (
           <div className="space-y-4">
             <Button variant="outline" onClick={() => setSelectedTeam(null)}>
-              ← Back to Teams
+              {t('backToTeams')}
             </Button>
             <TeamCanvasView team={selectedTeam} onClose={() => setSelectedTeam(null)} />
           </div>
         ) : (
           <Card>
             <CardHeader>
-              <CardTitle>Your Assigned Teams ({assignments.length})</CardTitle>
+              <CardTitle>{t('assignedTeams')} ({assignments.length})</CardTitle>
               <CardDescription>
                 {currentEvent?.status === 'IDEATION'
-                  ? 'Guide teams with questions to help them develop their ideas'
-                  : 'View your assigned teams'}
+                  ? t('guideTeams')
+                  : t('viewTeams')}
               </CardDescription>
             </CardHeader>
             <CardContent>
               {assignments.length === 0 ? (
                 <div className="text-center py-12 text-muted-foreground">
                   <Users className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                  <p>No teams assigned yet.</p>
-                  <p className="text-sm mt-2">Contact the admin to get team assignments.</p>
+                  <p>{t('noTeams')}</p>
+                  <p className="text-sm mt-2">{t('contactAdmin')}</p>
                 </div>
               ) : (
                 <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
@@ -265,24 +268,24 @@ export default function MentorPage() {
                       >
                         <CardHeader className="pb-3">
                           <CardTitle className="text-lg">{team.name}</CardTitle>
-                          <CardDescription>Table {team.table_number}</CardDescription>
+                          <CardDescription>{t('table')} {team.table_number}</CardDescription>
                         </CardHeader>
                         <CardContent className="space-y-3">
                           <div className="flex items-center gap-2 text-sm">
                             <Users className="h-4 w-4 text-muted-foreground" />
-                            <span>{members.length} member{members.length !== 1 ? 's' : ''}</span>
+                            <span>{members.length} {members.length !== 1 ? t('members') : t('member')}</span>
                           </div>
 
                           {hasCanvas && (
                             <div className="flex items-center gap-2 text-sm text-green-600">
                               <FileText className="h-4 w-4" />
-                              <span>Canvas in progress</span>
+                              <span>{t('canvasInProgress')}</span>
                             </div>
                           )}
 
                           <Button className="w-full" size="sm">
                             <MessageSquare className="mr-2 h-4 w-4" />
-                            View & Give Feedback
+                            {t('viewAndFeedback')}
                           </Button>
                         </CardContent>
                       </Card>

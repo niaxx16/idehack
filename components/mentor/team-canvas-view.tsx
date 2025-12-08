@@ -9,6 +9,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import { createClient } from '@/lib/supabase/client'
 import { AlertCircle, Lightbulb, Target, Star, Zap, DollarSign, MessageSquare, Send, Loader2, Users, Crown, UserCircle, CheckCircle } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
+import { useTranslations } from 'next-intl'
 
 interface TeamCanvasViewProps {
   team: Team
@@ -19,8 +20,8 @@ type CanvasSection = 'problem' | 'solution' | 'value_proposition' | 'target_audi
 
 interface SectionConfig {
   key: CanvasSection
-  title: string
-  description: string
+  titleKey: string
+  descKey: string
   icon: React.ReactNode
   color: string
   borderColor: string
@@ -31,8 +32,8 @@ interface SectionConfig {
 const sectionConfigs: SectionConfig[] = [
   {
     key: 'problem',
-    title: 'Problem',
-    description: 'What problem are they solving?',
+    titleKey: 'problem',
+    descKey: 'problemDesc',
     icon: <AlertCircle className="h-5 w-5 text-red-600" />,
     color: 'text-red-600',
     borderColor: 'border-red-400',
@@ -41,8 +42,8 @@ const sectionConfigs: SectionConfig[] = [
   },
   {
     key: 'solution',
-    title: 'Solution',
-    description: 'How does it work?',
+    titleKey: 'solution',
+    descKey: 'solutionDesc',
     icon: <Lightbulb className="h-5 w-5 text-yellow-600" />,
     color: 'text-yellow-600',
     borderColor: 'border-yellow-400',
@@ -51,8 +52,8 @@ const sectionConfigs: SectionConfig[] = [
   },
   {
     key: 'value_proposition',
-    title: 'Unique Value',
-    description: 'Why choose them?',
+    titleKey: 'uniqueValue',
+    descKey: 'uniqueValueDesc',
     icon: <Star className="h-5 w-5 text-purple-600" />,
     color: 'text-purple-600',
     borderColor: 'border-purple-400',
@@ -61,8 +62,8 @@ const sectionConfigs: SectionConfig[] = [
   },
   {
     key: 'target_audience',
-    title: 'Target Customers',
-    description: 'Who are they?',
+    titleKey: 'targetCustomers',
+    descKey: 'targetCustomersDesc',
     icon: <Target className="h-5 w-5 text-blue-600" />,
     color: 'text-blue-600',
     borderColor: 'border-blue-400',
@@ -71,8 +72,8 @@ const sectionConfigs: SectionConfig[] = [
   },
   {
     key: 'key_features',
-    title: 'Key Features',
-    description: 'Top 3 features',
+    titleKey: 'keyFeatures',
+    descKey: 'keyFeaturesDesc',
     icon: <Zap className="h-5 w-5 text-green-600" />,
     color: 'text-green-600',
     borderColor: 'border-green-400',
@@ -81,8 +82,8 @@ const sectionConfigs: SectionConfig[] = [
   },
   {
     key: 'revenue_model',
-    title: 'Revenue Model',
-    description: 'How to monetize?',
+    titleKey: 'revenueModel',
+    descKey: 'revenueModelDesc',
     icon: <DollarSign className="h-5 w-5 text-orange-600" />,
     color: 'text-orange-600',
     borderColor: 'border-orange-400',
@@ -93,6 +94,8 @@ const sectionConfigs: SectionConfig[] = [
 
 export function TeamCanvasView({ team, onClose }: TeamCanvasViewProps) {
   const supabase = createClient()
+  const t = useTranslations('mentor')
+  const tCanvas = useTranslations('mentor.canvas')
   const [feedbacks, setFeedbacks] = useState<MentorFeedbackWithMentor[]>([])
   const [isLoadingFeedback, setIsLoadingFeedback] = useState(true)
   const [selectedSection, setSelectedSection] = useState<CanvasSection | null>(null)
@@ -328,17 +331,17 @@ export function TeamCanvasView({ team, onClose }: TeamCanvasViewProps) {
           <div className="flex items-start justify-between">
             <div>
               <CardTitle className="text-2xl text-purple-900">{team.name}</CardTitle>
-              <CardDescription>Table {team.table_number}</CardDescription>
+              <CardDescription>{t('table')} {team.table_number}</CardDescription>
             </div>
             <Badge variant="secondary" className="flex items-center gap-1">
               <Users className="h-3 w-3" />
-              {members.length} member{members.length !== 1 ? 's' : ''}
+              {members.length} {members.length !== 1 ? t('members') : t('member')}
             </Badge>
           </div>
         </CardHeader>
         <CardContent>
           <div className="space-y-2">
-            <p className="text-sm font-medium text-purple-900">Team Members:</p>
+            <p className="text-sm font-medium text-purple-900">{t('teamMembers')}:</p>
             <div className="flex flex-wrap gap-2">
               {members.map((member: any, index: number) => (
                 <Badge key={index} variant="outline" className="bg-white">
@@ -367,25 +370,25 @@ export function TeamCanvasView({ team, onClose }: TeamCanvasViewProps) {
                   <div className="flex items-center gap-2">
                     <div className={`p-2 ${config.iconBgColor} rounded-lg`}>{config.icon}</div>
                     <div>
-                      <CardTitle className="text-lg">{config.title}</CardTitle>
-                      <CardDescription className="text-xs">{config.description}</CardDescription>
+                      <CardTitle className="text-lg">{tCanvas(config.titleKey)}</CardTitle>
+                      <CardDescription className="text-xs">{tCanvas(config.descKey)}</CardDescription>
                     </div>
                   </div>
                   <div className="flex items-center gap-2">
                     {teamDecision && (
                       <Badge className="text-xs bg-green-100 text-green-700 border-green-300">
                         <CheckCircle className="h-3 w-3 mr-1" />
-                        Decision
+                        {t('decision')}
                       </Badge>
                     )}
                     {sectionContributions.length > 0 && (
                       <Badge variant="outline" className="text-xs">
-                        {sectionContributions.length} ideas
+                        {sectionContributions.length} {t('ideas')}
                       </Badge>
                     )}
                     {sectionFeedback.length > 0 && (
                       <Badge variant="secondary" className="text-xs">
-                        {sectionFeedback.length} feedback
+                        {sectionFeedback.length} {t('feedback')}
                       </Badge>
                     )}
                   </div>
@@ -397,11 +400,11 @@ export function TeamCanvasView({ team, onClose }: TeamCanvasViewProps) {
                   <div className="p-3 bg-green-50 border-2 border-green-400 rounded-lg">
                     <div className="flex items-center gap-2 mb-2">
                       <CheckCircle className="h-4 w-4 text-green-600" />
-                      <span className="text-sm font-semibold text-green-800">Team Decision</span>
+                      <span className="text-sm font-semibold text-green-800">{t('teamDecision')}</span>
                     </div>
                     <p className="text-sm text-green-900 whitespace-pre-wrap">{teamDecision.content}</p>
                     <p className="text-xs text-green-600 mt-2">
-                      Updated: {new Date(teamDecision.updated_at).toLocaleString('en-US', {
+                      {t('updated')}: {new Date(teamDecision.updated_at).toLocaleString('tr-TR', {
                         month: 'short',
                         day: 'numeric',
                         hour: '2-digit',
@@ -418,7 +421,7 @@ export function TeamCanvasView({ team, onClose }: TeamCanvasViewProps) {
                       <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
                     </div>
                   ) : sectionContributions.length === 0 ? (
-                    <p className="text-sm text-muted-foreground italic">No contributions yet</p>
+                    <p className="text-sm text-muted-foreground italic">{t('noContributions')}</p>
                   ) : (
                     sectionContributions.map((contrib) => (
                       <div
@@ -438,7 +441,7 @@ export function TeamCanvasView({ team, onClose }: TeamCanvasViewProps) {
                                 <p className="text-[10px] text-gray-500">{contrib.member_role}</p>
                               </div>
                               <p className="text-[10px] text-gray-400 flex-shrink-0">
-                                {new Date(contrib.created_at).toLocaleTimeString('en-US', {
+                                {new Date(contrib.created_at).toLocaleTimeString('tr-TR', {
                                   hour: '2-digit',
                                   minute: '2-digit',
                                 })}
@@ -469,24 +472,24 @@ export function TeamCanvasView({ team, onClose }: TeamCanvasViewProps) {
                       onClick={() => setSelectedSection(config.key)}
                     >
                       <MessageSquare className="mr-2 h-4 w-4" />
-                      Give Feedback ({sectionFeedback.length})
+                      {t('giveFeedback')} ({sectionFeedback.length})
                     </Button>
                   </DialogTrigger>
                   <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
                     <DialogHeader>
-                      <DialogTitle>Feedback: {config.title}</DialogTitle>
+                      <DialogTitle>{t('feedbackTitle')}: {tCanvas(config.titleKey)}</DialogTitle>
                       <DialogDescription>
-                        Provide guidance through questions to help the team improve this section
+                        {t('feedbackDesc')}
                       </DialogDescription>
                     </DialogHeader>
 
                     <div className="space-y-4">
                       {/* Team's contributions */}
                       <div>
-                        <p className="text-sm font-medium mb-2">Team Ideas ({sectionContributions.length}):</p>
+                        <p className="text-sm font-medium mb-2">{t('teamIdeas')} ({sectionContributions.length}):</p>
                         <div className={`p-3 ${config.bgColor} rounded-md max-h-48 overflow-y-auto space-y-2`}>
                           {sectionContributions.length === 0 ? (
-                            <p className="text-sm text-muted-foreground italic">No contributions yet</p>
+                            <p className="text-sm text-muted-foreground italic">{t('noContributions')}</p>
                           ) : (
                             sectionContributions.map((contrib) => (
                               <div
@@ -515,7 +518,7 @@ export function TeamCanvasView({ team, onClose }: TeamCanvasViewProps) {
                       {/* Previous feedback */}
                       {sectionFeedback.length > 0 && (
                         <div>
-                          <p className="text-sm font-medium mb-2">Previous Feedback:</p>
+                          <p className="text-sm font-medium mb-2">{t('previousFeedback')}:</p>
                           <div className="space-y-2 max-h-48 overflow-y-auto">
                             {sectionFeedback.map((fb) => (
                               <div
@@ -541,7 +544,7 @@ export function TeamCanvasView({ team, onClose }: TeamCanvasViewProps) {
                                 </div>
                                 <p className="text-sm whitespace-pre-wrap">{fb.feedback_text}</p>
                                 {fb.is_read && (
-                                  <p className="text-xs text-green-600 mt-1">✓ Read by team</p>
+                                  <p className="text-xs text-green-600 mt-1">✓ {t('readByTeam')}</p>
                                 )}
                               </div>
                             ))}
@@ -551,9 +554,9 @@ export function TeamCanvasView({ team, onClose }: TeamCanvasViewProps) {
 
                       {/* New feedback */}
                       <div>
-                        <p className="text-sm font-medium mb-2">Add New Feedback:</p>
+                        <p className="text-sm font-medium mb-2">{t('addNewFeedback')}:</p>
                         <Textarea
-                          placeholder="Ask guiding questions like: 'Have you considered...?', 'What about...?', 'How would you handle...?'"
+                          placeholder={t('feedbackPlaceholder')}
                           value={feedbackText}
                           onChange={(e) => setFeedbackText(e.target.value)}
                           rows={4}
@@ -572,12 +575,12 @@ export function TeamCanvasView({ team, onClose }: TeamCanvasViewProps) {
                         {isSubmitting ? (
                           <>
                             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                            Submitting...
+                            {t('submitting')}
                           </>
                         ) : (
                           <>
                             <Send className="mr-2 h-4 w-4" />
-                            Submit Feedback
+                            {t('submitFeedback')}
                           </>
                         )}
                       </Button>
@@ -593,8 +596,8 @@ export function TeamCanvasView({ team, onClose }: TeamCanvasViewProps) {
       {/* Feedback Summary */}
       <Card>
         <CardHeader>
-          <CardTitle>All Feedback</CardTitle>
-          <CardDescription>Complete feedback history for this team</CardDescription>
+          <CardTitle>{t('allFeedback')}</CardTitle>
+          <CardDescription>{t('allFeedbackDesc')}</CardDescription>
         </CardHeader>
         <CardContent>
           {isLoadingFeedback ? (
@@ -604,7 +607,7 @@ export function TeamCanvasView({ team, onClose }: TeamCanvasViewProps) {
           ) : feedbacks.length === 0 ? (
             <div className="text-center py-8 text-muted-foreground">
               <MessageSquare className="h-12 w-12 mx-auto mb-4 opacity-50" />
-              <p>No feedback yet. Start guiding the team!</p>
+              <p>{t('noFeedbackYet')}</p>
             </div>
           ) : (
             <div className="space-y-3">
@@ -623,9 +626,9 @@ export function TeamCanvasView({ team, onClose }: TeamCanvasViewProps) {
                       <div className="flex items-center gap-2">
                         {config && <div className={`p-1.5 ${config.iconBgColor} rounded`}>{config.icon}</div>}
                         <div>
-                          <p className="text-sm font-medium">{config?.title}</p>
+                          <p className="text-sm font-medium">{config ? tCanvas(config.titleKey) : ''}</p>
                           <p className="text-xs text-muted-foreground">
-                            by {fb.mentor?.full_name || 'Mentor'}
+                            {fb.mentor?.full_name || 'Mentor'}
                           </p>
                         </div>
                       </div>
@@ -639,7 +642,7 @@ export function TeamCanvasView({ team, onClose }: TeamCanvasViewProps) {
                           })}
                         </p>
                         {fb.is_read && (
-                          <p className="text-xs text-green-600 mt-1">✓ Read</p>
+                          <p className="text-xs text-green-600 mt-1">✓ {t('read')}</p>
                         )}
                       </div>
                     </div>
