@@ -12,11 +12,14 @@ import { Loader2 } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useLanguage } from '@/lib/i18n/language-provider'
 import { Locale } from '@/lib/i18n/config'
+import { useTranslations } from 'next-intl'
 
 export default function JuryPage() {
   const router = useRouter()
   const { profile, signOut, isLoading: authLoading } = useAuth()
   const { setLocale } = useLanguage()
+  const t = useTranslations('jury')
+  const tCommon = useTranslations('common')
   const [currentEvent, setCurrentEvent] = useState<Event | null>(null)
   const [currentTeam, setCurrentTeam] = useState<Team | null>(null)
   const [isLoading, setIsLoading] = useState(true)
@@ -149,13 +152,13 @@ export default function JuryPage() {
         <div className="bg-white border-b p-4">
           <div className="max-w-screen-2xl mx-auto flex items-center justify-between">
             <div>
-              <h1 className="text-2xl font-bold">Jury Dashboard</h1>
+              <h1 className="text-2xl font-bold">{t('dashboard')}</h1>
               <p className="text-sm text-muted-foreground">
-                {currentEvent?.name || 'No event selected'}
+                {currentEvent?.name || t('noActiveEvent')}
               </p>
             </div>
             <Button variant="outline" size="sm" onClick={handleSignOut}>
-              Sign Out
+              {tCommon('signOut')}
             </Button>
           </div>
         </div>
@@ -183,22 +186,21 @@ export default function JuryPage() {
             <div className="h-full flex items-center justify-center p-4">
               <Card className="max-w-md w-full">
                 <CardHeader>
-                  <CardTitle>No Active Pitch</CardTitle>
+                  <CardTitle>{t('noActivePitch')}</CardTitle>
                   <CardDescription>
                     {currentEvent?.status === 'PITCHING'
-                      ? 'The admin needs to select a team and start their pitch timer in the Pitch Control panel.'
+                      ? t('waitingForPitch')
                       : currentEvent
-                      ? 'Waiting for the pitching phase to begin...'
-                      : 'No active event found'}
+                      ? t('waitingForPhase')
+                      : t('noActiveEvent')}
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
                   {currentEvent?.status === 'PITCHING' && (
                     <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 text-sm text-blue-800">
-                      <p className="font-medium mb-1">Status: PITCHING phase active</p>
+                      <p className="font-medium mb-1">{t('pitchingPhaseActive')}</p>
                       <p className="text-xs">
-                        The event is in pitching phase but no team is currently presenting.
-                        The admin can select a team from the Pitch Control panel to begin.
+                        {t('pitchingPhaseInfo')}
                       </p>
                     </div>
                   )}

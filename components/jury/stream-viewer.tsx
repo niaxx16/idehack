@@ -7,6 +7,27 @@ import { Badge } from '@/components/ui/badge'
 import { ExternalLink, Video, Crown, UserCircle, CheckCircle } from 'lucide-react'
 import { useState, useEffect } from 'react'
 import { createClient } from '@/lib/supabase/client'
+import { useTranslations } from 'next-intl'
+
+// Canvas section translations mapping
+const SECTION_LABELS = {
+  problem: 'problemStatement',
+  solution: 'solution',
+  value_proposition: 'uniqueValue',
+  target_audience: 'targetCustomers',
+  key_features: 'keyFeatures',
+  revenue_model: 'revenueModel',
+} as const
+
+// Section colors mapping
+const SECTION_COLORS = {
+  problem: { bg: 'bg-red-50', border: 'border-red-200', indicator: 'bg-red-500' },
+  solution: { bg: 'bg-yellow-50', border: 'border-yellow-200', indicator: 'bg-yellow-500' },
+  value_proposition: { bg: 'bg-purple-50', border: 'border-purple-200', indicator: 'bg-purple-500' },
+  target_audience: { bg: 'bg-blue-50', border: 'border-blue-200', indicator: 'bg-blue-500' },
+  key_features: { bg: 'bg-green-50', border: 'border-green-200', indicator: 'bg-green-500' },
+  revenue_model: { bg: 'bg-emerald-50', border: 'border-emerald-200', indicator: 'bg-emerald-500' },
+} as const
 
 interface StreamViewerProps {
   event: Event
@@ -14,6 +35,7 @@ interface StreamViewerProps {
 }
 
 export function StreamViewer({ event, team }: StreamViewerProps) {
+  const t = useTranslations('jury.streamViewer')
   const [contributions, setContributions] = useState<Record<CanvasSection, CanvasContributionWithUser[]>>({
     problem: [],
     solution: [],
@@ -136,15 +158,62 @@ export function StreamViewer({ event, team }: StreamViewerProps) {
     return url
   }
 
+  // Render a canvas section
+  const renderSection = (section: CanvasSection) => {
+    const colors = SECTION_COLORS[section]
+    const decision = teamDecisions[section]
+    const sectionContributions = contributions[section]
+    const labelKey = SECTION_LABELS[section]
+
+    return (
+      <div key={section}>
+        <h4 className="font-semibold mb-2 text-sm flex items-center gap-2">
+          <div className={`w-1 h-4 ${colors.indicator} rounded`}></div>
+          {t(labelKey)}
+        </h4>
+        {decision ? (
+          <div className="bg-green-50 border-2 border-green-400 rounded-lg p-2">
+            <div className="flex items-center gap-1 mb-1">
+              <CheckCircle className="h-3 w-3 text-green-600" />
+              <span className="text-xs font-semibold text-green-700">{t('teamDecision')}</span>
+            </div>
+            <p className="text-sm font-medium">{decision.content}</p>
+          </div>
+        ) : sectionContributions.length > 0 ? (
+          <div className="space-y-2">
+            {sectionContributions.map((contrib) => (
+              <div key={contrib.id} className={`${colors.bg} border ${colors.border} rounded p-2`}>
+                <div className="flex items-center gap-1 mb-1">
+                  {contrib.is_captain ? (
+                    <Crown className="h-3 w-3 text-yellow-600" />
+                  ) : (
+                    <UserCircle className="h-3 w-3 text-gray-400" />
+                  )}
+                  <span className="text-xs font-medium">{contrib.member_name}</span>
+                  <span className="text-xs text-muted-foreground">({contrib.member_role})</span>
+                </div>
+                <p className="text-sm">{contrib.content}</p>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <p className="text-sm text-muted-foreground italic">{t('noIdeasYet')}</p>
+        )}
+      </div>
+    )
+  }
+
+  const sections: CanvasSection[] = ['problem', 'solution', 'value_proposition', 'target_audience', 'key_features', 'revenue_model']
+
   return (
     <div className="space-y-4">
       <Card>
         <CardHeader>
           <div className="flex items-start justify-between">
             <div>
-              <Badge className="mb-2">Now Pitching</Badge>
+              <Badge className="mb-2">{t('nowPitching')}</Badge>
               <CardTitle className="text-2xl">{team.name}</CardTitle>
-              <CardDescription>Table {team.table_number}</CardDescription>
+              <CardDescription>{t('table')} {team.table_number}</CardDescription>
             </div>
           </div>
         </CardHeader>
@@ -165,7 +234,7 @@ export function StreamViewer({ event, team }: StreamViewerProps) {
                 className="w-full"
               >
                 <ExternalLink className="mr-2 h-4 w-4" />
-                Open in New Tab
+                {t('openInNewTab')}
               </Button>
             </div>
           ) : (
@@ -173,7 +242,7 @@ export function StreamViewer({ event, team }: StreamViewerProps) {
               <div className="text-center space-y-3">
                 <Video className="h-12 w-12 mx-auto text-muted-foreground" />
                 <p className="text-sm text-muted-foreground">
-                  No stream URL configured
+                  {t('noStreamUrl')}
                 </p>
               </div>
             </div>
@@ -183,225 +252,11 @@ export function StreamViewer({ event, team }: StreamViewerProps) {
 
       <Card>
         <CardHeader>
-          <CardTitle>Project Canvas</CardTitle>
-          <CardDescription>Team decisions are highlighted</CardDescription>
+          <CardTitle>{t('projectCanvas')}</CardTitle>
+          <CardDescription>{t('teamDecisionsHighlighted')}</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
-          {/* Problem */}
-          <div>
-            <h4 className="font-semibold mb-2 text-sm flex items-center gap-2">
-              <div className="w-1 h-4 bg-red-500 rounded"></div>
-              Problem Statement
-            </h4>
-            {teamDecisions.problem ? (
-              <div className="bg-green-50 border-2 border-green-400 rounded-lg p-2">
-                <div className="flex items-center gap-1 mb-1">
-                  <CheckCircle className="h-3 w-3 text-green-600" />
-                  <span className="text-xs font-semibold text-green-700">Team Decision</span>
-                </div>
-                <p className="text-sm font-medium">{teamDecisions.problem.content}</p>
-              </div>
-            ) : contributions.problem.length > 0 ? (
-              <div className="space-y-2">
-                {contributions.problem.map((contrib) => (
-                  <div key={contrib.id} className="bg-red-50 border border-red-200 rounded p-2">
-                    <div className="flex items-center gap-1 mb-1">
-                      {contrib.is_captain ? (
-                        <Crown className="h-3 w-3 text-yellow-600" />
-                      ) : (
-                        <UserCircle className="h-3 w-3 text-gray-400" />
-                      )}
-                      <span className="text-xs font-medium">{contrib.member_name}</span>
-                      <span className="text-xs text-muted-foreground">({contrib.member_role})</span>
-                    </div>
-                    <p className="text-sm">{contrib.content}</p>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <p className="text-sm text-muted-foreground italic">No ideas yet</p>
-            )}
-          </div>
-
-          {/* Solution */}
-          <div>
-            <h4 className="font-semibold mb-2 text-sm flex items-center gap-2">
-              <div className="w-1 h-4 bg-yellow-500 rounded"></div>
-              Solution
-            </h4>
-            {teamDecisions.solution ? (
-              <div className="bg-green-50 border-2 border-green-400 rounded-lg p-2">
-                <div className="flex items-center gap-1 mb-1">
-                  <CheckCircle className="h-3 w-3 text-green-600" />
-                  <span className="text-xs font-semibold text-green-700">Team Decision</span>
-                </div>
-                <p className="text-sm font-medium">{teamDecisions.solution.content}</p>
-              </div>
-            ) : contributions.solution.length > 0 ? (
-              <div className="space-y-2">
-                {contributions.solution.map((contrib) => (
-                  <div key={contrib.id} className="bg-yellow-50 border border-yellow-200 rounded p-2">
-                    <div className="flex items-center gap-1 mb-1">
-                      {contrib.is_captain ? (
-                        <Crown className="h-3 w-3 text-yellow-600" />
-                      ) : (
-                        <UserCircle className="h-3 w-3 text-gray-400" />
-                      )}
-                      <span className="text-xs font-medium">{contrib.member_name}</span>
-                      <span className="text-xs text-muted-foreground">({contrib.member_role})</span>
-                    </div>
-                    <p className="text-sm">{contrib.content}</p>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <p className="text-sm text-muted-foreground italic">No ideas yet</p>
-            )}
-          </div>
-
-          {/* Value Proposition */}
-          <div>
-            <h4 className="font-semibold mb-2 text-sm flex items-center gap-2">
-              <div className="w-1 h-4 bg-purple-500 rounded"></div>
-              Unique Value
-            </h4>
-            {teamDecisions.value_proposition ? (
-              <div className="bg-green-50 border-2 border-green-400 rounded-lg p-2">
-                <div className="flex items-center gap-1 mb-1">
-                  <CheckCircle className="h-3 w-3 text-green-600" />
-                  <span className="text-xs font-semibold text-green-700">Team Decision</span>
-                </div>
-                <p className="text-sm font-medium">{teamDecisions.value_proposition.content}</p>
-              </div>
-            ) : contributions.value_proposition.length > 0 ? (
-              <div className="space-y-2">
-                {contributions.value_proposition.map((contrib) => (
-                  <div key={contrib.id} className="bg-purple-50 border border-purple-200 rounded p-2">
-                    <div className="flex items-center gap-1 mb-1">
-                      {contrib.is_captain ? (
-                        <Crown className="h-3 w-3 text-yellow-600" />
-                      ) : (
-                        <UserCircle className="h-3 w-3 text-gray-400" />
-                      )}
-                      <span className="text-xs font-medium">{contrib.member_name}</span>
-                      <span className="text-xs text-muted-foreground">({contrib.member_role})</span>
-                    </div>
-                    <p className="text-sm">{contrib.content}</p>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <p className="text-sm text-muted-foreground italic">No ideas yet</p>
-            )}
-          </div>
-
-          {/* Target Audience */}
-          <div>
-            <h4 className="font-semibold mb-2 text-sm flex items-center gap-2">
-              <div className="w-1 h-4 bg-blue-500 rounded"></div>
-              Target Customers
-            </h4>
-            {teamDecisions.target_audience ? (
-              <div className="bg-green-50 border-2 border-green-400 rounded-lg p-2">
-                <div className="flex items-center gap-1 mb-1">
-                  <CheckCircle className="h-3 w-3 text-green-600" />
-                  <span className="text-xs font-semibold text-green-700">Team Decision</span>
-                </div>
-                <p className="text-sm font-medium">{teamDecisions.target_audience.content}</p>
-              </div>
-            ) : contributions.target_audience.length > 0 ? (
-              <div className="space-y-2">
-                {contributions.target_audience.map((contrib) => (
-                  <div key={contrib.id} className="bg-blue-50 border border-blue-200 rounded p-2">
-                    <div className="flex items-center gap-1 mb-1">
-                      {contrib.is_captain ? (
-                        <Crown className="h-3 w-3 text-yellow-600" />
-                      ) : (
-                        <UserCircle className="h-3 w-3 text-gray-400" />
-                      )}
-                      <span className="text-xs font-medium">{contrib.member_name}</span>
-                      <span className="text-xs text-muted-foreground">({contrib.member_role})</span>
-                    </div>
-                    <p className="text-sm">{contrib.content}</p>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <p className="text-sm text-muted-foreground italic">No ideas yet</p>
-            )}
-          </div>
-
-          {/* Key Features */}
-          <div>
-            <h4 className="font-semibold mb-2 text-sm flex items-center gap-2">
-              <div className="w-1 h-4 bg-green-500 rounded"></div>
-              Key Features
-            </h4>
-            {teamDecisions.key_features ? (
-              <div className="bg-green-50 border-2 border-green-400 rounded-lg p-2">
-                <div className="flex items-center gap-1 mb-1">
-                  <CheckCircle className="h-3 w-3 text-green-600" />
-                  <span className="text-xs font-semibold text-green-700">Team Decision</span>
-                </div>
-                <p className="text-sm font-medium">{teamDecisions.key_features.content}</p>
-              </div>
-            ) : contributions.key_features.length > 0 ? (
-              <div className="space-y-2">
-                {contributions.key_features.map((contrib) => (
-                  <div key={contrib.id} className="bg-green-50 border border-green-200 rounded p-2">
-                    <div className="flex items-center gap-1 mb-1">
-                      {contrib.is_captain ? (
-                        <Crown className="h-3 w-3 text-yellow-600" />
-                      ) : (
-                        <UserCircle className="h-3 w-3 text-gray-400" />
-                      )}
-                      <span className="text-xs font-medium">{contrib.member_name}</span>
-                      <span className="text-xs text-muted-foreground">({contrib.member_role})</span>
-                    </div>
-                    <p className="text-sm">{contrib.content}</p>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <p className="text-sm text-muted-foreground italic">No ideas yet</p>
-            )}
-          </div>
-
-          {/* Revenue Model */}
-          <div>
-            <h4 className="font-semibold mb-2 text-sm flex items-center gap-2">
-              <div className="w-1 h-4 bg-emerald-500 rounded"></div>
-              Revenue Model
-            </h4>
-            {teamDecisions.revenue_model ? (
-              <div className="bg-green-50 border-2 border-green-400 rounded-lg p-2">
-                <div className="flex items-center gap-1 mb-1">
-                  <CheckCircle className="h-3 w-3 text-green-600" />
-                  <span className="text-xs font-semibold text-green-700">Team Decision</span>
-                </div>
-                <p className="text-sm font-medium">{teamDecisions.revenue_model.content}</p>
-              </div>
-            ) : contributions.revenue_model.length > 0 ? (
-              <div className="space-y-2">
-                {contributions.revenue_model.map((contrib) => (
-                  <div key={contrib.id} className="bg-emerald-50 border border-emerald-200 rounded p-2">
-                    <div className="flex items-center gap-1 mb-1">
-                      {contrib.is_captain ? (
-                        <Crown className="h-3 w-3 text-yellow-600" />
-                      ) : (
-                        <UserCircle className="h-3 w-3 text-gray-400" />
-                      )}
-                      <span className="text-xs font-medium">{contrib.member_name}</span>
-                      <span className="text-xs text-muted-foreground">({contrib.member_role})</span>
-                    </div>
-                    <p className="text-sm">{contrib.content}</p>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <p className="text-sm text-muted-foreground italic">No ideas yet</p>
-            )}
-          </div>
+          {sections.map(renderSection)}
 
           {team.presentation_url && (
             <Button
@@ -410,7 +265,7 @@ export function StreamViewer({ event, team }: StreamViewerProps) {
               className="w-full mt-4"
             >
               <ExternalLink className="mr-2 h-4 w-4" />
-              View Presentation
+              {t('viewPresentation')}
             </Button>
           )}
         </CardContent>

@@ -9,6 +9,7 @@ import { Textarea } from '@/components/ui/textarea'
 import { Slider } from '@/components/ui/slider'
 import { createClient } from '@/lib/supabase/client'
 import { Loader2, Save, CheckCircle } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 
 interface ScoringFormProps {
   event: Event
@@ -17,14 +18,10 @@ interface ScoringFormProps {
   onScoreSubmitted: () => void
 }
 
-const SCORING_CRITERIA = [
-  { key: 'innovation', label: 'Innovation', description: 'Originality and creativity of the solution' },
-  { key: 'presentation', label: 'Presentation', description: 'Quality of pitch and communication' },
-  { key: 'feasibility', label: 'Feasibility', description: 'Practicality and implementation potential' },
-  { key: 'impact', label: 'Impact', description: 'Potential social or business impact' },
-]
+const SCORING_CRITERIA_KEYS = ['innovation', 'presentation', 'feasibility', 'impact'] as const
 
 export function ScoringForm({ event, team, juryId, onScoreSubmitted }: ScoringFormProps) {
+  const t = useTranslations('jury.scoringForm')
   const [scores, setScores] = useState<JuryScoreData>({
     innovation: 5,
     presentation: 5,
@@ -34,7 +31,7 @@ export function ScoringForm({ event, team, juryId, onScoreSubmitted }: ScoringFo
   const [comments, setComments] = useState('')
   const [isSaving, setIsSaving] = useState(false)
   const [hasExistingScore, setHasExistingScore] = useState(false)
-  const [saveMessage, setSaveMessage] = useState<string | null>(null)
+  const [saveMessage, setSaveMessage] = useState<{ type: 'success' | 'error'; key: string } | null>(null)
   const supabase = createClient()
 
   useEffect(() => {
@@ -94,13 +91,13 @@ export function ScoringForm({ event, team, juryId, onScoreSubmitted }: ScoringFo
       if (error) throw error
 
       setHasExistingScore(true)
-      setSaveMessage('Score saved successfully!')
+      setSaveMessage({ type: 'success', key: 'scoreSaved' })
       onScoreSubmitted()
 
       setTimeout(() => setSaveMessage(null), 3000)
     } catch (error) {
       console.error('Failed to save score:', error)
-      setSaveMessage('Failed to save score')
+      setSaveMessage({ type: 'error', key: 'saveFailed' })
     } finally {
       setIsSaving(false)
     }
@@ -111,30 +108,30 @@ export function ScoringForm({ event, team, juryId, onScoreSubmitted }: ScoringFo
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Scoring Form</CardTitle>
+        <CardTitle>{t('title')}</CardTitle>
         <CardDescription>
-          Rate this team on a scale of 1-10 for each criterion
+          {t('description')}
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
         <div className="p-4 bg-primary/5 rounded-lg">
           <div className="flex items-center justify-between">
-            <span className="text-sm font-medium">Total Score</span>
+            <span className="text-sm font-medium">{t('totalScore')}</span>
             <span className="text-3xl font-bold">{totalScore}/40</span>
           </div>
         </div>
 
-        {SCORING_CRITERIA.map((criterion) => {
-          const value = scores[criterion.key as keyof JuryScoreData]
+        {SCORING_CRITERIA_KEYS.map((criterionKey) => {
+          const value = scores[criterionKey as keyof JuryScoreData]
           return (
-            <div key={criterion.key} className="space-y-3">
+            <div key={criterionKey} className="space-y-3">
               <div className="flex items-start justify-between">
                 <div className="space-y-1">
                   <Label className="text-base font-semibold">
-                    {criterion.label}
+                    {t(criterionKey)}
                   </Label>
                   <p className="text-xs text-muted-foreground">
-                    {criterion.description}
+                    {t(`${criterionKey}Desc`)}
                   </p>
                 </div>
                 <div className="text-2xl font-bold w-12 text-right">
@@ -144,7 +141,7 @@ export function ScoringForm({ event, team, juryId, onScoreSubmitted }: ScoringFo
               <Slider
                 value={[value]}
                 onValueChange={(vals) =>
-                  updateScore(criterion.key as keyof JuryScoreData, vals[0])
+                  updateScore(criterionKey as keyof JuryScoreData, vals[0])
                 }
                 min={1}
                 max={10}
@@ -152,18 +149,18 @@ export function ScoringForm({ event, team, juryId, onScoreSubmitted }: ScoringFo
                 className="w-full"
               />
               <div className="flex justify-between text-xs text-muted-foreground">
-                <span>Poor (1)</span>
-                <span>Excellent (10)</span>
+                <span>{t('poor')} (1)</span>
+                <span>{t('excellent')} (10)</span>
               </div>
             </div>
           )
         })}
 
         <div className="space-y-2">
-          <Label htmlFor="comments">Comments (Optional)</Label>
+          <Label htmlFor="comments">{t('comments')}</Label>
           <Textarea
             id="comments"
-            placeholder="Add your feedback for this team..."
+            placeholder={t('commentsPlaceholder')}
             rows={4}
             value={comments}
             onChange={(e) => setComments(e.target.value)}
@@ -173,15 +170,15 @@ export function ScoringForm({ event, team, juryId, onScoreSubmitted }: ScoringFo
         {saveMessage && (
           <div
             className={`flex items-center gap-2 p-3 rounded-lg ${
-              saveMessage.includes('success')
+              saveMessage.type === 'success'
                 ? 'bg-green-50 text-green-600 border border-green-200'
                 : 'bg-red-50 text-red-600 border border-red-200'
             }`}
           >
-            {saveMessage.includes('success') && (
+            {saveMessage.type === 'success' && (
               <CheckCircle className="h-4 w-4" />
             )}
-            <span className="text-sm">{saveMessage}</span>
+            <span className="text-sm">{t(saveMessage.key)}</span>
           </div>
         )}
 
@@ -189,19 +186,19 @@ export function ScoringForm({ event, team, juryId, onScoreSubmitted }: ScoringFo
           {isSaving ? (
             <>
               <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-              Saving...
+              {t('saving')}
             </>
           ) : (
             <>
               <Save className="mr-2 h-5 w-5" />
-              {hasExistingScore ? 'Update Score' : 'Save Score'}
+              {hasExistingScore ? t('updateScore') : t('saveScore')}
             </>
           )}
         </Button>
 
         {hasExistingScore && (
           <p className="text-xs text-center text-muted-foreground">
-            You have already scored this team. Click to update.
+            {t('alreadyScored')}
           </p>
         )}
       </CardContent>
