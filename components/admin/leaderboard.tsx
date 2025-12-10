@@ -109,7 +109,7 @@ export function Leaderboard({ event }: LeaderboardProps) {
                   <div className="flex flex-wrap gap-3 mt-1 text-sm text-muted-foreground">
                     <div className="flex items-center gap-1">
                       <Star className="h-4 w-4" />
-                      <span>{t('jury')}: {entry.jury_avg_score.toFixed(1)}/40</span>
+                      <span>{t('jury')}: {entry.jury_avg_score.toFixed(1)}/100</span>
                     </div>
                     <div className="flex items-center gap-1">
                       <Coins className="h-4 w-4" />

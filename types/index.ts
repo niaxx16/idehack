@@ -89,12 +89,13 @@ export interface MentorAssignmentWithDetails extends MentorAssignment {
   team?: Team
 }
 
-// Jury scoring structure
+// Jury scoring structure (5 criteria, each 1-20 points, total 100)
 export interface JuryScoreData {
-  innovation: number
-  presentation: number
-  feasibility: number
-  impact: number
+  problem_understanding: number    // Problemi ve ihtiyacı anlama
+  innovation: number               // Fikir ve yenilikçilik
+  value_impact: number            // Değer ve etkisi
+  feasibility: number             // Uygulanabilirlik ve planlama
+  presentation_teamwork: number   // Sunum ve takım çalışması
 }
 
 // Portfolio vote structure

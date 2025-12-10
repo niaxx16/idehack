@@ -18,15 +18,19 @@ interface ScoringFormProps {
   onScoreSubmitted: () => void
 }
 
-const SCORING_CRITERIA_KEYS = ['innovation', 'presentation', 'feasibility', 'impact'] as const
+// 5 criteria, each 1-20 points, total 100
+const SCORING_CRITERIA_KEYS = ['problem_understanding', 'innovation', 'value_impact', 'feasibility', 'presentation_teamwork'] as const
+const MAX_SCORE_PER_CRITERION = 20
+const TOTAL_MAX_SCORE = 100
 
 export function ScoringForm({ event, team, juryId, onScoreSubmitted }: ScoringFormProps) {
   const t = useTranslations('jury.scoringForm')
   const [scores, setScores] = useState<JuryScoreData>({
-    innovation: 5,
-    presentation: 5,
-    feasibility: 5,
-    impact: 5,
+    problem_understanding: 10,
+    innovation: 10,
+    value_impact: 10,
+    feasibility: 10,
+    presentation_teamwork: 10,
   })
   const [comments, setComments] = useState('')
   const [isSaving, setIsSaving] = useState(false)
@@ -51,16 +55,30 @@ export function ScoringForm({ event, team, juryId, onScoreSubmitted }: ScoringFo
     }
 
     if (data) {
-      setScores(data.scores as JuryScoreData)
+      // Handle migration from old 4-criteria to new 5-criteria system
+      const loadedScores = data.scores as any
+      if (loadedScores.problem_understanding !== undefined) {
+        setScores(loadedScores as JuryScoreData)
+      } else {
+        // Old format - reset to new defaults
+        setScores({
+          problem_understanding: 10,
+          innovation: 10,
+          value_impact: 10,
+          feasibility: 10,
+          presentation_teamwork: 10,
+        })
+      }
       setComments(data.comments || '')
       setHasExistingScore(true)
     } else {
       // Reset form for new team
       setScores({
-        innovation: 5,
-        presentation: 5,
-        feasibility: 5,
-        impact: 5,
+        problem_understanding: 10,
+        innovation: 10,
+        value_impact: 10,
+        feasibility: 10,
+        presentation_teamwork: 10,
       })
       setComments('')
       setHasExistingScore(false)
@@ -117,7 +135,7 @@ export function ScoringForm({ event, team, juryId, onScoreSubmitted }: ScoringFo
         <div className="p-4 bg-primary/5 rounded-lg">
           <div className="flex items-center justify-between">
             <span className="text-sm font-medium">{t('totalScore')}</span>
-            <span className="text-3xl font-bold">{totalScore}/40</span>
+            <span className="text-3xl font-bold">{totalScore}/{TOTAL_MAX_SCORE}</span>
           </div>
         </div>
 
@@ -128,7 +146,7 @@ export function ScoringForm({ event, team, juryId, onScoreSubmitted }: ScoringFo
               <div className="flex items-start justify-between">
                 <div className="space-y-1">
                   <Label className="text-base font-semibold">
-                    {t(criterionKey)}
+                    {t(criterionKey)} <span className="text-muted-foreground font-normal">({MAX_SCORE_PER_CRITERION}p)</span>
                   </Label>
                   <p className="text-xs text-muted-foreground">
                     {t(`${criterionKey}Desc`)}
@@ -144,13 +162,13 @@ export function ScoringForm({ event, team, juryId, onScoreSubmitted }: ScoringFo
                   updateScore(criterionKey as keyof JuryScoreData, vals[0])
                 }
                 min={1}
-                max={10}
+                max={MAX_SCORE_PER_CRITERION}
                 step={1}
                 className="w-full"
               />
               <div className="flex justify-between text-xs text-muted-foreground">
                 <span>{t('poor')} (1)</span>
-                <span>{t('excellent')} (10)</span>
+                <span>{t('excellent')} ({MAX_SCORE_PER_CRITERION})</span>
               </div>
             </div>
           )
