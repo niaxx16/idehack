@@ -109,12 +109,13 @@ CREATE TABLE public.jury_scores (
   jury_id UUID NOT NULL REFERENCES public.profiles(id) ON DELETE CASCADE,
   team_id UUID NOT NULL REFERENCES public.teams(id) ON DELETE CASCADE,
 
-  -- Scoring criteria (1-10 scale)
+  -- Scoring criteria (1-20 scale, 5 criteria, 100 points total)
   scores JSONB NOT NULL DEFAULT '{
-    "innovation": 0,
-    "presentation": 0,
-    "feasibility": 0,
-    "impact": 0
+    "problem_understanding": 10,
+    "innovation": 10,
+    "value_impact": 10,
+    "feasibility": 10,
+    "presentation_teamwork": 10
   }'::jsonb,
 
   comments TEXT,
@@ -403,6 +404,7 @@ END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
 -- Function to calculate leaderboard
+-- 70% jury score (100 points max) + 30% student investment (normalized to 100)
 CREATE OR REPLACE FUNCTION get_leaderboard(event_id_input UUID)
 RETURNS TABLE (
   team_id UUID,
@@ -417,20 +419,23 @@ BEGIN
     t.id,
     t.name,
     t.total_investment,
+    -- New 5-criteria scoring (100 points total)
     COALESCE(AVG(
-      (js.scores->>'innovation')::INTEGER +
-      (js.scores->>'presentation')::INTEGER +
-      (js.scores->>'feasibility')::INTEGER +
-      (js.scores->>'impact')::INTEGER
+      COALESCE((js.scores->>'problem_understanding')::INTEGER, 0) +
+      COALESCE((js.scores->>'innovation')::INTEGER, 0) +
+      COALESCE((js.scores->>'value_impact')::INTEGER, 0) +
+      COALESCE((js.scores->>'feasibility')::INTEGER, 0) +
+      COALESCE((js.scores->>'presentation_teamwork')::INTEGER, 0)
     ), 0) as jury_avg_score,
-    -- Final score: 60% jury score + 40% investment (normalized)
+    -- Final score: 70% jury score (out of 100) + 30% investment (normalized to 100)
     (COALESCE(AVG(
-      (js.scores->>'innovation')::INTEGER +
-      (js.scores->>'presentation')::INTEGER +
-      (js.scores->>'feasibility')::INTEGER +
-      (js.scores->>'impact')::INTEGER
-    ), 0) * 0.6) +
-    (t.total_investment::NUMERIC / NULLIF((SELECT MAX(total_investment) FROM public.teams WHERE event_id = event_id_input), 0) * 40 * 0.4) as final_score
+      COALESCE((js.scores->>'problem_understanding')::INTEGER, 0) +
+      COALESCE((js.scores->>'innovation')::INTEGER, 0) +
+      COALESCE((js.scores->>'value_impact')::INTEGER, 0) +
+      COALESCE((js.scores->>'feasibility')::INTEGER, 0) +
+      COALESCE((js.scores->>'presentation_teamwork')::INTEGER, 0)
+    ), 0) * 0.7) +
+    (t.total_investment::NUMERIC / NULLIF((SELECT MAX(total_investment) FROM public.teams WHERE event_id = event_id_input), 0) * 100 * 0.3) as final_score
   FROM public.teams t
   LEFT JOIN public.jury_scores js ON js.team_id = t.id
   WHERE t.event_id = event_id_input
