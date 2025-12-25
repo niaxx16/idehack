@@ -1,8 +1,8 @@
 // i18n configuration for next-intl
-export const locales = ['en', 'tr'] as const
+export const locales = ['tr', 'en'] as const
 export type Locale = (typeof locales)[number]
 
-export const defaultLocale: Locale = 'en'
+export const defaultLocale: Locale = 'tr'
 
 export const localeNames: Record<Locale, string> = {
   en: 'English',
