@@ -16,14 +16,14 @@ const geistMono = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "InovaSprint - Hackathon Management Platform",
-  description: "A comprehensive platform for managing high school hackathons with hybrid support",
+  title: "Fikir Maratonu - Fikir Geliştirme Platformu",
+  description: "Lise öğrencileri için yenilikçi fikir geliştirme ve sunum platformu",
   manifest: "/manifest.json",
   themeColor: "#000000",
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
-    title: "InovaSprint",
+    title: "Fikir Maratonu",
   },
   viewport: {
     width: "device-width",

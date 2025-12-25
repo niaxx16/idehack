@@ -30,8 +30,8 @@
     "loginDescription": "Enter your credentials to access your account"
   },
   "home": {
-    "title": "InovaSprint",
-    "subtitle": "Comprehensive platform for managing high school ideathons and hackathons",
+    "title": "Fikir Maratonu",
+    "subtitle": "Innovative idea development and presentation platform for high school students",
     "getStarted": "Get Started",
     "signInDescription": "Sign in according to your role",
     "adminJuryMentorLogin": "Admin / Jury / Mentor Login",

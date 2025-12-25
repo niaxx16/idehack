@@ -1,7 +1,7 @@
 {
-  "name": "InovaSprint - Hackathon Management Platform",
-  "short_name": "InovaSprint",
-  "description": "A comprehensive platform for managing high school hackathons with hybrid support",
+  "name": "Fikir Maratonu - Fikir Geliştirme Platformu",
+  "short_name": "Fikir Maratonu",
+  "description": "Lise öğrencileri için yenilikçi fikir geliştirme ve sunum platformu",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",
