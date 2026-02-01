@@ -73,16 +73,28 @@ export function TeamTracking({ event, teams, onUpdate }: TeamTrackingProps) {
 
     try {
       // Load leaderboard scores
-      const { data: leaderboardData } = await supabase.rpc('get_leaderboard', {
+      const { data: leaderboardData, error: leaderboardError } = await supabase.rpc('get_leaderboard', {
         event_id_input: event.id,
       })
+
+      if (leaderboardError) {
+        console.error('Leaderboard error:', leaderboardError)
+      }
       setLeaderboard(leaderboardData || [])
 
-      // Load tracking data for all teams (using any to bypass type check until database.ts is updated)
-      const { data: trackingRecords } = await (supabase as any)
-        .from('team_tracking')
-        .select('*')
-        .in('team_id', teams.map((t: Team) => t.id)) as { data: TeamTrackingRecord[] | null }
+      // Load tracking data for all teams (skip if no teams)
+      let trackingRecords: TeamTrackingRecord[] | null = null
+      if (teams.length > 0) {
+        const { data, error: trackingError } = await (supabase as any)
+          .from('team_tracking')
+          .select('*')
+          .in('team_id', teams.map((t: Team) => t.id)) as { data: TeamTrackingRecord[] | null, error: any }
+
+        if (trackingError) {
+          console.error('Tracking error:', trackingError)
+        }
+        trackingRecords = data
+      }
 
       // Merge teams with tracking data
       const merged: TeamTrackingData[] = teams.map(team => {
