@@ -71,6 +71,7 @@ export type Database = {
           pitch_order: number | null
           school_name: string | null
           advisor_teacher: string | null
+          advisor_phone: string | null
           created_at: string
           updated_at: string
         }
@@ -91,6 +92,7 @@ export type Database = {
           pitch_order?: number | null
           school_name?: string | null
           advisor_teacher?: string | null
+          advisor_phone?: string | null
           created_at?: string
           updated_at?: string
         }
@@ -111,6 +113,7 @@ export type Database = {
           pitch_order?: number | null
           school_name?: string | null
           advisor_teacher?: string | null
+          advisor_phone?: string | null
           created_at?: string
           updated_at?: string
         }

@@ -304,6 +304,9 @@
       },
       "notes": "Notes",
       "saved": "Saved",
+      "exportExcel": "Export to Excel",
+      "yes": "Yes",
+      "no": "No",
       "juryDialog": {
         "title": "Jury Evaluations",
         "noEvaluations": "No jury evaluations yet",

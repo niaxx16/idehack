@@ -12,7 +12,7 @@ import { Badge } from '@/components/ui/badge'
 import { Textarea } from '@/components/ui/textarea'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import { createClient } from '@/lib/supabase/client'
-import { Loader2, Eye, ClipboardList, Phone, Save, Check, School, User } from 'lucide-react'
+import { Loader2, Eye, ClipboardList, Phone, Save, Check, School, User, Download } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 import { TeamCanvasViewer } from './team-canvas-viewer'
 import { JuryEvaluationsDialog } from './jury-evaluations-dialog'
@@ -199,6 +199,99 @@ export function TeamTracking({ event, teams, onUpdate }: TeamTrackingProps) {
     return !!pendingChanges[teamId] && Object.keys(pendingChanges[teamId]).length > 0
   }
 
+  const getProjectPathLabel = (path: string | null) => {
+    if (!path) return '-'
+    const labels: Record<string, string> = {
+      startup: t('projectPaths.startup'),
+      tubitak: t('projectPaths.tubitak'),
+      teknofest: t('projectPaths.teknofest'),
+      other: t('projectPaths.other'),
+    }
+    return labels[path] || path
+  }
+
+  const getIncubationStatusLabel = (status: string | null) => {
+    if (!status) return '-'
+    const labels: Record<string, string> = {
+      not_started: t('incubationStatus.not_started'),
+      in_progress: t('incubationStatus.in_progress'),
+      completed: t('incubationStatus.completed'),
+    }
+    return labels[status] || status
+  }
+
+  const getApplicationResultLabel = (result: string | null) => {
+    if (!result) return '-'
+    const labels: Record<string, string> = {
+      pending: t('applicationResult.pending'),
+      accepted: t('applicationResult.accepted'),
+      rejected: t('applicationResult.rejected'),
+    }
+    return labels[result] || result
+  }
+
+  const exportToExcel = () => {
+    if (!event || trackingData.length === 0) return
+
+    // CSV header
+    const headers = [
+      t('schoolName'),
+      t('teamName'),
+      t('advisorTeacher'),
+      t('advisorPhone'),
+      t('score'),
+      t('projectPath'),
+      t('incubation'),
+      t('mentorProject'),
+      t('mentorDomain'),
+      t('applicationSubmitted'),
+      t('result'),
+      t('notes'),
+    ]
+
+    // CSV rows
+    const rows = trackingData.map(team => [
+      team.school_name || '',
+      team.name,
+      team.advisor_teacher || '',
+      team.advisor_phone || '',
+      team.leaderboard_score?.toFixed(1) || '',
+      getProjectPathLabel(team.tracking?.project_path || null),
+      getIncubationStatusLabel(team.tracking?.incubation_status || null),
+      team.tracking?.mentor_project_expert || '',
+      team.tracking?.mentor_domain_expert || '',
+      team.tracking?.application_submitted ? t('yes') : t('no'),
+      getApplicationResultLabel(team.tracking?.application_result || null),
+      team.tracking?.notes || '',
+    ])
+
+    // Escape CSV values
+    const escapeCSV = (value: string) => {
+      if (value.includes(',') || value.includes('"') || value.includes('\n')) {
+        return `"${value.replace(/"/g, '""')}"`
+      }
+      return value
+    }
+
+    // Build CSV content with BOM for Excel UTF-8 support
+    const BOM = '\uFEFF'
+    const csvContent = BOM + [
+      headers.map(escapeCSV).join(','),
+      ...rows.map(row => row.map(escapeCSV).join(','))
+    ].join('\n')
+
+    // Create and download file
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' })
+    const link = document.createElement('a')
+    const url = URL.createObjectURL(blob)
+    link.setAttribute('href', url)
+    link.setAttribute('download', `${event.name}_takip_${new Date().toISOString().split('T')[0]}.csv`)
+    link.style.visibility = 'hidden'
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+  }
+
   if (!event) {
     return (
       <Card>
@@ -240,8 +333,16 @@ export function TeamTracking({ event, teams, onUpdate }: TeamTrackingProps) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>{t('title')}</CardTitle>
-        <CardDescription>{t('description')}</CardDescription>
+        <div className="flex items-center justify-between">
+          <div>
+            <CardTitle>{t('title')}</CardTitle>
+            <CardDescription>{t('description')}</CardDescription>
+          </div>
+          <Button variant="outline" onClick={exportToExcel}>
+            <Download className="h-4 w-4 mr-2" />
+            {t('exportExcel')}
+          </Button>
+        </div>
       </CardHeader>
       <CardContent>
         <div className="overflow-x-auto">

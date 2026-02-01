@@ -304,6 +304,9 @@
       },
       "notes": "Notlar",
       "saved": "Kaydedildi",
+      "exportExcel": "Excel'e Aktar",
+      "yes": "Evet",
+      "no": "Hayır",
       "juryDialog": {
         "title": "Jüri Değerlendirmeleri",
         "noEvaluations": "Henüz jüri değerlendirmesi yok",
