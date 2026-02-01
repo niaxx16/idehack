@@ -150,3 +150,34 @@ export interface HypeEvent {
   userId: string
   timestamp: number
 }
+
+// Team Tracking types (post-event tracking)
+export type ProjectPath = 'startup' | 'tubitak' | 'teknofest' | 'other'
+export type IncubationStatus = 'not_started' | 'in_progress' | 'completed'
+export type ApplicationResult = 'pending' | 'accepted' | 'rejected'
+
+export interface TeamTracking {
+  id: string
+  team_id: string
+  project_path: ProjectPath | null
+  project_path_other: string | null
+  incubation_status: IncubationStatus
+  incubation_start_date: string | null
+  incubation_end_date: string | null
+  incubation_notes: string | null
+  mentor_project_expert: string | null
+  mentor_domain_expert: string | null
+  application_submitted: boolean
+  application_date: string | null
+  application_result: ApplicationResult | null
+  result_notes: string | null
+  notes: string | null
+  created_at: string
+  updated_at: string
+}
+
+export interface TeamWithTracking extends Team {
+  tracking?: TeamTracking | null
+  jury_scores?: JuryScore[]
+  leaderboard_score?: number
+}

@@ -71,7 +71,8 @@
       "mentors": "Mentorlar",
       "jury": "Jüri",
       "pitch": "Sunum Kontrolü",
-      "leaderboard": "Sıralama"
+      "leaderboard": "Sıralama",
+      "tracking": "Takip Et"
     },
     "eventControl": {
       "title": "Etkinlik Kontrolü",
@@ -265,6 +266,52 @@
       "confirmDelete": "Bu mentörü silmek istediğinizden emin misiniz? Bu işlem geri alınamaz.",
       "deleting": "Siliniyor...",
       "deleteError": "Mentör silinemedi"
+    },
+    "teamTracking": {
+      "title": "Takım Takip",
+      "description": "Etkinlik sonrası takım ilerleyişini takip edin",
+      "noEvent": "Etkinlik seçilmedi",
+      "noTeams": "Henüz takip edilecek takım yok",
+      "schoolName": "Okul",
+      "teamName": "Takım",
+      "advisorTeacher": "Danışman",
+      "advisorPhone": "Danışman Tel.",
+      "score": "Puan",
+      "viewCanvas": "Canvas",
+      "juryEvaluations": "Jüri",
+      "projectPath": "Proje Yolu",
+      "selectProjectPath": "Seçin...",
+      "projectPaths": {
+        "startup": "Girişim/Startup",
+        "tubitak": "TÜBİTAK",
+        "teknofest": "TEKNOFEST",
+        "other": "Diğer"
+      },
+      "incubation": "Kuluçka",
+      "incubationStatus": {
+        "not_started": "Başlamadı",
+        "in_progress": "Devam Ediyor",
+        "completed": "Tamamlandı"
+      },
+      "mentorProject": "Proje Uzmanı",
+      "mentorDomain": "Alan Uzmanı",
+      "applicationSubmitted": "Başvuru",
+      "result": "Sonuç",
+      "applicationResult": {
+        "pending": "Beklemede",
+        "accepted": "Kabul",
+        "rejected": "Red"
+      },
+      "notes": "Notlar",
+      "saved": "Kaydedildi",
+      "juryDialog": {
+        "title": "Jüri Değerlendirmeleri",
+        "noEvaluations": "Henüz jüri değerlendirmesi yok",
+        "evaluationCount": "değerlendirme",
+        "averageScores": "Ortalama Puanlar",
+        "individualEvaluations": "Bireysel Değerlendirmeler",
+        "anonymousJury": "Anonim Jüri"
+      }
     },
     "juryManagement": {
       "title": "Jüri Yönetimi",

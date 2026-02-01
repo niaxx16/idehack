@@ -71,7 +71,8 @@
       "mentors": "Mentors",
       "jury": "Jury",
       "pitch": "Pitch Control",
-      "leaderboard": "Leaderboard"
+      "leaderboard": "Leaderboard",
+      "tracking": "Tracking"
     },
     "eventControl": {
       "title": "Event Control",
@@ -265,6 +266,52 @@
       "confirmDelete": "Are you sure you want to delete this mentor? This action cannot be undone.",
       "deleting": "Deleting...",
       "deleteError": "Failed to delete mentor"
+    },
+    "teamTracking": {
+      "title": "Team Tracking",
+      "description": "Track team progress after the event",
+      "noEvent": "No event selected",
+      "noTeams": "No teams to track yet",
+      "schoolName": "School",
+      "teamName": "Team",
+      "advisorTeacher": "Advisor",
+      "advisorPhone": "Advisor Phone",
+      "score": "Score",
+      "viewCanvas": "Canvas",
+      "juryEvaluations": "Jury",
+      "projectPath": "Project Path",
+      "selectProjectPath": "Select...",
+      "projectPaths": {
+        "startup": "Startup",
+        "tubitak": "TÜBİTAK",
+        "teknofest": "TEKNOFEST",
+        "other": "Other"
+      },
+      "incubation": "Incubation",
+      "incubationStatus": {
+        "not_started": "Not Started",
+        "in_progress": "In Progress",
+        "completed": "Completed"
+      },
+      "mentorProject": "Project Expert",
+      "mentorDomain": "Domain Expert",
+      "applicationSubmitted": "Applied",
+      "result": "Result",
+      "applicationResult": {
+        "pending": "Pending",
+        "accepted": "Accepted",
+        "rejected": "Rejected"
+      },
+      "notes": "Notes",
+      "saved": "Saved",
+      "juryDialog": {
+        "title": "Jury Evaluations",
+        "noEvaluations": "No jury evaluations yet",
+        "evaluationCount": "evaluations",
+        "averageScores": "Average Scores",
+        "individualEvaluations": "Individual Evaluations",
+        "anonymousJury": "Anonymous Jury"
+      }
     },
     "juryManagement": {
       "title": "Jury Management",

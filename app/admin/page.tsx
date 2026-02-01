@@ -16,6 +16,7 @@ import { MentorManagement } from '@/components/admin/mentor-management'
 import { JuryManagement } from '@/components/admin/jury-management'
 import { AdminManagement } from '@/components/admin/admin-management'
 import { TopInvestors } from '@/components/admin/top-investors'
+import { TeamTracking } from '@/components/admin/team-tracking'
 import { Button } from '@/components/ui/button'
 import { useRouter } from 'next/navigation'
 import { Loader2 } from 'lucide-react'
@@ -157,7 +158,7 @@ export default function AdminPage() {
         </div>
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
-          <TabsList className="grid w-full grid-cols-8">
+          <TabsList className="grid w-full grid-cols-9">
             <TabsTrigger value="admins">{t('tabs.admins')}</TabsTrigger>
             <TabsTrigger value="events">{t('tabs.events')}</TabsTrigger>
             <TabsTrigger value="control">{t('tabs.control')}</TabsTrigger>
@@ -166,6 +167,7 @@ export default function AdminPage() {
             <TabsTrigger value="jury">{t('tabs.jury')}</TabsTrigger>
             <TabsTrigger value="pitch">{t('tabs.pitch')}</TabsTrigger>
             <TabsTrigger value="leaderboard">{t('tabs.leaderboard')}</TabsTrigger>
+            <TabsTrigger value="tracking">{t('tabs.tracking')}</TabsTrigger>
           </TabsList>
 
           <TabsContent value="admins">
@@ -206,6 +208,10 @@ export default function AdminPage() {
               <Leaderboard event={currentEvent} />
               <TopInvestors event={currentEvent} />
             </div>
+          </TabsContent>
+
+          <TabsContent value="tracking">
+            <TeamTracking event={currentEvent} teams={teams} onUpdate={loadData} />
           </TabsContent>
         </Tabs>
       </div>
