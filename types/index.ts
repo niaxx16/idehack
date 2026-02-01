@@ -170,6 +170,9 @@ export interface TeamTracking {
   application_date: string | null
   application_result: ApplicationResult | null
   result_notes: string | null
+  consortium_demoday: 'participated' | 'not_participated' | null
+  collaborator_support: 'received' | 'not_received' | null
+  support_type: string | null
   notes: string | null
   created_at: string
   updated_at: string

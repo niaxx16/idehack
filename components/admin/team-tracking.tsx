@@ -37,6 +37,9 @@ interface TeamTrackingRecord {
   application_date: string | null
   application_result: string | null
   result_notes: string | null
+  consortium_demoday: string | null
+  collaborator_support: string | null
+  support_type: string | null
   notes: string | null
   created_at: string
   updated_at: string
@@ -229,6 +232,24 @@ export function TeamTracking({ event, teams, onUpdate }: TeamTrackingProps) {
     return labels[result] || result
   }
 
+  const getConsortiumDemodayLabel = (status: string | null) => {
+    if (!status) return '-'
+    const labels: Record<string, string> = {
+      participated: t('consortiumDemodayStatus.participated'),
+      not_participated: t('consortiumDemodayStatus.not_participated'),
+    }
+    return labels[status] || status
+  }
+
+  const getCollaboratorSupportLabel = (status: string | null) => {
+    if (!status) return '-'
+    const labels: Record<string, string> = {
+      received: t('collaboratorSupportStatus.received'),
+      not_received: t('collaboratorSupportStatus.not_received'),
+    }
+    return labels[status] || status
+  }
+
   const exportToExcel = () => {
     if (!event || trackingData.length === 0) return
 
@@ -244,6 +265,9 @@ export function TeamTracking({ event, teams, onUpdate }: TeamTrackingProps) {
       t('supportingExperts'),
       t('applicationSubmitted'),
       t('result'),
+      t('consortiumDemoday'),
+      t('collaboratorSupport'),
+      t('supportType'),
       t('notes'),
     ]
 
@@ -259,6 +283,9 @@ export function TeamTracking({ event, teams, onUpdate }: TeamTrackingProps) {
       team.tracking?.supporting_experts || '',
       team.tracking?.application_submitted ? t('yes') : t('no'),
       getApplicationResultLabel(team.tracking?.application_result || null),
+      getConsortiumDemodayLabel(team.tracking?.consortium_demoday || null),
+      getCollaboratorSupportLabel(team.tracking?.collaborator_support || null),
+      team.tracking?.support_type || '',
       team.tracking?.notes || '',
     ])
 
@@ -389,6 +416,9 @@ export function TeamTracking({ event, teams, onUpdate }: TeamTrackingProps) {
                 <TableHead className="min-w-[150px]">{t('supportingExperts')}</TableHead>
                 <TableHead className="w-[80px] text-center">{t('applicationSubmitted')}</TableHead>
                 <TableHead className="min-w-[120px]">{t('result')}</TableHead>
+                <TableHead className="min-w-[130px]">{t('consortiumDemoday')}</TableHead>
+                <TableHead className="min-w-[130px]">{t('collaboratorSupport')}</TableHead>
+                <TableHead className="min-w-[150px]">{t('supportType')}</TableHead>
                 <TableHead className="min-w-[200px]">{t('notes')}</TableHead>
                 <TableHead className="w-[80px]"></TableHead>
               </TableRow>
@@ -558,6 +588,50 @@ export function TeamTracking({ event, teams, onUpdate }: TeamTrackingProps) {
                         <SelectItem value="rejected">{t('applicationResult.rejected')}</SelectItem>
                       </SelectContent>
                     </Select>
+                  </TableCell>
+
+                  {/* Consortium Demoday */}
+                  <TableCell>
+                    <Select
+                      value={getDisplayValue(team.id, 'consortium_demoday', team.tracking?.consortium_demoday) || 'none'}
+                      onValueChange={(value) => updateLocalState(team.id, 'consortium_demoday', value === 'none' ? null : value)}
+                    >
+                      <SelectTrigger className="h-8 text-sm w-[120px]">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="none">-</SelectItem>
+                        <SelectItem value="participated">{t('consortiumDemodayStatus.participated')}</SelectItem>
+                        <SelectItem value="not_participated">{t('consortiumDemodayStatus.not_participated')}</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </TableCell>
+
+                  {/* Collaborator Support */}
+                  <TableCell>
+                    <Select
+                      value={getDisplayValue(team.id, 'collaborator_support', team.tracking?.collaborator_support) || 'none'}
+                      onValueChange={(value) => updateLocalState(team.id, 'collaborator_support', value === 'none' ? null : value)}
+                    >
+                      <SelectTrigger className="h-8 text-sm w-[120px]">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="none">-</SelectItem>
+                        <SelectItem value="received">{t('collaboratorSupportStatus.received')}</SelectItem>
+                        <SelectItem value="not_received">{t('collaboratorSupportStatus.not_received')}</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </TableCell>
+
+                  {/* Support Type */}
+                  <TableCell>
+                    <Input
+                      placeholder={t('supportType')}
+                      className="h-8 text-sm w-[150px]"
+                      value={getDisplayValue(team.id, 'support_type', team.tracking?.support_type) || ''}
+                      onChange={(e) => updateLocalState(team.id, 'support_type', e.target.value)}
+                    />
                   </TableCell>
 
                   {/* Notes */}

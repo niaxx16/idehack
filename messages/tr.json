@@ -301,6 +301,17 @@
         "accepted": "Kabul",
         "rejected": "Red"
       },
+      "consortiumDemoday": "Konsorsiyum Demoday",
+      "consortiumDemodayStatus": {
+        "participated": "Katıldı",
+        "not_participated": "Katılmadı"
+      },
+      "collaboratorSupport": "İş birlikçi Desteği",
+      "collaboratorSupportStatus": {
+        "received": "Aldı",
+        "not_received": "Almadı"
+      },
+      "supportType": "Ne Tür Destek Aldı",
       "notes": "Notlar",
       "saved": "Kaydedildi",
       "exportExcel": "Excel'e Aktar",

@@ -301,6 +301,17 @@
         "accepted": "Accepted",
         "rejected": "Rejected"
       },
+      "consortiumDemoday": "Consortium Demoday",
+      "consortiumDemodayStatus": {
+        "participated": "Participated",
+        "not_participated": "Not Participated"
+      },
+      "collaboratorSupport": "Collaborator Support",
+      "collaboratorSupportStatus": {
+        "received": "Received",
+        "not_received": "Not Received"
+      },
+      "supportType": "Type of Support",
       "notes": "Notes",
       "saved": "Saved",
       "exportExcel": "Export to Excel",
