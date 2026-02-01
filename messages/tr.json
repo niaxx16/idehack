@@ -287,14 +287,13 @@
         "teknofest": "TEKNOFEST",
         "other": "Diğer"
       },
-      "incubation": "Kuluçka",
+      "incubation": "Mini Kuluçka Süreci",
       "incubationStatus": {
         "not_started": "Başlamadı",
         "in_progress": "Devam Ediyor",
         "completed": "Tamamlandı"
       },
-      "mentorProject": "Proje Uzmanı",
-      "mentorDomain": "Alan Uzmanı",
+      "supportingExperts": "Destek Olan Uzmanlar",
       "applicationSubmitted": "Başvuru",
       "result": "Sonuç",
       "applicationResult": {

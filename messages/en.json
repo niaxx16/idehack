@@ -287,14 +287,13 @@
         "teknofest": "TEKNOFEST",
         "other": "Other"
       },
-      "incubation": "Incubation",
+      "incubation": "Mini Incubation Process",
       "incubationStatus": {
         "not_started": "Not Started",
         "in_progress": "In Progress",
         "completed": "Completed"
       },
-      "mentorProject": "Project Expert",
-      "mentorDomain": "Domain Expert",
+      "supportingExperts": "Supporting Experts",
       "applicationSubmitted": "Applied",
       "result": "Result",
       "applicationResult": {

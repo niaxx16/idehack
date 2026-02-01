@@ -165,8 +165,7 @@ export interface TeamTracking {
   incubation_start_date: string | null
   incubation_end_date: string | null
   incubation_notes: string | null
-  mentor_project_expert: string | null
-  mentor_domain_expert: string | null
+  supporting_experts: string | null
   application_submitted: boolean
   application_date: string | null
   application_result: ApplicationResult | null

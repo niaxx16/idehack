@@ -32,8 +32,7 @@ interface TeamTrackingRecord {
   incubation_start_date: string | null
   incubation_end_date: string | null
   incubation_notes: string | null
-  mentor_project_expert: string | null
-  mentor_domain_expert: string | null
+  supporting_experts: string | null
   application_submitted: boolean
   application_date: string | null
   application_result: string | null
@@ -242,8 +241,7 @@ export function TeamTracking({ event, teams, onUpdate }: TeamTrackingProps) {
       t('score'),
       t('projectPath'),
       t('incubation'),
-      t('mentorProject'),
-      t('mentorDomain'),
+      t('supportingExperts'),
       t('applicationSubmitted'),
       t('result'),
       t('notes'),
@@ -258,8 +256,7 @@ export function TeamTracking({ event, teams, onUpdate }: TeamTrackingProps) {
       team.leaderboard_score?.toFixed(1) || '',
       getProjectPathLabel(team.tracking?.project_path || null),
       getIncubationStatusLabel(team.tracking?.incubation_status || null),
-      team.tracking?.mentor_project_expert || '',
-      team.tracking?.mentor_domain_expert || '',
+      team.tracking?.supporting_experts || '',
       team.tracking?.application_submitted ? t('yes') : t('no'),
       getApplicationResultLabel(team.tracking?.application_result || null),
       team.tracking?.notes || '',
@@ -389,8 +386,7 @@ export function TeamTracking({ event, teams, onUpdate }: TeamTrackingProps) {
                 <TableHead className="w-[80px] text-center">{t('juryEvaluations')}</TableHead>
                 <TableHead className="min-w-[130px]">{t('projectPath')}</TableHead>
                 <TableHead className="min-w-[130px]">{t('incubation')}</TableHead>
-                <TableHead className="min-w-[100px]">{t('mentorProject')}</TableHead>
-                <TableHead className="min-w-[100px]">{t('mentorDomain')}</TableHead>
+                <TableHead className="min-w-[150px]">{t('supportingExperts')}</TableHead>
                 <TableHead className="w-[80px] text-center">{t('applicationSubmitted')}</TableHead>
                 <TableHead className="min-w-[120px]">{t('result')}</TableHead>
                 <TableHead className="min-w-[200px]">{t('notes')}</TableHead>
@@ -528,23 +524,13 @@ export function TeamTracking({ event, teams, onUpdate }: TeamTrackingProps) {
                     </Select>
                   </TableCell>
 
-                  {/* Mentor Project Expert */}
+                  {/* Supporting Experts */}
                   <TableCell>
                     <Input
-                      placeholder={t('mentorProject')}
-                      className="h-8 text-sm w-[100px]"
-                      value={getDisplayValue(team.id, 'mentor_project_expert', team.tracking?.mentor_project_expert) || ''}
-                      onChange={(e) => updateLocalState(team.id, 'mentor_project_expert', e.target.value)}
-                    />
-                  </TableCell>
-
-                  {/* Mentor Domain Expert */}
-                  <TableCell>
-                    <Input
-                      placeholder={t('mentorDomain')}
-                      className="h-8 text-sm w-[100px]"
-                      value={getDisplayValue(team.id, 'mentor_domain_expert', team.tracking?.mentor_domain_expert) || ''}
-                      onChange={(e) => updateLocalState(team.id, 'mentor_domain_expert', e.target.value)}
+                      placeholder={t('supportingExperts')}
+                      className="h-8 text-sm w-[150px]"
+                      value={getDisplayValue(team.id, 'supporting_experts', (team.tracking as any)?.supporting_experts) || ''}
+                      onChange={(e) => updateLocalState(team.id, 'supporting_experts', e.target.value)}
                     />
                   </TableCell>
 
