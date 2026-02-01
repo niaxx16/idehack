@@ -109,18 +109,18 @@ export function Leaderboard({ event }: LeaderboardProps) {
                   <div className="flex flex-wrap gap-3 mt-1 text-sm text-muted-foreground">
                     <div className="flex items-center gap-1">
                       <Star className="h-4 w-4" />
-                      <span>{t('jury')}: {entry.jury_avg_score.toFixed(1)}/100</span>
+                      <span>{t('jury')}: {(entry.jury_avg_score ?? 0).toFixed(1)}/100</span>
                     </div>
                     <div className="flex items-center gap-1">
                       <Coins className="h-4 w-4" />
-                      <span>{t('investment')}: {entry.total_investment} idecoin</span>
+                      <span>{t('investment')}: {entry.total_investment ?? 0} idecoin</span>
                     </div>
                   </div>
                 </div>
 
                 <div className="text-right">
                   <Badge variant="outline" className="text-lg font-bold">
-                    {entry.final_score.toFixed(2)}
+                    {(entry.final_score ?? 0).toFixed(2)}
                   </Badge>
                   <p className="text-xs text-muted-foreground mt-1">{t('finalScore')}</p>
                 </div>
