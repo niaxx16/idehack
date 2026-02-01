@@ -265,28 +265,25 @@ export function TeamTracking({ event, teams, onUpdate }: TeamTrackingProps) {
       team.tracking?.notes || '',
     ])
 
-    // Escape CSV values (using semicolon as delimiter for Excel Turkish locale)
-    const escapeCSV = (value: string) => {
-      if (value.includes(';') || value.includes('"') || value.includes('\n')) {
-        return `"${value.replace(/"/g, '""')}"`
-      }
-      return value
+    // Escape values for tab-separated format
+    const escapeValue = (value: string) => {
+      // Replace tabs and newlines to prevent breaking the format
+      return value.replace(/\t/g, ' ').replace(/\n/g, ' ').replace(/\r/g, '')
     }
 
-    // Build CSV content with BOM for Excel UTF-8 support
-    // Using semicolon (;) as delimiter for Turkish/European Excel
+    // Build tab-separated content with BOM for Excel UTF-8 support
     const BOM = '\uFEFF'
-    const csvContent = BOM + [
-      headers.map(escapeCSV).join(';'),
-      ...rows.map(row => row.map(escapeCSV).join(';'))
+    const tsvContent = BOM + [
+      headers.map(escapeValue).join('\t'),
+      ...rows.map(row => row.map(escapeValue).join('\t'))
     ].join('\n')
 
-    // Create and download file
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' })
+    // Create and download file (.xls extension for direct Excel opening)
+    const blob = new Blob([tsvContent], { type: 'application/vnd.ms-excel;charset=utf-8;' })
     const link = document.createElement('a')
     const url = URL.createObjectURL(blob)
     link.setAttribute('href', url)
-    link.setAttribute('download', `${event.name}_takip_${new Date().toISOString().split('T')[0]}.csv`)
+    link.setAttribute('download', `${event.name}_takip_${new Date().toISOString().split('T')[0]}.xls`)
     link.style.visibility = 'hidden'
     document.body.appendChild(link)
     link.click()
