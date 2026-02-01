@@ -265,21 +265,54 @@ export function TeamTracking({ event, teams, onUpdate }: TeamTrackingProps) {
       team.tracking?.notes || '',
     ])
 
-    // Escape values for tab-separated format
-    const escapeValue = (value: string) => {
-      // Replace tabs and newlines to prevent breaking the format
-      return value.replace(/\t/g, ' ').replace(/\n/g, ' ').replace(/\r/g, '')
+    // Escape HTML special characters
+    const escapeHtml = (value: string) => {
+      return value
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
     }
 
-    // Build tab-separated content with BOM for Excel UTF-8 support
-    const BOM = '\uFEFF'
-    const tsvContent = BOM + [
-      headers.map(escapeValue).join('\t'),
-      ...rows.map(row => row.map(escapeValue).join('\t'))
-    ].join('\n')
+    // Build HTML table for Excel
+    const htmlContent = `
+      <html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40">
+      <head>
+        <meta charset="UTF-8">
+        <!--[if gte mso 9]>
+        <xml>
+          <x:ExcelWorkbook>
+            <x:ExcelWorksheets>
+              <x:ExcelWorksheet>
+                <x:Name>Takip</x:Name>
+                <x:WorksheetOptions>
+                  <x:DisplayGridlines/>
+                </x:WorksheetOptions>
+              </x:ExcelWorksheet>
+            </x:ExcelWorksheets>
+          </x:ExcelWorkbook>
+        </xml>
+        <![endif]-->
+        <style>
+          td, th { border: 1px solid #ccc; padding: 5px; }
+          th { background-color: #f0f0f0; font-weight: bold; }
+        </style>
+      </head>
+      <body>
+        <table>
+          <thead>
+            <tr>${headers.map(h => `<th>${escapeHtml(h)}</th>`).join('')}</tr>
+          </thead>
+          <tbody>
+            ${rows.map(row => `<tr>${row.map(cell => `<td>${escapeHtml(cell)}</td>`).join('')}</tr>`).join('')}
+          </tbody>
+        </table>
+      </body>
+      </html>
+    `
 
-    // Create and download file (.xls extension for direct Excel opening)
-    const blob = new Blob([tsvContent], { type: 'application/vnd.ms-excel;charset=utf-8;' })
+    // Create and download file
+    const blob = new Blob([htmlContent], { type: 'application/vnd.ms-excel;charset=utf-8;' })
     const link = document.createElement('a')
     const url = URL.createObjectURL(blob)
     link.setAttribute('href', url)
