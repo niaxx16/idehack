@@ -17,9 +17,9 @@ RETURNS TABLE (
 BEGIN
   RETURN QUERY
   SELECT
-    t.id,
-    t.name,
-    t.total_investment,
+    t.id AS team_id,
+    t.name AS team_name,
+    t.total_investment AS total_investment,
     -- New 5-criteria scoring (100 points total)
     COALESCE(AVG(
       COALESCE((js.scores->>'problem_understanding')::INTEGER, 0) +
@@ -27,7 +27,7 @@ BEGIN
       COALESCE((js.scores->>'value_impact')::INTEGER, 0) +
       COALESCE((js.scores->>'feasibility')::INTEGER, 0) +
       COALESCE((js.scores->>'presentation_teamwork')::INTEGER, 0)
-    ), 0) as jury_avg_score,
+    ), 0) AS jury_avg_score,
     -- Final score: 70% jury score (out of 100) + 30% investment (normalized to 100)
     (COALESCE(AVG(
       COALESCE((js.scores->>'problem_understanding')::INTEGER, 0) +
@@ -36,11 +36,11 @@ BEGIN
       COALESCE((js.scores->>'feasibility')::INTEGER, 0) +
       COALESCE((js.scores->>'presentation_teamwork')::INTEGER, 0)
     ), 0) * 0.7) +
-    (t.total_investment::NUMERIC / NULLIF((SELECT MAX(total_investment) FROM public.teams WHERE event_id = event_id_input), 0) * 100 * 0.3) as final_score
+    (t.total_investment::NUMERIC / NULLIF((SELECT MAX(t2.total_investment) FROM public.teams t2 WHERE t2.event_id = event_id_input), 0) * 100 * 0.3) AS final_score
   FROM public.teams t
   LEFT JOIN public.jury_scores js ON js.team_id = t.id
   WHERE t.event_id = event_id_input
   GROUP BY t.id, t.name, t.total_investment
   ORDER BY final_score DESC;
 END;
-$$ LANGUAGE plpgsql;
+$$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = public;
