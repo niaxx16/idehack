@@ -265,19 +265,20 @@ export function TeamTracking({ event, teams, onUpdate }: TeamTrackingProps) {
       team.tracking?.notes || '',
     ])
 
-    // Escape CSV values
+    // Escape CSV values (using semicolon as delimiter for Excel Turkish locale)
     const escapeCSV = (value: string) => {
-      if (value.includes(',') || value.includes('"') || value.includes('\n')) {
+      if (value.includes(';') || value.includes('"') || value.includes('\n')) {
         return `"${value.replace(/"/g, '""')}"`
       }
       return value
     }
 
     // Build CSV content with BOM for Excel UTF-8 support
+    // Using semicolon (;) as delimiter for Turkish/European Excel
     const BOM = '\uFEFF'
     const csvContent = BOM + [
-      headers.map(escapeCSV).join(','),
-      ...rows.map(row => row.map(escapeCSV).join(','))
+      headers.map(escapeCSV).join(';'),
+      ...rows.map(row => row.map(escapeCSV).join(';'))
     ].join('\n')
 
     // Create and download file
