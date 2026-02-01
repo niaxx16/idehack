@@ -69,6 +69,8 @@ export type Database = {
           presentation_url: string | null
           total_investment: number
           pitch_order: number | null
+          school_name: string | null
+          advisor_teacher: string | null
           created_at: string
           updated_at: string
         }
@@ -87,6 +89,8 @@ export type Database = {
           presentation_url?: string | null
           total_investment?: number
           pitch_order?: number | null
+          school_name?: string | null
+          advisor_teacher?: string | null
           created_at?: string
           updated_at?: string
         }
@@ -105,6 +109,8 @@ export type Database = {
           presentation_url?: string | null
           total_investment?: number
           pitch_order?: number | null
+          school_name?: string | null
+          advisor_teacher?: string | null
           created_at?: string
           updated_at?: string
         }

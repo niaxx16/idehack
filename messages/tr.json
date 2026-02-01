@@ -154,7 +154,11 @@
         "title": "Tek Takım Oluştur",
         "description": "Manuel olarak bir takım ekle",
         "teamNamePlaceholder": "örn., Alfa Takımı",
-        "tableNumberPlaceholder": "örn., 1"
+        "tableNumberPlaceholder": "örn., 1",
+        "schoolName": "Okul Adı",
+        "schoolNamePlaceholder": "örn., Atatürk Anadolu Lisesi",
+        "advisorTeacher": "Danışman Öğretmen",
+        "advisorTeacherPlaceholder": "örn., Ayşe Yılmaz"
       },
       "teamsList": {
         "title": "Takımlar",
@@ -169,7 +173,10 @@
         "presentationUploaded": "Sunum yüklendi",
         "showQR": "QR Kodu Göster",
         "captain": "Kaptan",
-        "noTeams": "Henüz takım yok. Yukarıdan ilk takımınızı oluşturun."
+        "noTeams": "Henüz takım yok. Yukarıdan ilk takımınızı oluşturun.",
+        "school": "Okul",
+        "advisor": "Danışman",
+        "viewCanvas": "Canvas'ı Görüntüle"
       },
       "qrDialog": {
         "allCodesTitle": "Tüm Takım Aktivasyon Kodları & QR Kodları",
@@ -178,6 +185,13 @@
         "print": "Yazdır",
         "joinTitle": "Katılım QR Kodu",
         "joinDescription": "Takıma katılmak için bu QR kodunu tarayın"
+      },
+      "canvasViewer": {
+        "title": "Takım Canvas'ı",
+        "noContributions": "Henüz katkı yok",
+        "teamDecision": "Takım Kararı",
+        "updated": "Güncellendi",
+        "ideas": "fikir"
       }
     },
     "pitchControl": {

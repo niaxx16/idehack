@@ -154,7 +154,11 @@
         "title": "Create Single Team",
         "description": "Add one team manually",
         "teamNamePlaceholder": "e.g., Team Alpha",
-        "tableNumberPlaceholder": "e.g., 1"
+        "tableNumberPlaceholder": "e.g., 1",
+        "schoolName": "School Name",
+        "schoolNamePlaceholder": "e.g., Lincoln High School",
+        "advisorTeacher": "Advisor Teacher",
+        "advisorTeacherPlaceholder": "e.g., John Smith"
       },
       "teamsList": {
         "title": "Teams",
@@ -169,7 +173,10 @@
         "presentationUploaded": "Presentation uploaded",
         "showQR": "Show QR Code",
         "captain": "Captain",
-        "noTeams": "No teams yet. Create your first team above."
+        "noTeams": "No teams yet. Create your first team above.",
+        "school": "School",
+        "advisor": "Advisor",
+        "viewCanvas": "View Canvas"
       },
       "qrDialog": {
         "allCodesTitle": "All Team Activation Codes & QR Codes",
@@ -178,6 +185,13 @@
         "print": "Print",
         "joinTitle": "Join QR Code",
         "joinDescription": "Scan this QR code to join the team"
+      },
+      "canvasViewer": {
+        "title": "Team Canvas",
+        "noContributions": "No contributions yet",
+        "teamDecision": "Team Decision",
+        "updated": "Updated",
+        "ideas": "ideas"
       }
     },
     "pitchControl": {

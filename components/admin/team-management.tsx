@@ -9,7 +9,8 @@ import { Label } from '@/components/ui/label'
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible'
 import { createClient } from '@/lib/supabase/client'
-import { Plus, Users, FileText, ChevronDown, Crown, UserCircle, Clock, Eye, EyeOff, Key } from 'lucide-react'
+import { Plus, Users, FileText, ChevronDown, Crown, UserCircle, Clock, Eye, EyeOff, Key, LayoutGrid } from 'lucide-react'
+import { TeamCanvasViewer } from './team-canvas-viewer'
 import { QRCodeSVG } from 'qrcode.react'
 import { useTranslations } from 'next-intl'
 
@@ -34,7 +35,10 @@ export function TeamManagement({ event, teams, onUpdate }: TeamManagementProps) 
   const [isCreating, setIsCreating] = useState(false)
   const [newTeamName, setNewTeamName] = useState('')
   const [newTeamTable, setNewTeamTable] = useState('')
+  const [schoolName, setSchoolName] = useState('')
+  const [advisorTeacher, setAdvisorTeacher] = useState('')
   const [selectedTeam, setSelectedTeam] = useState<Team | null>(null)
+  const [canvasViewTeam, setCanvasViewTeam] = useState<Team | null>(null)
   const [showAllQR, setShowAllQR] = useState(false)
   const [bulkCount, setBulkCount] = useState('')
   const [isBulkCreating, setIsBulkCreating] = useState(false)
@@ -195,12 +199,16 @@ export function TeamManagement({ event, teams, onUpdate }: TeamManagementProps) 
         activation_code: activationCode,
         is_activated: false,
         team_members: [],
+        school_name: schoolName.trim() || null,
+        advisor_teacher: advisorTeacher.trim() || null,
       })
 
       if (error) throw error
 
       setNewTeamName('')
       setNewTeamTable('')
+      setSchoolName('')
+      setAdvisorTeacher('')
       onUpdate()
     } catch (error) {
       console.error('Failed to create team:', error)
@@ -285,6 +293,26 @@ export function TeamManagement({ event, teams, onUpdate }: TeamManagementProps) 
                   value={newTeamTable}
                   onChange={(e) => setNewTeamTable(e.target.value)}
                   required
+                />
+              </div>
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="schoolName">{t('singleCreate.schoolName')}</Label>
+                <Input
+                  id="schoolName"
+                  placeholder={t('singleCreate.schoolNamePlaceholder')}
+                  value={schoolName}
+                  onChange={(e) => setSchoolName(e.target.value)}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="advisorTeacher">{t('singleCreate.advisorTeacher')}</Label>
+                <Input
+                  id="advisorTeacher"
+                  placeholder={t('singleCreate.advisorTeacherPlaceholder')}
+                  value={advisorTeacher}
+                  onChange={(e) => setAdvisorTeacher(e.target.value)}
                 />
               </div>
             </div>
@@ -415,7 +443,15 @@ export function TeamManagement({ event, teams, onUpdate }: TeamManagementProps) 
                     <div className="flex items-start justify-between">
                       <div>
                         <CardTitle className="text-lg">{team.name}</CardTitle>
-                        <CardDescription>{t('teamsList.table')} {team.table_number}</CardDescription>
+                        <CardDescription>
+                          {t('teamsList.table')} {team.table_number}
+                          {team.school_name && (
+                            <span className="block text-xs mt-1">{t('teamsList.school')}: {team.school_name}</span>
+                          )}
+                          {team.advisor_teacher && (
+                            <span className="block text-xs">{t('teamsList.advisor')}: {team.advisor_teacher}</span>
+                          )}
+                        </CardDescription>
                       </div>
                       {team.is_activated && (
                         <span className="text-xs bg-green-100 text-green-700 px-2 py-1 rounded">{t('teamsList.active')}</span>
@@ -571,6 +607,19 @@ export function TeamManagement({ event, teams, onUpdate }: TeamManagementProps) 
                         </div>
                       </DialogContent>
                     </Dialog>
+
+                    {/* View Canvas Button - Only show for activated teams */}
+                    {team.is_activated && (
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="w-full mt-2"
+                        onClick={() => setCanvasViewTeam(team)}
+                      >
+                        <LayoutGrid className="mr-2 h-4 w-4" />
+                        {t('teamsList.viewCanvas')}
+                      </Button>
+                    )}
                   </CardContent>
                 </Card>
               )
@@ -585,6 +634,21 @@ export function TeamManagement({ event, teams, onUpdate }: TeamManagementProps) 
           )}
         </CardContent>
       </Card>
+
+      {/* Canvas Viewer Dialog */}
+      <Dialog open={!!canvasViewTeam} onOpenChange={(open) => !open && setCanvasViewTeam(null)}>
+        <DialogContent className="max-w-6xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>{t('canvasViewer.title')}: {canvasViewTeam?.name}</DialogTitle>
+            <DialogDescription>
+              {t('teamsList.table')} {canvasViewTeam?.table_number}
+            </DialogDescription>
+          </DialogHeader>
+          {canvasViewTeam && (
+            <TeamCanvasViewer team={canvasViewTeam} onClose={() => setCanvasViewTeam(null)} />
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }
