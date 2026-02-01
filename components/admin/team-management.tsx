@@ -9,7 +9,7 @@ import { Label } from '@/components/ui/label'
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible'
 import { createClient } from '@/lib/supabase/client'
-import { Plus, Users, FileText, ChevronDown, Crown, UserCircle, Clock, Eye, EyeOff, Key, LayoutGrid } from 'lucide-react'
+import { Plus, Users, FileText, ChevronDown, Crown, UserCircle, Clock, Eye, EyeOff, Key, LayoutGrid, FileDown } from 'lucide-react'
 import { TeamCanvasViewer } from './team-canvas-viewer'
 import { QRCodeSVG } from 'qrcode.react'
 import { useTranslations } from 'next-intl'
@@ -561,9 +561,20 @@ export function TeamManagement({ event, teams, onUpdate }: TeamManagementProps) 
 
                     {/* Presentation Status */}
                     {team.presentation_url && (
-                      <div className="flex items-center gap-2 text-sm text-green-600">
-                        <FileText className="h-4 w-4" />
-                        <span>{t('teamsList.presentationUploaded')}</span>
+                      <div className="flex items-center justify-between gap-2 text-sm text-green-600 pt-2 border-t">
+                        <div className="flex items-center gap-2">
+                          <FileText className="h-4 w-4" />
+                          <span>{t('teamsList.presentationUploaded')}</span>
+                        </div>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          asChild
+                        >
+                          <a href={team.presentation_url} target="_blank" rel="noopener noreferrer">
+                            <FileDown className="h-4 w-4" />
+                          </a>
+                        </Button>
                       </div>
                     )}
 
