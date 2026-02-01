@@ -260,7 +260,11 @@
       "credentialsDescription": "Bu bilgileri kaydedin ve mentor ile güvenli bir şekilde paylaşın.",
       "password": "Şifre (Bunu kaydedin!)",
       "credentialsWarning": "⚠️ Önemli: Bu şifre bir daha gösterilmeyecek. Şimdi kopyalayın ve mentor ile güvenli bir şekilde paylaşın.",
-      "savedCredentials": "Bilgileri Kaydettim"
+      "savedCredentials": "Bilgileri Kaydettim",
+      "deleteMentor": "Mentörü Sil",
+      "confirmDelete": "Bu mentörü silmek istediğinizden emin misiniz? Bu işlem geri alınamaz.",
+      "deleting": "Siliniyor...",
+      "deleteError": "Mentör silinemedi"
     },
     "juryManagement": {
       "title": "Jüri Yönetimi",
@@ -280,7 +284,11 @@
       "credentialsTitle": "Jüri Üyesi Başarıyla Oluşturuldu",
       "credentialsDescription": "Bu bilgileri kaydedin ve jüri üyesiyle paylaşın. Daha sonra kurtarılamazlar.",
       "password": "Şifre (Bunu kaydedin!)",
-      "credentialsWarning": "⚠️ Bu şifreyi kaydettiğinizden emin olun! Bir daha gösterilmeyecek."
+      "credentialsWarning": "⚠️ Bu şifreyi kaydettiğinizden emin olun! Bir daha gösterilmeyecek.",
+      "deleteJury": "Jüriyi Sil",
+      "confirmDelete": "Bu jüri üyesini silmek istediğinizden emin misiniz? Bu işlem geri alınamaz.",
+      "deleting": "Siliniyor...",
+      "deleteError": "Jüri üyesi silinemedi"
     }
   },
   "student": {

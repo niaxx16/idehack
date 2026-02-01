@@ -260,7 +260,11 @@
       "credentialsDescription": "Save these credentials and share them with the mentor securely.",
       "password": "Password (Save this!)",
       "credentialsWarning": "⚠️ Important: This password will not be shown again. Copy it now and share it with the mentor securely.",
-      "savedCredentials": "I've Saved the Credentials"
+      "savedCredentials": "I've Saved the Credentials",
+      "deleteMentor": "Delete Mentor",
+      "confirmDelete": "Are you sure you want to delete this mentor? This action cannot be undone.",
+      "deleting": "Deleting...",
+      "deleteError": "Failed to delete mentor"
     },
     "juryManagement": {
       "title": "Jury Management",
@@ -280,7 +284,11 @@
       "credentialsTitle": "Jury Member Created Successfully",
       "credentialsDescription": "Save these credentials and share them with the jury member. They cannot be recovered later.",
       "password": "Password (Save this!)",
-      "credentialsWarning": "⚠️ Make sure to save this password! It won't be shown again."
+      "credentialsWarning": "⚠️ Make sure to save this password! It won't be shown again.",
+      "deleteJury": "Delete Jury",
+      "confirmDelete": "Are you sure you want to delete this jury member? This action cannot be undone.",
+      "deleting": "Deleting...",
+      "deleteError": "Failed to delete jury member"
     }
   },
   "student": {

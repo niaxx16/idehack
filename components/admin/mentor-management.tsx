@@ -9,9 +9,10 @@ import { Label } from '@/components/ui/label'
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { createClient } from '@/lib/supabase/client'
-import { Plus, Users, Loader2, UserCheck, Mail, Copy, Check, Eye, EyeOff, KeyRound } from 'lucide-react'
+import { Plus, Users, Loader2, UserCheck, Mail, Copy, Check, Eye, EyeOff, KeyRound, Trash2 } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { createUser } from '@/app/actions/create-user'
+import { deleteUser } from '@/app/actions/delete-user'
 import { useTranslations } from 'next-intl'
 
 interface MentorManagementProps {
@@ -29,6 +30,7 @@ export function MentorManagement({ event, teams, onUpdate }: MentorManagementPro
   const [mentors, setMentors] = useState<MentorWithAssignments[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [isCreating, setIsCreating] = useState(false)
+  const [isDeleting, setIsDeleting] = useState<string | null>(null)
   const [showCreateDialog, setShowCreateDialog] = useState(false)
   const [showCredentialsDialog, setShowCredentialsDialog] = useState(false)
   const [visiblePasswords, setVisiblePasswords] = useState<Set<string>>(new Set())
@@ -247,6 +249,27 @@ export function MentorManagement({ event, teams, onUpdate }: MentorManagementPro
     }
   }
 
+  const deleteMentor = async (mentorId: string) => {
+    if (!confirm(t('confirmDelete'))) return
+
+    setIsDeleting(mentorId)
+    try {
+      const result = await deleteUser({ userId: mentorId, role: 'mentor' })
+
+      if (!result.success) {
+        throw new Error(result.error || t('deleteError'))
+      }
+
+      loadMentors()
+      onUpdate()
+    } catch (err: any) {
+      console.error('Failed to delete mentor:', err)
+      alert(t('deleteError') + ': ' + err.message)
+    } finally {
+      setIsDeleting(null)
+    }
+  }
+
   const togglePasswordVisibility = (mentorId: string) => {
     setVisiblePasswords(prev => {
       const newSet = new Set(prev)
@@ -384,10 +407,26 @@ export function MentorManagement({ event, teams, onUpdate }: MentorManagementPro
                           </div>
                         )}
                       </div>
-                      <Badge variant="secondary" className="flex items-center gap-1">
-                        <Users className="h-3 w-3" />
-                        {mentor.assignment_count} {mentor.assignment_count !== 1 ? t('teams') : t('team')}
-                      </Badge>
+                      <div className="flex items-center gap-2">
+                        <Badge variant="secondary" className="flex items-center gap-1">
+                          <Users className="h-3 w-3" />
+                          {mentor.assignment_count} {mentor.assignment_count !== 1 ? t('teams') : t('team')}
+                        </Badge>
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          onClick={() => deleteMentor(mentor.id)}
+                          disabled={isDeleting === mentor.id}
+                          className="h-8 w-8 p-0 text-red-600 hover:text-red-700 hover:bg-red-50"
+                          title={t('deleteMentor')}
+                        >
+                          {isDeleting === mentor.id ? (
+                            <Loader2 className="h-4 w-4 animate-spin" />
+                          ) : (
+                            <Trash2 className="h-4 w-4" />
+                          )}
+                        </Button>
+                      </div>
                     </div>
                   </CardHeader>
                   <CardContent>

@@ -8,9 +8,10 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import { createClient } from '@/lib/supabase/client'
-import { Plus, UserCheck, Loader2, Copy, Gavel, Eye, EyeOff, KeyRound } from 'lucide-react'
+import { Plus, UserCheck, Loader2, Copy, Gavel, Eye, EyeOff, KeyRound, Trash2 } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { createUser } from '@/app/actions/create-user'
+import { deleteUser } from '@/app/actions/delete-user'
 import { useTranslations } from 'next-intl'
 
 interface JuryManagementProps {
@@ -22,6 +23,7 @@ export function JuryManagement({ event, onUpdate }: JuryManagementProps) {
   const [juryMembers, setJuryMembers] = useState<Profile[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [isCreating, setIsCreating] = useState(false)
+  const [isDeleting, setIsDeleting] = useState<string | null>(null)
   const [showCreateDialog, setShowCreateDialog] = useState(false)
   const [showCredentialsDialog, setShowCredentialsDialog] = useState(false)
   const [visiblePasswords, setVisiblePasswords] = useState<Set<string>>(new Set())
@@ -173,6 +175,26 @@ export function JuryManagement({ event, onUpdate }: JuryManagementProps) {
       }
       return newSet
     })
+  }
+
+  const deleteJury = async (juryId: string) => {
+    if (!confirm(t('confirmDelete'))) return
+
+    setIsDeleting(juryId)
+    try {
+      const result = await deleteUser({ userId: juryId, role: 'jury' })
+
+      if (!result.success) {
+        throw new Error(result.error || t('deleteError'))
+      }
+
+      loadJuryMembers()
+    } catch (err: any) {
+      console.error('Failed to delete jury:', err)
+      alert(t('deleteError') + ': ' + err.message)
+    } finally {
+      setIsDeleting(null)
+    }
   }
 
   return (
@@ -347,9 +369,25 @@ export function JuryManagement({ event, onUpdate }: JuryManagementProps) {
                           )}
                         </div>
                       </div>
-                      <Badge variant="outline" className="bg-purple-50 text-purple-700 border-purple-200">
-                        {t('juryBadge')}
-                      </Badge>
+                      <div className="flex items-center gap-2">
+                        <Badge variant="outline" className="bg-purple-50 text-purple-700 border-purple-200">
+                          {t('juryBadge')}
+                        </Badge>
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          onClick={() => deleteJury(jury.id)}
+                          disabled={isDeleting === jury.id}
+                          className="h-8 w-8 p-0 text-red-600 hover:text-red-700 hover:bg-red-50"
+                          title={t('deleteJury')}
+                        >
+                          {isDeleting === jury.id ? (
+                            <Loader2 className="h-4 w-4 animate-spin" />
+                          ) : (
+                            <Trash2 className="h-4 w-4" />
+                          )}
+                        </Button>
+                      </div>
                     </div>
                   </CardContent>
                 </Card>
