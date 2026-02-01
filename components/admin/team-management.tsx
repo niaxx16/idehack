@@ -384,7 +384,7 @@ export function TeamManagement({ event, teams, onUpdate }: TeamManagementProps) 
                             <p className="text-2xl font-bold font-mono tracking-wider print:text-xl break-all">{team.activation_code}</p>
                           </div>
                           <div className="text-xs text-center text-muted-foreground print:text-black print:text-[9px] w-full">
-                            <p className="whitespace-nowrap">idehack-bursaarge.vercel.app/join</p>
+                            <p className="whitespace-nowrap">fikirmaratonu.com/join</p>
                           </div>
                         </div>
                       )

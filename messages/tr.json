@@ -174,7 +174,7 @@
       "qrDialog": {
         "allCodesTitle": "Tüm Takım Aktivasyon Kodları & QR Kodları",
         "allCodesDescription": "Her masaya yazdırıp yerleştirin. Öğrenciler QR'ı tarayabilir veya kodu girebilirler.",
-        "scanInstruction": "QR'ı tarayın veya idehack-bursaarge.vercel.app/join adresini ziyaret edin",
+        "scanInstruction": "QR'ı tarayın veya fikirmaratonu.com/join adresini ziyaret edin",
         "print": "Yazdır",
         "joinTitle": "Katılım QR Kodu",
         "joinDescription": "Takıma katılmak için bu QR kodunu tarayın"
