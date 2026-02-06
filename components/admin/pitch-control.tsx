@@ -505,6 +505,7 @@ export function PitchControl({ event, teams, onUpdate }: PitchControlProps) {
               </div>
               <p className="text-xs">{t('notPitchingPhaseDesc')}</p>
             </div>
+            )
           ) : (
             <div className="space-y-6">
               <div className="text-center space-y-2">
