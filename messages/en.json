@@ -546,6 +546,9 @@
       "saveFailed": "Failed to save score",
       "alreadyScored": "You have already scored this team. Click to update."
     },
+    "myScores": {
+      "title": "My Scores"
+    },
     "scoring": {
       "title": "Score Team",
       "innovation": "Innovation",

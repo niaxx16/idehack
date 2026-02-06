@@ -8,6 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button'
 import { StreamViewer } from '@/components/jury/stream-viewer'
 import { ScoringForm } from '@/components/jury/scoring-form'
+import { MyScoresList } from '@/components/jury/my-scores-list'
 import { Loader2 } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useLanguage } from '@/lib/i18n/language-provider'
@@ -147,7 +148,7 @@ export default function JuryPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
-      <div className="h-screen flex flex-col">
+      <div className="min-h-screen flex flex-col">
         {/* Header */}
         <div className="bg-white border-b p-4">
           <div className="max-w-screen-2xl mx-auto flex items-center justify-between">
@@ -163,17 +164,17 @@ export default function JuryPage() {
           </div>
         </div>
 
-        {/* Main Content - Split Screen */}
-        <div className="flex-1 overflow-hidden">
+        {/* Main Content */}
+        <div className="flex-1 overflow-auto">
           {currentEvent && currentTeam ? (
-            <div className="h-full grid md:grid-cols-2 gap-4 p-4 max-w-screen-2xl mx-auto">
+            <div className="grid md:grid-cols-2 gap-4 p-4 max-w-screen-2xl mx-auto">
               {/* Left: Stream Viewer */}
-              <div className="overflow-auto">
+              <div>
                 <StreamViewer event={currentEvent} team={currentTeam} />
               </div>
 
               {/* Right: Scoring Form */}
-              <div className="overflow-auto">
+              <div>
                 <ScoringForm
                   event={currentEvent}
                   team={currentTeam}
@@ -183,7 +184,7 @@ export default function JuryPage() {
               </div>
             </div>
           ) : (
-            <div className="h-full flex items-center justify-center p-4">
+            <div className="flex items-center justify-center p-4 py-12">
               <Card className="max-w-md w-full">
                 <CardHeader>
                   <CardTitle>{t('noActivePitch')}</CardTitle>
@@ -206,6 +207,13 @@ export default function JuryPage() {
                   )}
                 </CardContent>
               </Card>
+            </div>
+          )}
+
+          {/* My Scores List */}
+          {currentEvent && profile && (
+            <div className="p-4 pt-0 max-w-screen-2xl mx-auto">
+              <MyScoresList juryId={profile.id} eventId={currentEvent.id} />
             </div>
           )}
         </div>

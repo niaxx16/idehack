@@ -546,6 +546,9 @@
       "saveFailed": "Puan kaydedilemedi",
       "alreadyScored": "Bu takımı zaten puanladınız. Güncellemek için tıklayın."
     },
+    "myScores": {
+      "title": "Verdiğim Puanlar"
+    },
     "scoring": {
       "title": "Takımı Puanla",
       "innovation": "Yenilikçilik",
