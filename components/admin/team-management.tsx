@@ -11,6 +11,7 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/component
 import { createClient } from '@/lib/supabase/client'
 import { Plus, Users, FileText, ChevronDown, Crown, UserCircle, Clock, Eye, EyeOff, Key, LayoutGrid, FileDown } from 'lucide-react'
 import { TeamCanvasViewer } from './team-canvas-viewer'
+import { InvestmentsOverview } from './investments-overview'
 import { QRCodeSVG } from 'qrcode.react'
 import { useTranslations } from 'next-intl'
 
@@ -645,6 +646,9 @@ export function TeamManagement({ event, teams, onUpdate }: TeamManagementProps) 
           )}
         </CardContent>
       </Card>
+
+      {/* Investments Overview */}
+      <InvestmentsOverview event={event} teams={teams} />
 
       {/* Canvas Viewer Dialog */}
       <Dialog open={!!canvasViewTeam} onOpenChange={(open) => !open && setCanvasViewTeam(null)}>

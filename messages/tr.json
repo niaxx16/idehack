@@ -195,6 +195,19 @@
         "ideas": "fikir"
       }
     },
+    "investmentsOverview": {
+      "title": "Yatırım Listesi",
+      "description": "Öğrencilerin takımlara yaptığı idecoin yatırımları",
+      "noInvestments": "Henüz yatırım yapılmadı",
+      "studentName": "Öğrenci",
+      "studentTeam": "Takımı",
+      "investedTeams": "Yatırım Yaptığı Takımlar",
+      "totalSpent": "Toplam Harcanan",
+      "totalReceived": "Toplam Alınan",
+      "teamTotals": "Takımların Aldığı Toplam Yatırım",
+      "unknownStudent": "Bilinmeyen Öğrenci",
+      "exportExcel": "Excel'e Aktar"
+    },
     "pitchControl": {
       "title": "Sunum Kontrolü",
       "description": "Bir takım seçin ve sunum zamanlayıcısını başlatın",

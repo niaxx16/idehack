@@ -195,6 +195,19 @@
         "ideas": "ideas"
       }
     },
+    "investmentsOverview": {
+      "title": "Investment List",
+      "description": "Idecoin investments made by students to teams",
+      "noInvestments": "No investments yet",
+      "studentName": "Student",
+      "studentTeam": "Team",
+      "investedTeams": "Invested Teams",
+      "totalSpent": "Total Spent",
+      "totalReceived": "Total Received",
+      "teamTotals": "Total Investment Received by Teams",
+      "unknownStudent": "Unknown Student",
+      "exportExcel": "Export to Excel"
+    },
     "pitchControl": {
       "title": "Pitch Control",
       "description": "Select a team and start their pitch timer",
