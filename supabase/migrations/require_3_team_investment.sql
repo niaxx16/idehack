@@ -1,7 +1,6 @@
--- Improved submit_portfolio function with validation rules:
--- 1. Minimum 1 team, maximum 3 teams
--- 2. Cannot invest in own team
--- 3. Better error messages
+-- Require exactly 3 team investments (minimum changed from 1 to 3)
+-- This forces students to evaluate multiple projects and creates
+-- more varied ROI scores on the leaderboard.
 
 CREATE OR REPLACE FUNCTION submit_portfolio(votes JSONB)
 RETURNS JSONB AS $$
@@ -52,7 +51,7 @@ BEGIN
     END IF;
   END LOOP;
 
-  -- Validate minimum and maximum team count (exactly 3 required)
+  -- Validate minimum 3 teams required
   IF team_count < 3 THEN
     RETURN jsonb_build_object(
       'success', false,

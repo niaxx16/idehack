@@ -8,7 +8,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { createClient } from '@/lib/supabase/client'
 import { useVotingStore } from '@/stores/voting-store'
-import { Coins, Loader2, CheckCircle } from 'lucide-react'
+import { Coins, Loader2, CheckCircle, AlertCircle } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { Progress } from '@/components/ui/progress'
 
@@ -84,8 +84,13 @@ export function PortfolioVoting({ event, profile }: PortfolioVotingProps) {
     updateVote(teamId, amount)
   }
 
+  const getTeamsWithInvestment = () => {
+    return Object.entries(votes).filter(([, amount]) => amount > 0).length
+  }
+
   const submitVotes = async () => {
     const totalAllocated = getTotalAllocated()
+    const teamsInvested = getTeamsWithInvestment()
 
     if (totalAllocated > WALLET_BALANCE) {
       setError(`You can't allocate more than ${WALLET_BALANCE} idecoin`)
@@ -94,6 +99,11 @@ export function PortfolioVoting({ event, profile }: PortfolioVotingProps) {
 
     if (totalAllocated === 0) {
       setError('Please allocate some investment')
+      return
+    }
+
+    if (teamsInvested < 3) {
+      setError('You must invest in exactly 3 teams')
       return
     }
 
@@ -126,6 +136,7 @@ export function PortfolioVoting({ event, profile }: PortfolioVotingProps) {
   const totalAllocated = getTotalAllocated()
   const remaining = WALLET_BALANCE - totalAllocated
   const progressPercentage = (totalAllocated / WALLET_BALANCE) * 100
+  const teamsInvested = getTeamsWithInvestment()
 
   if (hasVoted) {
     return (
@@ -165,9 +176,16 @@ export function PortfolioVoting({ event, profile }: PortfolioVotingProps) {
               value={progressPercentage}
               className={`h-3 ${remaining < 0 ? 'bg-red-200' : ''}`}
             />
-            <p className="text-xs text-muted-foreground text-right">
-              Remaining: {remaining} idecoin
-            </p>
+            <div className="flex justify-between text-xs text-muted-foreground">
+              <span>Teams: {teamsInvested}/3</span>
+              <span>Remaining: {remaining} idecoin</span>
+            </div>
+            {teamsInvested < 3 && totalAllocated > 0 && (
+              <div className="flex items-center gap-1.5 p-2 rounded bg-yellow-50 border border-yellow-200 text-yellow-800 text-xs">
+                <AlertCircle className="h-3.5 w-3.5 flex-shrink-0" />
+                <span>You must invest in exactly 3 different teams</span>
+              </div>
+            )}
           </div>
 
           {error && (
@@ -239,7 +257,7 @@ export function PortfolioVoting({ event, profile }: PortfolioVotingProps) {
         <CardContent className="pt-6">
           <Button
             onClick={submitVotes}
-            disabled={isSubmitting || totalAllocated === 0 || remaining < 0}
+            disabled={isSubmitting || totalAllocated === 0 || remaining < 0 || teamsInvested !== 3}
             className="w-full h-12 text-lg"
           >
             {isSubmitting ? (
