@@ -211,6 +211,8 @@
     "pitchControl": {
       "title": "Sunum Kontrolü",
       "description": "Bir takım seçin ve sunum zamanlayıcısını başlatın",
+      "notPitchingPhase": "Sunum aşaması aktif değil",
+      "notPitchingPhaseDesc": "Sunum başlatmak için Etkinlik Kontrolü sayfasından etkinliği \"Sunum\" aşamasına geçirin.",
       "selectTeam": "Sunum Yapacak Takımı Seçin",
       "chooseTeam": "Bir takım seçin...",
       "table": "Masa",

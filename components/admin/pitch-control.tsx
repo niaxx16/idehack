@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Progress } from '@/components/ui/progress'
 import { createClient } from '@/lib/supabase/client'
-import { Play, Pause, ExternalLink, Clock, Crown, UserCircle, Download, Video, Loader2, CheckCircle } from 'lucide-react'
+import { Play, Pause, ExternalLink, Clock, Crown, UserCircle, Download, Video, Loader2, CheckCircle, AlertCircle } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { useHype } from '@/hooks/use-hype'
 import { useTranslations } from 'next-intl'
@@ -470,6 +470,7 @@ export function PitchControl({ event, teams, onUpdate }: PitchControlProps) {
         </CardHeader>
         <CardContent className="space-y-6">
           {!currentTeam ? (
+            event?.status === 'PITCHING' ? (
             <div className="space-y-4">
               <div className="space-y-2">
                 <label className="text-sm font-medium">{t('selectTeam')}</label>
@@ -495,6 +496,14 @@ export function PitchControl({ event, teams, onUpdate }: PitchControlProps) {
                 <Play className="mr-2 h-4 w-4" />
                 {t('startPitch')}
               </Button>
+            </div>
+            ) : (
+            <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 text-sm text-yellow-800">
+              <div className="flex items-center gap-2 mb-1">
+                <AlertCircle className="h-4 w-4" />
+                <span className="font-medium">{t('notPitchingPhase')}</span>
+              </div>
+              <p className="text-xs">{t('notPitchingPhaseDesc')}</p>
             </div>
           ) : (
             <div className="space-y-6">

@@ -211,6 +211,8 @@
     "pitchControl": {
       "title": "Pitch Control",
       "description": "Select a team and start their pitch timer",
+      "notPitchingPhase": "Pitching phase is not active",
+      "notPitchingPhaseDesc": "Go to Event Control and switch the event to \"Pitching\" phase to start presentations.",
       "selectTeam": "Select Team to Pitch",
       "chooseTeam": "Choose a team...",
       "table": "Table",
