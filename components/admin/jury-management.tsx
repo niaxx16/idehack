@@ -13,6 +13,7 @@ import { Badge } from '@/components/ui/badge'
 import { createUser } from '@/app/actions/create-user'
 import { deleteUser } from '@/app/actions/delete-user'
 import { useTranslations } from 'next-intl'
+import { JuryScoresOverview } from './jury-scores-overview'
 
 interface JuryManagementProps {
   event: Event | null
@@ -396,6 +397,9 @@ export function JuryManagement({ event, onUpdate }: JuryManagementProps) {
           )}
         </CardContent>
       </Card>
+
+      {/* Jury Scores Overview */}
+      <JuryScoresOverview event={event} juryMembers={juryMembers} />
     </div>
   )
 }

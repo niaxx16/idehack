@@ -326,6 +326,14 @@
         "anonymousJury": "Anonim Jüri"
       }
     },
+    "juryScoresOverview": {
+      "title": "Jüri Puanları",
+      "description": "Tüm jüri üyelerinin takımlara verdiği puanlar",
+      "noScores": "Henüz puan verilmedi",
+      "team": "Takım",
+      "average": "Ortalama",
+      "anonymousJury": "Anonim Jüri"
+    },
     "juryManagement": {
       "title": "Jüri Yönetimi",
       "description": "Takım sunumlarını puanlayacak jüri üyelerini oluşturun ve yönetin",

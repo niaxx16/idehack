@@ -326,6 +326,14 @@
         "anonymousJury": "Anonymous Jury"
       }
     },
+    "juryScoresOverview": {
+      "title": "Jury Scores",
+      "description": "Scores given by all jury members to teams",
+      "noScores": "No scores given yet",
+      "team": "Team",
+      "average": "Average",
+      "anonymousJury": "Anonymous Jury"
+    },
     "juryManagement": {
       "title": "Jury Management",
       "description": "Create and manage jury members who will score team presentations",
