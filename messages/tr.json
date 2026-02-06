@@ -332,7 +332,16 @@
       "noScores": "Henüz puan verilmedi",
       "team": "Takım",
       "average": "Ortalama",
-      "anonymousJury": "Anonim Jüri"
+      "total": "Toplam",
+      "anonymousJury": "Anonim Jüri",
+      "exportExcel": "Excel'e Aktar",
+      "criteria": {
+        "problemUnderstanding": "Problem Anlama",
+        "innovation": "Yenilikçilik",
+        "valueImpact": "Değer/Etki",
+        "feasibility": "Uygulanabilirlik",
+        "presentationTeamwork": "Sunum/Takım Çalışması"
+      }
     },
     "juryManagement": {
       "title": "Jüri Yönetimi",

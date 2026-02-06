@@ -6,7 +6,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { Badge } from '@/components/ui/badge'
 import { createClient } from '@/lib/supabase/client'
-import { Loader2, BarChart3 } from 'lucide-react'
+import { Button } from '@/components/ui/button'
+import { Loader2, BarChart3, Download } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 
 interface JuryScoresOverviewProps {
@@ -116,6 +117,115 @@ export function JuryScoresOverview({ event, juryMembers }: JuryScoresOverviewPro
     return total / teamScores.length
   }
 
+  const getDetailedScores = (teamId: string, juryId: string): JuryScoreData | null => {
+    const record = scores.find(s => s.team_id === teamId && s.jury_id === juryId)
+    return record ? record.scores : null
+  }
+
+  const CRITERIA_KEYS: (keyof JuryScoreData)[] = [
+    'problem_understanding', 'innovation', 'value_impact', 'feasibility', 'presentation_teamwork'
+  ]
+
+  const criteriaLabels: Record<keyof JuryScoreData, string> = {
+    problem_understanding: t('criteria.problemUnderstanding'),
+    innovation: t('criteria.innovation'),
+    value_impact: t('criteria.valueImpact'),
+    feasibility: t('criteria.feasibility'),
+    presentation_teamwork: t('criteria.presentationTeamwork'),
+  }
+
+  const exportToExcel = () => {
+    if (!event || scores.length === 0) return
+
+    const scoredTeamIds = new Set(scores.map(s => s.team_id))
+    const scoredTeams = teams.filter(t => scoredTeamIds.has(t.id))
+    const scoredJuryIds = new Set(scores.map(s => s.jury_id))
+    const activeJury = juryMembers.filter(j => scoredJuryIds.has(j.id))
+
+    const escapeHtml = (value: string) => {
+      return value.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;')
+    }
+
+    // Build headers: Team | Jury1 (criteria) | Jury1 Total | Jury2 (criteria) | Jury2 Total | ... | Average
+    const headerRow1: string[] = [`<th rowspan="2" style="background:#f0f0f0;font-weight:bold;border:1px solid #ccc;padding:5px;">${escapeHtml(t('team'))}</th>`]
+    const headerRow2: string[] = []
+
+    activeJury.forEach(jury => {
+      const name = escapeHtml(jury.full_name || t('anonymousJury'))
+      headerRow1.push(`<th colspan="6" style="background:#e8e0f0;font-weight:bold;border:1px solid #ccc;padding:5px;text-align:center;">${name}</th>`)
+      CRITERIA_KEYS.forEach(key => {
+        headerRow2.push(`<th style="background:#f5f0fa;font-size:10px;border:1px solid #ccc;padding:3px;text-align:center;">${escapeHtml(criteriaLabels[key])}</th>`)
+      })
+      headerRow2.push(`<th style="background:#e0d5ef;font-weight:bold;border:1px solid #ccc;padding:3px;text-align:center;">${escapeHtml(t('total'))}</th>`)
+    })
+    headerRow1.push(`<th rowspan="2" style="background:#d4edda;font-weight:bold;border:1px solid #ccc;padding:5px;text-align:center;">${escapeHtml(t('average'))}</th>`)
+
+    // Build data rows
+    const dataRows = scoredTeams.map(team => {
+      const cells: string[] = [`<td style="font-weight:bold;border:1px solid #ccc;padding:5px;">${escapeHtml(team.name)} (#${team.table_number})</td>`]
+
+      activeJury.forEach(jury => {
+        const detailed = getDetailedScores(team.id, jury.id)
+        if (detailed) {
+          CRITERIA_KEYS.forEach(key => {
+            cells.push(`<td style="text-align:center;border:1px solid #ccc;padding:3px;">${detailed[key]}</td>`)
+          })
+          cells.push(`<td style="text-align:center;font-weight:bold;border:1px solid #ccc;padding:3px;background:#f5f0fa;">${getTotalScore(detailed)}</td>`)
+        } else {
+          for (let i = 0; i < 6; i++) {
+            cells.push(`<td style="text-align:center;border:1px solid #ccc;padding:3px;">-</td>`)
+          }
+        }
+      })
+
+      const avg = getTeamAverage(team.id)
+      cells.push(`<td style="text-align:center;font-weight:bold;border:1px solid #ccc;padding:3px;background:#d4edda;">${avg !== null ? avg.toFixed(1) : '-'}</td>`)
+
+      return `<tr>${cells.join('')}</tr>`
+    })
+
+    const htmlContent = `
+      <html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40">
+      <head>
+        <meta charset="UTF-8">
+        <!--[if gte mso 9]>
+        <xml>
+          <x:ExcelWorkbook>
+            <x:ExcelWorksheets>
+              <x:ExcelWorksheet>
+                <x:Name>${escapeHtml(t('title'))}</x:Name>
+                <x:WorksheetOptions><x:DisplayGridlines/></x:WorksheetOptions>
+              </x:ExcelWorksheet>
+            </x:ExcelWorksheets>
+          </x:ExcelWorkbook>
+        </xml>
+        <![endif]-->
+      </head>
+      <body>
+        <table>
+          <thead>
+            <tr>${headerRow1.join('')}</tr>
+            <tr>${headerRow2.join('')}</tr>
+          </thead>
+          <tbody>
+            ${dataRows.join('')}
+          </tbody>
+        </table>
+      </body>
+      </html>
+    `
+
+    const blob = new Blob([htmlContent], { type: 'application/vnd.ms-excel;charset=utf-8;' })
+    const link = document.createElement('a')
+    const url = URL.createObjectURL(blob)
+    link.setAttribute('href', url)
+    link.setAttribute('download', `${event.name}_juri_puanlari_${new Date().toISOString().split('T')[0]}.xls`)
+    link.style.visibility = 'hidden'
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+  }
+
   const getScoreBadgeColor = (score: number) => {
     if (score >= 80) return 'bg-green-100 text-green-800 border-green-300'
     if (score >= 60) return 'bg-blue-100 text-blue-800 border-blue-300'
@@ -169,11 +279,19 @@ export function JuryScoresOverview({ event, juryMembers }: JuryScoresOverviewPro
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <BarChart3 className="h-5 w-5" />
-          {t('title')}
-        </CardTitle>
-        <CardDescription>{t('description')}</CardDescription>
+        <div className="flex items-center justify-between">
+          <div>
+            <CardTitle className="flex items-center gap-2">
+              <BarChart3 className="h-5 w-5" />
+              {t('title')}
+            </CardTitle>
+            <CardDescription>{t('description')}</CardDescription>
+          </div>
+          <Button variant="outline" onClick={exportToExcel}>
+            <Download className="h-4 w-4 mr-2" />
+            {t('exportExcel')}
+          </Button>
+        </div>
       </CardHeader>
       <CardContent>
         <div className="overflow-x-auto">

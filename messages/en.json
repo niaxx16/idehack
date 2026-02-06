@@ -332,7 +332,16 @@
       "noScores": "No scores given yet",
       "team": "Team",
       "average": "Average",
-      "anonymousJury": "Anonymous Jury"
+      "total": "Total",
+      "anonymousJury": "Anonymous Jury",
+      "exportExcel": "Export to Excel",
+      "criteria": {
+        "problemUnderstanding": "Problem Understanding",
+        "innovation": "Innovation",
+        "valueImpact": "Value/Impact",
+        "feasibility": "Feasibility",
+        "presentationTeamwork": "Presentation/Teamwork"
+      }
     },
     "juryManagement": {
       "title": "Jury Management",
