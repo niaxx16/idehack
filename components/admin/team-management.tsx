@@ -40,7 +40,6 @@ export function TeamManagement({ event, teams, onUpdate }: TeamManagementProps) 
   const [advisorTeacher, setAdvisorTeacher] = useState('')
   const [selectedTeam, setSelectedTeam] = useState<Team | null>(null)
   const [canvasViewTeam, setCanvasViewTeam] = useState<Team | null>(null)
-  const [showAllQR, setShowAllQR] = useState(false)
   const [bulkCount, setBulkCount] = useState('')
   const [isBulkCreating, setIsBulkCreating] = useState(false)
   const [expandedTeams, setExpandedTeams] = useState<Set<string>>(new Set())
@@ -227,6 +226,87 @@ export function TeamManagement({ event, teams, onUpdate }: TeamManagementProps) 
     return code
   }
 
+  const printAllQRCodes = () => {
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || window.location.origin
+    const printWindow = window.open('', '_blank')
+    if (!printWindow) return
+
+    const cardsHtml = teams.map((team) => {
+      const joinUrl = `${baseUrl}/join?code=${team.activation_code}`
+      // Generate QR code as an image URL using a public API
+      const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(joinUrl)}&ecc=H`
+      return `
+        <div class="qr-card">
+          <h3>${team.name}</h3>
+          <p class="table-num">${t('teamsList.table')} ${team.table_number}</p>
+          <div class="qr-wrap">
+            <img src="${qrUrl}" alt="QR" width="180" height="180" />
+          </div>
+          <p class="code-label">${t('teamsList.activationCode')}</p>
+          <p class="code">${team.activation_code}</p>
+          <p class="url">fikirmaratonu.com/join</p>
+        </div>
+      `
+    }).join('')
+
+    printWindow.document.write(`
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <title>QR Codes</title>
+        <style>
+          * { margin: 0; padding: 0; box-sizing: border-box; }
+          body { font-family: Arial, sans-serif; }
+          @page { size: A4; margin: 0.8cm; }
+          .grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            padding: 10px;
+          }
+          .qr-card {
+            border: 2px solid #333;
+            border-radius: 8px;
+            padding: 10px;
+            text-align: center;
+            page-break-inside: avoid;
+            break-inside: avoid;
+          }
+          .qr-card h3 { font-size: 16px; margin-bottom: 2px; }
+          .table-num { font-size: 12px; color: #666; margin-bottom: 6px; }
+          .qr-wrap { display: inline-block; padding: 8px; border: 1px solid #ccc; border-radius: 6px; margin-bottom: 6px; }
+          .qr-wrap img { display: block; }
+          .code-label { font-size: 10px; color: #666; margin-bottom: 2px; }
+          .code { font-size: 22px; font-weight: bold; font-family: monospace; letter-spacing: 3px; margin-bottom: 4px; }
+          .url { font-size: 9px; color: #888; }
+        </style>
+      </head>
+      <body>
+        <div class="grid">${cardsHtml}</div>
+        <script>
+          // Wait for all QR images to load before printing
+          const images = document.querySelectorAll('img');
+          let loaded = 0;
+          const total = images.length;
+          if (total === 0) { window.print(); window.close(); }
+          images.forEach(img => {
+            if (img.complete) {
+              loaded++;
+              if (loaded === total) { window.print(); window.close(); }
+            } else {
+              img.onload = img.onerror = () => {
+                loaded++;
+                if (loaded === total) { window.print(); window.close(); }
+              };
+            }
+          });
+        </script>
+      </body>
+      </html>
+    `)
+    printWindow.document.close()
+  }
+
   const joinUrl = selectedTeam
     ? `${process.env.NEXT_PUBLIC_APP_URL || window.location.origin}/join?code=${selectedTeam.activation_code}`
     : ''
@@ -333,102 +413,9 @@ export function TeamManagement({ event, teams, onUpdate }: TeamManagementProps) 
               <CardDescription>{t('teamsList.description')}</CardDescription>
             </div>
             {teams.length > 0 && (
-              <Dialog open={showAllQR} onOpenChange={setShowAllQR}>
-                <DialogTrigger asChild>
-                  <Button variant="outline">
-                    {t('teamsList.printAll')}
-                  </Button>
-                </DialogTrigger>
-                <DialogContent className="max-w-6xl max-h-[90vh] overflow-y-auto print:max-w-full print:max-h-full">
-                  <DialogHeader className="print:hidden">
-                    <DialogTitle>{t('qrDialog.allCodesTitle')}</DialogTitle>
-                    <DialogDescription>
-                      {t('qrDialog.allCodesDescription')}
-                    </DialogDescription>
-                  </DialogHeader>
-
-                  <style jsx>{`
-                    @media print {
-                      @page {
-                        size: A4;
-                        margin: 1cm;
-                      }
-
-                      /* Hide everything except dialog content */
-                      body > :not([data-radix-portal]) {
-                        display: none !important;
-                      }
-
-                      /* Show only the dialog content */
-                      [data-radix-portal] {
-                        position: static !important;
-                        display: block !important;
-                      }
-
-                      /* Hide overlay and ensure single render */
-                      [data-radix-dialog-overlay] {
-                        display: none !important;
-                      }
-
-                      [data-radix-dialog-content] {
-                        position: static !important;
-                        max-width: 100% !important;
-                        max-height: 100% !important;
-                        margin: 0 !important;
-                        padding: 0 !important;
-                        box-shadow: none !important;
-                        border: none !important;
-                      }
-
-                      .qr-card {
-                        page-break-inside: avoid;
-                        break-inside: avoid;
-                        display: block !important;
-                      }
-                    }
-                  `}</style>
-
-                  <div className="grid grid-cols-2 md:grid-cols-3 gap-6 p-4 print:grid-cols-3 print:gap-4">
-                    {teams.map((team) => {
-                      const joinUrl = `${process.env.NEXT_PUBLIC_APP_URL || window.location.origin}/join?code=${team.activation_code}`
-                      return (
-                        <div
-                          key={team.id}
-                          className="qr-card flex flex-col items-center space-y-2 p-4 border-2 rounded-lg break-inside-avoid print:border-black print:p-3"
-                        >
-                          <h3 className="font-bold text-xl print:text-lg">{team.name}</h3>
-                          <p className="text-sm text-muted-foreground print:text-black print:text-xs">
-                            {t('teamsList.table')} {team.table_number}
-                          </p>
-                          <div className="p-4 bg-white rounded-lg border print:border-black print:p-2">
-                            <QRCodeSVG
-                              value={joinUrl}
-                              size={200}
-                              level="H"
-                              includeMargin
-                            />
-                          </div>
-                          <div className="text-center w-full">
-                            <p className="text-xs text-muted-foreground print:text-black">{t('teamsList.activationCode')}</p>
-                            <p className="text-2xl font-bold font-mono tracking-wider print:text-xl break-all">{team.activation_code}</p>
-                          </div>
-                          <div className="text-xs text-center text-muted-foreground print:text-black print:text-[9px] w-full">
-                            <p className="whitespace-nowrap">fikirmaratonu.com/join</p>
-                          </div>
-                        </div>
-                      )
-                    })}
-                  </div>
-                  <div className="flex justify-end gap-2 print:hidden">
-                    <Button onClick={() => window.print()} variant="default">
-                      {t('qrDialog.print')}
-                    </Button>
-                    <Button onClick={() => setShowAllQR(false)} variant="outline">
-                      {tCommon('close')}
-                    </Button>
-                  </div>
-                </DialogContent>
-              </Dialog>
+              <Button variant="outline" onClick={() => printAllQRCodes()}>
+                {t('teamsList.printAll')}
+              </Button>
             )}
           </div>
         </CardHeader>
