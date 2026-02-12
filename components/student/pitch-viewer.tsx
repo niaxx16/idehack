@@ -17,6 +17,10 @@ interface PitchViewerProps {
 
 export function PitchViewer({ event }: PitchViewerProps) {
   const [currentTeam, setCurrentTeam] = useState<Team | null>(null)
+  const [pitchingTeamInfo, setPitchingTeamInfo] = useState<{ name: string | null; table_number: number | null }>({
+    name: null,
+    table_number: null,
+  })
   const [timeRemaining, setTimeRemaining] = useState<number>(0)
   const [contributions, setContributions] = useState<Record<CanvasSection, CanvasContributionWithUser[]>>({
     problem: [],
@@ -50,6 +54,7 @@ export function PitchViewer({ event }: PitchViewerProps) {
       loadPitchData(event.current_team_id, event.id)
     } else {
       setCurrentTeam(null)
+      setPitchingTeamInfo({ name: null, table_number: null })
       // Reset contributions when no team
       setContributions({
         problem: [],
@@ -130,11 +135,26 @@ export function PitchViewer({ event }: PitchViewerProps) {
       console.log('[PitchViewer] decisionsResult:', { count: decisionsResult.data?.length, error: decisionsResult.error })
       if (!teamData) {
         console.log('[PitchViewer] Team row not readable, continuing with current_team_id fallback')
+        const { data: teamInfo } = await supabase
+          .from('teams')
+          .select('name, table_number')
+          .eq('id', teamId)
+          .maybeSingle()
+
+        setPitchingTeamInfo({
+          name: teamInfo?.name ?? null,
+          table_number: teamInfo?.table_number ?? null,
+        })
+      } else {
+        setPitchingTeamInfo({
+          name: teamData.name,
+          table_number: teamData.table_number,
+        })
       }
       setCurrentTeam(teamData ?? null)
 
       // Group contributions using the freshly fetched team data (not stale closure)
-      const members = (teamData.team_members as any[]) || []
+      const members = (teamData?.team_members as any[]) || []
       const grouped: Record<CanvasSection, CanvasContributionWithUser[]> = {
         problem: [],
         solution: [],
@@ -212,8 +232,8 @@ export function PitchViewer({ event }: PitchViewerProps) {
   }
 
   const progressPercentage = (timeRemaining / (3 * 60)) * 100
-  const teamTitle = currentTeam?.name || 'Current Team'
-  const teamTable = currentTeam?.table_number
+  const teamTitle = currentTeam?.name || pitchingTeamInfo.name || 'Current Team'
+  const teamTable = currentTeam?.table_number || pitchingTeamInfo.table_number
 
   return (
     <div className="space-y-4">
