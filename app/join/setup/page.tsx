@@ -63,7 +63,7 @@ export default function TeamSetupPage() {
           .from('profiles')
           .select('team_id')
           .eq('id', user.id)
-          .single()
+          .maybeSingle()
 
         if (profile?.team_id) {
           // User is already in a team, redirect to dashboard
@@ -77,9 +77,20 @@ export default function TeamSetupPage() {
         .from('teams')
         .select('captain_id, team_members')
         .eq('activation_code', normalizedCode)
-        .single()
+        .maybeSingle()
 
-      if (error) throw error
+      if (error) {
+        // Do not hard-block on precheck errors; final validation is in join submit.
+        console.warn('Team precheck failed, proceeding to submit validation:', error.message)
+        setIsFirstMember(false)
+        return
+      }
+
+      if (!team) {
+        // Unknown code will be reported by join submit/RPC; keep form usable.
+        setIsFirstMember(false)
+        return
+      }
 
       // Check if this is the first member
       const isFirst = !team.captain_id
@@ -90,12 +101,9 @@ export default function TeamSetupPage() {
         code: err?.code,
         activationCode: normalizedCode,
       })
-      setError(
-        err?.message?.toLowerCase().includes('invalid')
-          ? 'Invalid activation code. Please try again.'
-          : 'Could not verify team right now. Please try again.'
-      )
-      setTimeout(() => router.push('/join'), 2000)
+      // Keep user on page; submit step is the source of truth for validation.
+      setError('Could not pre-verify team. You can still continue below.')
+      setIsFirstMember(false)
     } finally {
       setIsLoading(false)
     }
