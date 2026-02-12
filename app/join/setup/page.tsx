@@ -137,6 +137,38 @@ export default function TeamSetupPage() {
               },
               { onConflict: 'id' }
             )
+
+          // Keep teams.team_members in sync for admin panel visibility.
+          const { data: teamData } = await supabase
+            .from('teams')
+            .select('team_members, captain_id, is_activated')
+            .eq('id', joinResult.team_id)
+            .single()
+
+          const existingMembers = (teamData?.team_members as any[]) || []
+          const alreadyMember = existingMembers.some((m) => m?.user_id === authData.user.id)
+
+          if (!alreadyMember) {
+            const updatedMembers = [
+              ...existingMembers,
+              {
+                user_id: authData.user.id,
+                name: memberName,
+                role: memberRole,
+                is_captain: Boolean(isFirstMember),
+                joined_at: new Date().toISOString(),
+              },
+            ]
+
+            await supabase
+              .from('teams')
+              .update({
+                team_members: updatedMembers,
+                captain_id: isFirstMember && !teamData?.captain_id ? authData.user.id : teamData?.captain_id,
+                is_activated: true,
+              })
+              .eq('id', joinResult.team_id)
+          }
         }
       }
 
