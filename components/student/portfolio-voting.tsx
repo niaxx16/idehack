@@ -21,6 +21,8 @@ export function PortfolioVoting({ event, profile }: PortfolioVotingProps) {
   const [teams, setTeams] = useState<Team[]>([])
   const [userNotes, setUserNotes] = useState<Record<string, UserNote>>({})
   const [hasVoted, setHasVoted] = useState(false)
+  const [isLoading, setIsLoading] = useState(true)
+  const [loadError, setLoadError] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
   const {
     votes,
@@ -36,27 +38,46 @@ export function PortfolioVoting({ event, profile }: PortfolioVotingProps) {
   const WALLET_BALANCE = profile.wallet_balance
 
   useEffect(() => {
-    loadTeamsAndNotes()
-    checkIfVoted()
+    loadAll()
   }, [event.id, profile.id])
+
+  const loadAll = async () => {
+    setIsLoading(true)
+    setLoadError(null)
+    try {
+      // Refresh auth session first to prevent stale token errors
+      await supabase.auth.getSession()
+
+      await Promise.all([loadTeamsAndNotes(), checkIfVoted()])
+    } catch (err: any) {
+      console.error('Failed to load voting data:', err)
+      setLoadError(err.message || 'Bağlantı hatası. Lütfen tekrar deneyin.')
+    } finally {
+      setIsLoading(false)
+    }
+  }
 
   const loadTeamsAndNotes = async () => {
     // Load all teams
-    const { data: teamsData } = await supabase
+    const { data: teamsData, error: teamsError } = await supabase
       .from('teams')
       .select('*')
       .eq('event_id', event.id)
       .order('table_number')
 
+    if (teamsError) throw teamsError
+
     if (teamsData) {
       setTeams(teamsData)
 
       // Load user's notes
-      const { data: notesData } = await supabase
+      const { data: notesData, error: notesError } = await supabase
         .from('user_notes')
         .select('*')
         .eq('user_id', profile.id)
         .in('target_team_id', teamsData.map(t => t.id))
+
+      if (notesError) throw notesError
 
       if (notesData) {
         const notesMap: Record<string, UserNote> = {}
@@ -70,11 +91,13 @@ export function PortfolioVoting({ event, profile }: PortfolioVotingProps) {
 
   const checkIfVoted = async () => {
     // Check if user has already made transactions
-    const { data } = await supabase
+    const { data, error: txError } = await supabase
       .from('transactions')
       .select('id')
       .eq('sender_id', profile.id)
       .limit(1)
+
+    if (txError) throw txError
 
     setHasVoted(!!data && data.length > 0)
   }
@@ -111,6 +134,9 @@ export function PortfolioVoting({ event, profile }: PortfolioVotingProps) {
     setError(null)
 
     try {
+      // Refresh session before submitting
+      await supabase.auth.getSession()
+
       const votesArray = getVotesArray()
 
       const { data, error: rpcError } = await supabase.rpc('submit_portfolio', {
@@ -137,6 +163,38 @@ export function PortfolioVoting({ event, profile }: PortfolioVotingProps) {
   const remaining = WALLET_BALANCE - totalAllocated
   const progressPercentage = (totalAllocated / WALLET_BALANCE) * 100
   const teamsInvested = getTeamsWithInvestment()
+
+  if (isLoading) {
+    return (
+      <Card>
+        <CardHeader className="text-center">
+          <div className="flex justify-center mb-4">
+            <Loader2 className="h-12 w-12 animate-spin text-purple-600" />
+          </div>
+          <CardTitle>Loading...</CardTitle>
+        </CardHeader>
+      </Card>
+    )
+  }
+
+  if (loadError) {
+    return (
+      <Card>
+        <CardHeader className="text-center">
+          <div className="flex justify-center mb-4">
+            <AlertCircle className="h-16 w-16 text-red-500" />
+          </div>
+          <CardTitle>Bağlantı Hatası</CardTitle>
+          <CardDescription>{loadError}</CardDescription>
+        </CardHeader>
+        <CardContent className="flex justify-center">
+          <Button onClick={loadAll}>
+            Tekrar Dene
+          </Button>
+        </CardContent>
+      </Card>
+    )
+  }
 
   if (hasVoted) {
     return (
