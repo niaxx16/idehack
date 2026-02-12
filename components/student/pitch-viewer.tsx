@@ -46,7 +46,7 @@ export function PitchViewer({ event }: PitchViewerProps) {
 
   useEffect(() => {
     if (event.current_team_id) {
-      loadCurrentTeam()
+      loadPitchData(event.current_team_id, event.id)
     } else {
       setCurrentTeam(null)
       // Reset contributions when no team
@@ -75,14 +75,6 @@ export function PitchViewer({ event }: PitchViewerProps) {
     }
   }, [event.current_team_id, event.id])
 
-  // Load contributions and team decisions when current team changes
-  useEffect(() => {
-    if (currentTeam?.id) {
-      loadContributions(currentTeam.id)
-      loadTeamDecisions(currentTeam.id)
-    }
-  }, [currentTeam?.id])
-
   useEffect(() => {
     if (event.pitch_timer_end) {
       const endTime = new Date(event.pitch_timer_end).getTime()
@@ -100,45 +92,45 @@ export function PitchViewer({ event }: PitchViewerProps) {
     }
   }, [event.pitch_timer_end])
 
-  const loadCurrentTeam = async () => {
-    if (!event.current_team_id) return
-
-    const { data } = await supabase
-      .from('teams')
-      .select('*')
-      .eq('id', event.current_team_id)
-      .eq('event_id', event.id)
-      .single()
-
-    if (data) {
-      setCurrentTeam(data)
-    } else {
-      setCurrentTeam(null)
-    }
-  }
-
-  const loadContributions = async (teamId: string) => {
+  const loadPitchData = async (teamId: string, eventId: string) => {
     try {
-      const members = (currentTeam?.team_members as any[]) || []
+      // Load team, contributions, and decisions in parallel
+      const [teamResult, contribResult, decisionsResult] = await Promise.all([
+        supabase
+          .from('teams')
+          .select('*')
+          .eq('id', teamId)
+          .eq('event_id', eventId)
+          .maybeSingle(),
+        supabase
+          .from('canvas_contributions')
+          .select(`
+            *,
+            profiles:user_id (
+              id,
+              full_name,
+              display_name,
+              role
+            )
+          `)
+          .eq('team_id', teamId)
+          .order('created_at', { ascending: true }),
+        supabase
+          .from('team_decisions')
+          .select('*')
+          .eq('team_id', teamId),
+      ])
 
-      // Load contributions with profile information
-      const { data, error } = await supabase
-        .from('canvas_contributions')
-        .select(`
-          *,
-          profiles:user_id (
-            id,
-            full_name,
-            display_name,
-            role
-          )
-        `)
-        .eq('team_id', teamId)
-        .order('created_at', { ascending: true })
+      // Set team
+      const teamData = teamResult.data
+      if (!teamData) {
+        setCurrentTeam(null)
+        return
+      }
+      setCurrentTeam(teamData)
 
-      if (error) throw error
-
-      // Group by section and enrich with member info
+      // Group contributions using the freshly fetched team data (not stale closure)
+      const members = (teamData.team_members as any[]) || []
       const grouped: Record<CanvasSection, CanvasContributionWithUser[]> = {
         problem: [],
         solution: [],
@@ -151,7 +143,7 @@ export function PitchViewer({ event }: PitchViewerProps) {
         resources_risks: [],
       }
 
-      ;(data || []).forEach((contrib: any) => {
+      ;(contribResult.data || []).forEach((contrib: any) => {
         const member = members.find((m: any) => m.user_id === contrib.user_id)
         const profile = contrib.profiles
         const memberName = profile?.display_name || profile?.full_name || member?.name || 'Unknown'
@@ -166,22 +158,9 @@ export function PitchViewer({ event }: PitchViewerProps) {
         }
         grouped[contrib.section as CanvasSection].push(enriched)
       })
-
       setContributions(grouped)
-    } catch (error) {
-      console.error('Failed to load contributions:', error)
-    }
-  }
 
-  const loadTeamDecisions = async (teamId: string) => {
-    try {
-      const { data, error } = await supabase
-        .from('team_decisions')
-        .select('*')
-        .eq('team_id', teamId)
-
-      if (error) throw error
-
+      // Set team decisions
       const decisions: Record<CanvasSection, TeamDecision | null> = {
         problem: null,
         solution: null,
@@ -194,13 +173,12 @@ export function PitchViewer({ event }: PitchViewerProps) {
         resources_risks: null,
       }
 
-      ;(data || []).forEach((decision: TeamDecision) => {
+      ;(decisionsResult.data || []).forEach((decision: TeamDecision) => {
         decisions[decision.section as CanvasSection] = decision
       })
-
       setTeamDecisions(decisions)
     } catch (error) {
-      console.error('Failed to load team decisions:', error)
+      console.error('Failed to load pitch data:', error)
     }
   }
 
