@@ -69,26 +69,45 @@ export default function AdminPage() {
   const loadData = async (selectedEvent?: Event) => {
     setIsLoadingData(true)
 
-    // Use provided event or current event, or load the first event
+    // Use provided event or current event, or restore from localStorage
     let eventToUse = selectedEvent || currentEvent
 
     if (!eventToUse) {
-      // Don't use .single() - it throws error when no rows returned
-      const { data: eventsData } = await supabase
-        .from('events')
-        .select('*')
-        .order('created_at', { ascending: false })
-        .limit(1)
+      // Try to restore previously selected event from localStorage
+      const savedEventId = localStorage.getItem('admin_selected_event_id')
 
-      if (eventsData && eventsData.length > 0) {
-        eventToUse = eventsData[0]
-        setCurrentEvent(eventsData[0])
-      } else {
-        // No events available for this admin
-        setCurrentEvent(null)
-        setTeams([])
-        setIsLoadingData(false)
-        return
+      if (savedEventId) {
+        const { data: savedEvent } = await supabase
+          .from('events')
+          .select('*')
+          .eq('id', savedEventId)
+          .maybeSingle()
+
+        if (savedEvent) {
+          eventToUse = savedEvent
+          setCurrentEvent(savedEvent)
+        }
+      }
+
+      // If no saved event found, fall back to most recent
+      if (!eventToUse) {
+        const { data: eventsData } = await supabase
+          .from('events')
+          .select('*')
+          .order('created_at', { ascending: false })
+          .limit(1)
+
+        if (eventsData && eventsData.length > 0) {
+          eventToUse = eventsData[0]
+          setCurrentEvent(eventsData[0])
+        } else {
+          // No events available for this admin
+          setCurrentEvent(null)
+          setTeams([])
+          setIsLoadingData(false)
+          localStorage.removeItem('admin_selected_event_id')
+          return
+        }
       }
     } else {
       // Refresh the event from database to get latest status
@@ -105,6 +124,9 @@ export default function AdminPage() {
     }
 
     if (eventToUse) {
+      // Persist selected event for page refresh
+      localStorage.setItem('admin_selected_event_id', eventToUse.id)
+
       // Load teams for this event
       const { data: teamsData } = await supabase
         .from('teams')
@@ -127,6 +149,7 @@ export default function AdminPage() {
 
   const handleEventSelect = (event: Event) => {
     setCurrentEvent(event)
+    localStorage.setItem('admin_selected_event_id', event.id)
     loadData(event)
   }
 
