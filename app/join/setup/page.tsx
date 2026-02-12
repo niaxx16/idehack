@@ -197,6 +197,39 @@ export default function TeamSetupPage() {
         )
       if (ensureProfileError) throw ensureProfileError
 
+      // Keep teams.team_members in sync (admin panel reads member count from this field).
+      const { data: teamSnapshot, error: teamSnapshotError } = await supabase
+        .from('teams')
+        .select('team_members, captain_id, is_activated')
+        .eq('id', resolvedTeamId)
+        .single()
+      if (teamSnapshotError) throw teamSnapshotError
+
+      const existingMembers = (teamSnapshot.team_members as any[]) || []
+      const alreadyMember = existingMembers.some((m) => m?.user_id === authDataForTeam.user.id)
+      if (!alreadyMember) {
+        const updatedMembers = [
+          ...existingMembers,
+          {
+            user_id: authDataForTeam.user.id,
+            name: memberName,
+            role: memberRole,
+            is_captain: resolvedIsCaptain,
+            joined_at: new Date().toISOString(),
+          },
+        ]
+
+        const { error: syncTeamError } = await supabase
+          .from('teams')
+          .update({
+            team_members: updatedMembers,
+            captain_id: resolvedIsCaptain && !teamSnapshot.captain_id ? authDataForTeam.user.id : teamSnapshot.captain_id,
+            is_activated: true,
+          })
+          .eq('id', resolvedTeamId)
+        if (syncTeamError) throw syncTeamError
+      }
+
       // If first member (captain), set team name
       if (resolvedIsCaptain && teamName && resolvedTeamId) {
         const { error: nameError } = await supabase.rpc('setup_team_name', {
