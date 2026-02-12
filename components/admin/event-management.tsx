@@ -45,12 +45,17 @@ export function EventManagement({ currentEvent, onEventSelect, onUpdate, adminPr
   const loadEvents = async () => {
     setIsLoading(true)
     try {
+      const { data: authData } = await supabase.auth.getUser()
       const { data, error } = await supabase
         .from('events')
         .select('*')
         .order('created_at', { ascending: false })
 
       if (error) throw error
+      console.log('[EventManagement] loadEvents', {
+        userId: authData.user?.id || null,
+        count: data?.length || 0,
+      })
       setEvents(data || [])
     } catch (err: any) {
       console.error('Failed to load events:', err)

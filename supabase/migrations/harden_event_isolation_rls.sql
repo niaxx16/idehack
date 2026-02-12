@@ -20,44 +20,8 @@ DROP POLICY IF EXISTS "Admins can delete own events" ON public.events;
 CREATE POLICY "events_select_scoped"
 ON public.events
 FOR SELECT
-TO authenticated
-USING (
-  -- super admin: all events
-  EXISTS (
-    SELECT 1
-    FROM public.profiles ap
-    WHERE ap.id = auth.uid()
-      AND ap.role = 'admin'
-      AND ap.is_super_admin = true
-  )
-  OR
-  -- admin: only events created by self
-  EXISTS (
-    SELECT 1
-    FROM public.profiles ap
-    WHERE ap.id = auth.uid()
-      AND ap.role = 'admin'
-      AND events.created_by = ap.id
-  )
-  OR
-  -- mentor/jury: only assigned event
-  EXISTS (
-    SELECT 1
-    FROM public.profiles p
-    WHERE p.id = auth.uid()
-      AND p.event_id = events.id
-      AND p.role IN ('mentor', 'jury')
-  )
-  OR
-  -- student: only event of their team
-  EXISTS (
-    SELECT 1
-    FROM public.profiles p
-    JOIN public.teams t ON t.id = p.team_id
-    WHERE p.id = auth.uid()
-      AND t.event_id = events.id
-  )
-);
+TO authenticated, anon
+USING (true);
 
 CREATE POLICY "events_insert_admin"
 ON public.events
@@ -138,42 +102,8 @@ DROP POLICY IF EXISTS "Admins can delete teams in own events" ON public.teams;
 CREATE POLICY "teams_select_scoped"
 ON public.teams
 FOR SELECT
-TO authenticated
-USING (
-  -- super admin
-  EXISTS (
-    SELECT 1
-    FROM public.profiles ap
-    WHERE ap.id = auth.uid()
-      AND ap.role = 'admin'
-      AND ap.is_super_admin = true
-  )
-  OR
-  -- admin owns event
-  EXISTS (
-    SELECT 1
-    FROM public.events e
-    WHERE e.id = teams.event_id
-      AND e.created_by = auth.uid()
-  )
-  OR
-  -- mentor/jury same event
-  EXISTS (
-    SELECT 1
-    FROM public.profiles p
-    WHERE p.id = auth.uid()
-      AND p.event_id = teams.event_id
-      AND p.role IN ('mentor', 'jury')
-  )
-  OR
-  -- student own team
-  EXISTS (
-    SELECT 1
-    FROM public.profiles p
-    WHERE p.id = auth.uid()
-      AND p.team_id = teams.id
-  )
-);
+TO authenticated, anon
+USING (true);
 
 CREATE POLICY "teams_insert_admin_scoped"
 ON public.teams
@@ -493,4 +423,3 @@ WITH CHECK (
       AND p.event_id = t.event_id
   )
 );
-
