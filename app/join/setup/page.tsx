@@ -68,14 +68,9 @@ export default function TeamSetupPage() {
         .from('teams')
         .select('captain_id, team_members')
         .eq('activation_code', normalizedCode)
-        .maybeSingle()
+        .single()
 
       if (error) throw error
-      if (!team) {
-        // Do not block here; final source of truth is join_team_by_code RPC.
-        setIsFirstMember(false)
-        return
-      }
 
       // Check if this is the first member
       const isFirst = !team.captain_id
@@ -86,14 +81,12 @@ export default function TeamSetupPage() {
         code: err?.code,
         activationCode: normalizedCode,
       })
-      // Do not hard-block on pre-check failures; final validation happens in join_team_by_code RPC.
-      if (err?.message?.toLowerCase().includes('invalid') || err?.code === 'PGRST116') {
-        setError('Invalid activation code. Please try again.')
-        setTimeout(() => router.push('/join'), 2000)
-      } else {
-        setError('Could not pre-verify team. You can still try joining below.')
-        setIsFirstMember(false)
-      }
+      setError(
+        err?.message?.toLowerCase().includes('invalid')
+          ? 'Invalid activation code. Please try again.'
+          : 'Could not verify team right now. Please try again.'
+      )
+      setTimeout(() => router.push('/join'), 2000)
     } finally {
       setIsLoading(false)
     }
@@ -108,7 +101,7 @@ export default function TeamSetupPage() {
     const normalizedCode = activationCode.replace(/\s+/g, '').toUpperCase()
 
     try {
-      // Join team (final validation should happen here)
+      // Join team
       const { data: joinResult, error: joinError } = await supabase.rpc('join_team_by_code', {
         activation_code_input: normalizedCode,
         member_name: memberName,
@@ -116,64 +109,9 @@ export default function TeamSetupPage() {
       })
 
       if (joinError) throw joinError
-      if (!joinResult?.success) {
-        throw new Error(joinResult?.error || 'Invalid activation code')
-      }
-
-      // Fallback: ensure profile has team_id even if RPC implementation is stale.
-      if (joinResult?.team_id) {
-        const { data: authData } = await supabase.auth.getUser()
-        if (authData?.user?.id) {
-          await supabase
-            .from('profiles')
-            .upsert(
-              {
-                id: authData.user.id,
-                role: 'student',
-                team_id: joinResult.team_id,
-                full_name: memberName,
-                display_name: memberName,
-                wallet_balance: 1000,
-              },
-              { onConflict: 'id' }
-            )
-
-          // Keep teams.team_members in sync for admin panel visibility.
-          const { data: teamData } = await supabase
-            .from('teams')
-            .select('team_members, captain_id, is_activated')
-            .eq('id', joinResult.team_id)
-            .single()
-
-          const existingMembers = (teamData?.team_members as any[]) || []
-          const alreadyMember = existingMembers.some((m) => m?.user_id === authData.user.id)
-
-          if (!alreadyMember) {
-            const updatedMembers = [
-              ...existingMembers,
-              {
-                user_id: authData.user.id,
-                name: memberName,
-                role: memberRole,
-                is_captain: Boolean(isFirstMember),
-                joined_at: new Date().toISOString(),
-              },
-            ]
-
-            await supabase
-              .from('teams')
-              .update({
-                team_members: updatedMembers,
-                captain_id: isFirstMember && !teamData?.captain_id ? authData.user.id : teamData?.captain_id,
-                is_activated: true,
-              })
-              .eq('id', joinResult.team_id)
-          }
-        }
-      }
 
       // If first member (captain), set team name
-      if (isFirstMember && teamName && joinResult?.team_id) {
+      if (isFirstMember && teamName) {
         const { error: nameError } = await supabase.rpc('setup_team_name', {
           team_id_input: joinResult.team_id,
           new_team_name: teamName,
