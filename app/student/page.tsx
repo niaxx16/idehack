@@ -147,18 +147,6 @@ export default function StudentPage() {
 
       setProfile(profileData)
 
-      // Load current event
-      const { data: eventData } = await supabase
-        .from('events')
-        .select('*')
-        .order('created_at', { ascending: false })
-        .limit(1)
-        .single()
-
-      if (eventData) {
-        setCurrentEvent(eventData)
-      }
-
       // Get team
       const { data: teamData, error: teamError } = await supabase
         .from('teams')
@@ -168,6 +156,20 @@ export default function StudentPage() {
 
       if (teamError) throw teamError
       setTeam(teamData)
+
+      // Load event from team's event_id to ensure strict event isolation
+      if (teamData.event_id) {
+        const { data: eventData, error: eventError } = await supabase
+          .from('events')
+          .select('*')
+          .eq('id', teamData.event_id)
+          .single()
+
+        if (eventError) throw eventError
+        setCurrentEvent(eventData)
+      } else {
+        setCurrentEvent(null)
+      }
 
       // Set current user ID
       setCurrentUserId(user.id)

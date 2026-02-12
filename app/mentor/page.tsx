@@ -138,7 +138,14 @@ export default function MentorPage() {
 
       if (assignmentsError) throw assignmentsError
 
-      setAssignments(assignmentsData || [])
+      const filteredAssignments = (assignmentsData || []).filter((assignment) => {
+        const team = assignment.team as Team | null
+        if (!team) return false
+        if (!profileData.event_id) return false
+        return team.event_id === profileData.event_id
+      })
+
+      setAssignments(filteredAssignments)
     } catch (error) {
       console.error('Load data error:', error)
     } finally {
