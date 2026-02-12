@@ -59,7 +59,8 @@ function JoinFormContent() {
 
   const handleJoin = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (!activationCode) return
+    const normalizedCode = activationCode.replace(/\s+/g, '').toUpperCase()
+    if (!normalizedCode) return
 
     setIsLoading(true)
     setError(null)
@@ -81,14 +82,14 @@ function JoinFormContent() {
       }
 
       // Store activation code in session for next step
-      sessionStorage.setItem('pending_activation_code', activationCode.toUpperCase())
+      sessionStorage.setItem('pending_activation_code', normalizedCode)
       sessionStorage.setItem('pending_user_id', userId)
 
       // Redirect to team setup page
       router.push('/join/setup')
     } catch (err: any) {
       console.error('Join error:', err)
-      setError(err.message || 'Failed to join. Please check the code and try again.')
+      setError(err.message || 'Failed to continue. Please check the code and try again.')
     } finally {
       setIsLoading(false)
     }
@@ -113,7 +114,7 @@ function JoinFormContent() {
                 id="code"
                 placeholder="e.g., ABC12345"
                 value={activationCode}
-                onChange={(e) => setActivationCode(e.target.value.toUpperCase())}
+                onChange={(e) => setActivationCode(e.target.value.replace(/\s+/g, '').toUpperCase())}
                 className="text-center text-2xl font-mono tracking-wider"
                 maxLength={8}
                 required

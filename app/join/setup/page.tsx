@@ -45,6 +45,7 @@ export default function TeamSetupPage() {
   }, [router])
 
   const checkTeamStatus = async (code: string) => {
+    const normalizedCode = code.replace(/\s+/g, '').toUpperCase()
     try {
       // First, check if user is already in a team
       const { data: { user } } = await supabase.auth.getUser()
@@ -66,7 +67,7 @@ export default function TeamSetupPage() {
       const { data: team, error } = await supabase
         .from('teams')
         .select('captain_id, team_members')
-        .eq('activation_code', code)
+        .eq('activation_code', normalizedCode)
         .single()
 
       if (error) throw error
@@ -75,8 +76,16 @@ export default function TeamSetupPage() {
       const isFirst = !team.captain_id
       setIsFirstMember(isFirst)
     } catch (err: any) {
-      console.error('Check team status error:', err)
-      setError('Invalid activation code. Please try again.')
+      console.error('Check team status error:', {
+        message: err?.message,
+        code: err?.code,
+        activationCode: normalizedCode,
+      })
+      setError(
+        err?.message?.toLowerCase().includes('invalid')
+          ? 'Invalid activation code. Please try again.'
+          : 'Could not verify team right now. Please try again.'
+      )
       setTimeout(() => router.push('/join'), 2000)
     } finally {
       setIsLoading(false)
@@ -89,11 +98,12 @@ export default function TeamSetupPage() {
 
     setIsSubmitting(true)
     setError(null)
+    const normalizedCode = activationCode.replace(/\s+/g, '').toUpperCase()
 
     try {
       // Join team
       const { data: joinResult, error: joinError } = await supabase.rpc('join_team_by_code', {
-        activation_code_input: activationCode,
+        activation_code_input: normalizedCode,
         member_name: memberName,
         member_role: memberRole,
       })
