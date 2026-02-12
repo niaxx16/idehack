@@ -120,6 +120,26 @@ export default function TeamSetupPage() {
         throw new Error(joinResult?.error || 'Invalid activation code')
       }
 
+      // Fallback: ensure profile has team_id even if RPC implementation is stale.
+      if (joinResult?.team_id) {
+        const { data: authData } = await supabase.auth.getUser()
+        if (authData?.user?.id) {
+          await supabase
+            .from('profiles')
+            .upsert(
+              {
+                id: authData.user.id,
+                role: 'student',
+                team_id: joinResult.team_id,
+                full_name: memberName,
+                display_name: memberName,
+                wallet_balance: 1000,
+              },
+              { onConflict: 'id' }
+            )
+        }
+      }
+
       // If first member (captain), set team name
       if (isFirstMember && teamName && joinResult?.team_id) {
         const { error: nameError } = await supabase.rpc('setup_team_name', {
