@@ -207,6 +207,7 @@ export default function TeamSetupPage() {
 
       const existingMembers = (teamSnapshot.team_members as any[]) || []
       const alreadyMember = existingMembers.some((m) => m?.user_id === authDataForTeam.user.id)
+      const shouldBeCaptain = !teamSnapshot.captain_id
       if (!alreadyMember) {
         const updatedMembers = [
           ...existingMembers,
@@ -214,7 +215,7 @@ export default function TeamSetupPage() {
             user_id: authDataForTeam.user.id,
             name: memberName,
             role: memberRole,
-            is_captain: resolvedIsCaptain,
+            is_captain: shouldBeCaptain,
             joined_at: new Date().toISOString(),
           },
         ]
@@ -223,7 +224,7 @@ export default function TeamSetupPage() {
           .from('teams')
           .update({
             team_members: updatedMembers,
-            captain_id: resolvedIsCaptain && !teamSnapshot.captain_id ? authDataForTeam.user.id : teamSnapshot.captain_id,
+            captain_id: shouldBeCaptain ? authDataForTeam.user.id : teamSnapshot.captain_id,
             is_activated: true,
           })
           .eq('id', resolvedTeamId)
@@ -231,7 +232,7 @@ export default function TeamSetupPage() {
       }
 
       // If first member (captain), set team name
-      if (resolvedIsCaptain && teamName && resolvedTeamId) {
+      if (shouldBeCaptain && teamName && resolvedTeamId) {
         const { error: nameError } = await supabase.rpc('setup_team_name', {
           team_id_input: resolvedTeamId,
           new_team_name: teamName,
