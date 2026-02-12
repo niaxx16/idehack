@@ -173,6 +173,30 @@ export default function TeamSetupPage() {
         resolvedPersonalCode = (joinResult.personal_code as string) || null
       }
 
+      if (!resolvedTeamId) {
+        throw new Error('Team not found')
+      }
+
+      // Always enforce profile-team binding on client side to avoid stale RPC implementations.
+      const { data: authDataForTeam } = await supabase.auth.getUser()
+      if (!authDataForTeam?.user?.id) {
+        throw new Error('Not authenticated')
+      }
+      const { error: ensureProfileError } = await supabase
+        .from('profiles')
+        .upsert(
+          {
+            id: authDataForTeam.user.id,
+            role: 'student',
+            team_id: resolvedTeamId,
+            full_name: memberName,
+            display_name: memberName,
+            wallet_balance: 1000,
+          },
+          { onConflict: 'id' }
+        )
+      if (ensureProfileError) throw ensureProfileError
+
       // If first member (captain), set team name
       if (resolvedIsCaptain && teamName && resolvedTeamId) {
         const { error: nameError } = await supabase.rpc('setup_team_name', {
