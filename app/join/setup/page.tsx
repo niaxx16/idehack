@@ -68,9 +68,12 @@ export default function TeamSetupPage() {
         .from('teams')
         .select('captain_id, team_members')
         .eq('activation_code', normalizedCode)
-        .single()
+        .maybeSingle()
 
       if (error) throw error
+      if (!team) {
+        throw new Error('Invalid activation code')
+      }
 
       // Check if this is the first member
       const isFirst = !team.captain_id
@@ -81,12 +84,14 @@ export default function TeamSetupPage() {
         code: err?.code,
         activationCode: normalizedCode,
       })
-      setError(
-        err?.message?.toLowerCase().includes('invalid')
-          ? 'Invalid activation code. Please try again.'
-          : 'Could not verify team right now. Please try again.'
-      )
-      setTimeout(() => router.push('/join'), 2000)
+      // Do not hard-block on pre-check failures; final validation happens in join_team_by_code RPC.
+      if (err?.message?.toLowerCase().includes('invalid') || err?.code === 'PGRST116') {
+        setError('Invalid activation code. Please try again.')
+        setTimeout(() => router.push('/join'), 2000)
+      } else {
+        setError('Could not pre-verify team. You can still try joining below.')
+        setIsFirstMember(false)
+      }
     } finally {
       setIsLoading(false)
     }
