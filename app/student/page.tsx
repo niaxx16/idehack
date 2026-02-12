@@ -85,6 +85,7 @@ export default function StudentPage() {
         },
         (payload) => {
           if (payload.new) {
+            console.log('[StudentPage] realtime event update:', { current_team_id: (payload.new as any).current_team_id, status: (payload.new as any).status })
             setCurrentEvent(payload.new as Event)
           }
         }
@@ -113,9 +114,8 @@ export default function StudentPage() {
       }
     }
 
-    // Initial sync + periodic refresh while user is on student page.
-    syncEvent()
-    const interval = setInterval(syncEvent, 3000)
+    // Periodic refresh as fallback for missed realtime updates.
+    const interval = setInterval(syncEvent, 15000)
     const onFocus = () => {
       syncEvent()
     }
@@ -763,7 +763,7 @@ export default function StudentPage() {
             </TabsList>
 
             <TabsContent value="pitch">
-              <PitchViewer event={currentEvent} />
+              <PitchViewer key={currentEvent?.current_team_id || 'no-team'} event={currentEvent} />
             </TabsContent>
 
             <TabsContent value="notes">

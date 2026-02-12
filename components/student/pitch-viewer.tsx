@@ -45,6 +45,7 @@ export function PitchViewer({ event }: PitchViewerProps) {
   const supabase = createClient()
 
   useEffect(() => {
+    console.log('[PitchViewer] event changed:', { current_team_id: event.current_team_id, event_id: event.id, status: event.status })
     if (event.current_team_id) {
       loadPitchData(event.current_team_id, event.id)
     } else {
@@ -93,6 +94,7 @@ export function PitchViewer({ event }: PitchViewerProps) {
   }, [event.pitch_timer_end])
 
   const loadPitchData = async (teamId: string, eventId: string) => {
+    console.log('[PitchViewer] loadPitchData called:', { teamId, eventId })
     try {
       // Load team, contributions, and decisions in parallel
       const [teamResult, contribResult, decisionsResult] = await Promise.all([
@@ -123,11 +125,13 @@ export function PitchViewer({ event }: PitchViewerProps) {
 
       // Set team
       const teamData = teamResult.data
+      console.log('[PitchViewer] teamResult:', { data: teamData, error: teamResult.error })
+      console.log('[PitchViewer] contribResult:', { count: contribResult.data?.length, error: contribResult.error })
+      console.log('[PitchViewer] decisionsResult:', { count: decisionsResult.data?.length, error: decisionsResult.error })
       if (!teamData) {
-        setCurrentTeam(null)
-        return
+        console.log('[PitchViewer] Team row not readable, continuing with current_team_id fallback')
       }
-      setCurrentTeam(teamData)
+      setCurrentTeam(teamData ?? null)
 
       // Group contributions using the freshly fetched team data (not stale closure)
       const members = (teamData.team_members as any[]) || []
@@ -194,7 +198,7 @@ export function PitchViewer({ event }: PitchViewerProps) {
     return `${mins}:${secs.toString().padStart(2, '0')}`
   }
 
-  if (!currentTeam) {
+  if (!event.current_team_id) {
     return (
       <Card>
         <CardHeader>
@@ -208,14 +212,20 @@ export function PitchViewer({ event }: PitchViewerProps) {
   }
 
   const progressPercentage = (timeRemaining / (3 * 60)) * 100
+  const teamTitle = currentTeam?.name || 'Current Team'
+  const teamTable = currentTeam?.table_number
 
   return (
     <div className="space-y-4">
       <Card>
         <CardHeader className="text-center pb-3">
           <Badge className="mx-auto mb-2 w-fit">Now Pitching</Badge>
-          <CardTitle className="text-3xl">{currentTeam.name}</CardTitle>
-          <p className="text-muted-foreground">Table {currentTeam.table_number}</p>
+          <CardTitle className="text-3xl">{teamTitle}</CardTitle>
+          {teamTable ? (
+            <p className="text-muted-foreground">Table {teamTable}</p>
+          ) : (
+            <p className="text-muted-foreground">Live pitch in progress</p>
+          )}
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="space-y-2">
