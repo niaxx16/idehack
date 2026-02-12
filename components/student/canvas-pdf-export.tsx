@@ -16,9 +16,12 @@ const sectionConfig = [
   { key: 'problem', title: 'Problem', color: [239, 68, 68] }, // red
   { key: 'solution', title: 'Solution', color: [234, 179, 8] }, // yellow
   { key: 'value_proposition', title: 'Unique Value Proposition', color: [168, 85, 247] }, // purple
-  { key: 'target_audience', title: 'Target Audience', color: [59, 130, 246] }, // blue
+  { key: 'target_audience', title: 'Target Users', color: [59, 130, 246] }, // blue
+  { key: 'evidence', title: 'Evidence / Insight', color: [34, 211, 238] }, // cyan
   { key: 'key_features', title: 'Key Features', color: [34, 197, 94] }, // green
-  { key: 'revenue_model', title: 'Revenue Model', color: [249, 115, 22] }, // orange
+  { key: 'pilot_plan', title: 'Pilot Plan', color: [249, 115, 22] }, // orange
+  { key: 'success_metrics', title: 'Success Metrics', color: [99, 102, 241] }, // indigo
+  { key: 'resources_risks', title: 'Resources & Risks', color: [244, 63, 94] }, // rose
 ]
 
 export function CanvasPdfExport({ teamName, contributions, teamDecisions }: CanvasPdfExportProps) {

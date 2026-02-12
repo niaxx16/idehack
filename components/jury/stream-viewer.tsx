@@ -14,9 +14,12 @@ const SECTION_LABELS = {
   problem: 'problemStatement',
   solution: 'solution',
   value_proposition: 'uniqueValue',
-  target_audience: 'targetCustomers',
+  target_audience: 'targetUsers',
   key_features: 'keyFeatures',
-  revenue_model: 'revenueModel',
+  evidence: 'evidence',
+  pilot_plan: 'pilotPlan',
+  success_metrics: 'successMetrics',
+  resources_risks: 'resourcesRisks',
 } as const
 
 // Section colors mapping
@@ -26,7 +29,10 @@ const SECTION_COLORS = {
   value_proposition: { bg: 'bg-purple-50', border: 'border-purple-200', indicator: 'bg-purple-500' },
   target_audience: { bg: 'bg-blue-50', border: 'border-blue-200', indicator: 'bg-blue-500' },
   key_features: { bg: 'bg-green-50', border: 'border-green-200', indicator: 'bg-green-500' },
-  revenue_model: { bg: 'bg-emerald-50', border: 'border-emerald-200', indicator: 'bg-emerald-500' },
+  evidence: { bg: 'bg-cyan-50', border: 'border-cyan-200', indicator: 'bg-cyan-500' },
+  pilot_plan: { bg: 'bg-orange-50', border: 'border-orange-200', indicator: 'bg-orange-500' },
+  success_metrics: { bg: 'bg-indigo-50', border: 'border-indigo-200', indicator: 'bg-indigo-500' },
+  resources_risks: { bg: 'bg-rose-50', border: 'border-rose-200', indicator: 'bg-rose-500' },
 } as const
 
 interface StreamViewerProps {
@@ -42,7 +48,10 @@ export function StreamViewer({ event, team }: StreamViewerProps) {
     value_proposition: [],
     target_audience: [],
     key_features: [],
-    revenue_model: [],
+    evidence: [],
+    pilot_plan: [],
+    success_metrics: [],
+    resources_risks: [],
   })
   const [teamDecisions, setTeamDecisions] = useState<Record<CanvasSection, TeamDecision | null>>({
     problem: null,
@@ -50,7 +59,10 @@ export function StreamViewer({ event, team }: StreamViewerProps) {
     value_proposition: null,
     target_audience: null,
     key_features: null,
-    revenue_model: null,
+    evidence: null,
+    pilot_plan: null,
+    success_metrics: null,
+    resources_risks: null,
   })
   const supabase = createClient()
 
@@ -87,7 +99,10 @@ export function StreamViewer({ event, team }: StreamViewerProps) {
         value_proposition: [],
         target_audience: [],
         key_features: [],
-        revenue_model: [],
+        evidence: [],
+        pilot_plan: [],
+        success_metrics: [],
+        resources_risks: [],
       }
 
       ;(data || []).forEach((contrib: any) => {
@@ -130,7 +145,10 @@ export function StreamViewer({ event, team }: StreamViewerProps) {
         value_proposition: null,
         target_audience: null,
         key_features: null,
-        revenue_model: null,
+        evidence: null,
+        pilot_plan: null,
+        success_metrics: null,
+        resources_risks: null,
       }
 
       ;(data || []).forEach((decision: TeamDecision) => {
@@ -203,7 +221,7 @@ export function StreamViewer({ event, team }: StreamViewerProps) {
     )
   }
 
-  const sections: CanvasSection[] = ['problem', 'solution', 'value_proposition', 'target_audience', 'key_features', 'revenue_model']
+  const sections: CanvasSection[] = ['problem', 'solution', 'value_proposition', 'target_audience', 'evidence', 'key_features', 'pilot_plan', 'success_metrics', 'resources_risks']
 
   return (
     <div className="space-y-4">

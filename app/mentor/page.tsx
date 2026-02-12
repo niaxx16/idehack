@@ -264,7 +264,10 @@ export default function MentorPage() {
                       team.canvas_data.target_audience ||
                       team.canvas_data.value_proposition ||
                       team.canvas_data.key_features ||
-                      team.canvas_data.revenue_model
+                      team.canvas_data.evidence ||
+                      team.canvas_data.pilot_plan ||
+                      team.canvas_data.success_metrics ||
+                      team.canvas_data.resources_risks
                     )
 
                     return (

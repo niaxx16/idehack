@@ -21,7 +21,7 @@ interface TeamMember {
 interface CollaborativeCanvasSectionProps {
   teamId: string
   currentUserId: string
-  section: 'problem' | 'solution' | 'value_proposition' | 'target_audience' | 'key_features' | 'revenue_model'
+  section: 'problem' | 'solution' | 'value_proposition' | 'target_audience' | 'key_features' | 'evidence' | 'pilot_plan' | 'success_metrics' | 'resources_risks'
   title: string
   description: string
   placeholder: string
@@ -367,12 +367,12 @@ export function CollaborativeCanvasSection({
             onChange={(e) => setNewContent(e.target.value)}
             rows={3}
             className="resize-none text-sm"
-            maxLength={500}
+            maxLength={1000}
             disabled={isSubmitting}
           />
           <div className="flex items-center justify-between">
             <p className="text-xs text-muted-foreground">
-              {newContent.length}/500
+              {newContent.length}/1000
             </p>
             <Button
               type="submit"

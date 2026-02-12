@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import { createClient } from '@/lib/supabase/client'
-import { AlertCircle, Lightbulb, Target, Star, Zap, DollarSign, MessageSquare, Send, Loader2, Users, Crown, UserCircle, CheckCircle } from 'lucide-react'
+import { AlertCircle, Lightbulb, Target, Star, Zap, Search, FlaskConical, BarChart3, ShieldAlert, MessageSquare, Send, Loader2, Users, Crown, UserCircle, CheckCircle } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { useTranslations } from 'next-intl'
 
@@ -16,7 +16,7 @@ interface TeamCanvasViewProps {
   onClose: () => void
 }
 
-type CanvasSection = 'problem' | 'solution' | 'value_proposition' | 'target_audience' | 'key_features' | 'revenue_model'
+type CanvasSection = 'problem' | 'solution' | 'value_proposition' | 'target_audience' | 'key_features' | 'evidence' | 'pilot_plan' | 'success_metrics' | 'resources_risks'
 
 interface SectionConfig {
   key: CanvasSection
@@ -62,13 +62,23 @@ const sectionConfigs: SectionConfig[] = [
   },
   {
     key: 'target_audience',
-    titleKey: 'targetCustomers',
-    descKey: 'targetCustomersDesc',
+    titleKey: 'targetUsers',
+    descKey: 'targetUsersDesc',
     icon: <Target className="h-5 w-5 text-blue-600" />,
     color: 'text-blue-600',
     borderColor: 'border-blue-400',
     bgColor: 'bg-blue-50',
     iconBgColor: 'bg-blue-100',
+  },
+  {
+    key: 'evidence',
+    titleKey: 'evidence',
+    descKey: 'evidenceDesc',
+    icon: <Search className="h-5 w-5 text-cyan-600" />,
+    color: 'text-cyan-600',
+    borderColor: 'border-cyan-400',
+    bgColor: 'bg-cyan-50',
+    iconBgColor: 'bg-cyan-100',
   },
   {
     key: 'key_features',
@@ -81,14 +91,34 @@ const sectionConfigs: SectionConfig[] = [
     iconBgColor: 'bg-green-100',
   },
   {
-    key: 'revenue_model',
-    titleKey: 'revenueModel',
-    descKey: 'revenueModelDesc',
-    icon: <DollarSign className="h-5 w-5 text-orange-600" />,
+    key: 'pilot_plan',
+    titleKey: 'pilotPlan',
+    descKey: 'pilotPlanDesc',
+    icon: <FlaskConical className="h-5 w-5 text-orange-600" />,
     color: 'text-orange-600',
     borderColor: 'border-orange-400',
     bgColor: 'bg-orange-50',
     iconBgColor: 'bg-orange-100',
+  },
+  {
+    key: 'success_metrics',
+    titleKey: 'successMetrics',
+    descKey: 'successMetricsDesc',
+    icon: <BarChart3 className="h-5 w-5 text-indigo-600" />,
+    color: 'text-indigo-600',
+    borderColor: 'border-indigo-400',
+    bgColor: 'bg-indigo-50',
+    iconBgColor: 'bg-indigo-100',
+  },
+  {
+    key: 'resources_risks',
+    titleKey: 'resourcesRisks',
+    descKey: 'resourcesRisksDesc',
+    icon: <ShieldAlert className="h-5 w-5 text-rose-600" />,
+    color: 'text-rose-600',
+    borderColor: 'border-rose-400',
+    bgColor: 'bg-rose-50',
+    iconBgColor: 'bg-rose-100',
   },
 ]
 
@@ -108,7 +138,10 @@ export function TeamCanvasView({ team, onClose }: TeamCanvasViewProps) {
     value_proposition: [],
     target_audience: [],
     key_features: [],
-    revenue_model: [],
+    evidence: [],
+    pilot_plan: [],
+    success_metrics: [],
+    resources_risks: [],
   })
   const [isLoadingContributions, setIsLoadingContributions] = useState(true)
   const [teamDecisions, setTeamDecisions] = useState<Record<CanvasSection, TeamDecision | null>>({
@@ -117,7 +150,10 @@ export function TeamCanvasView({ team, onClose }: TeamCanvasViewProps) {
     value_proposition: null,
     target_audience: null,
     key_features: null,
-    revenue_model: null,
+    evidence: null,
+    pilot_plan: null,
+    success_metrics: null,
+    resources_risks: null,
   })
 
   const members = (team.team_members as any[]) || []
@@ -243,7 +279,10 @@ export function TeamCanvasView({ team, onClose }: TeamCanvasViewProps) {
         value_proposition: [],
         target_audience: [],
         key_features: [],
-        revenue_model: [],
+        evidence: [],
+        pilot_plan: [],
+        success_metrics: [],
+        resources_risks: [],
       }
 
       ;(data || []).forEach((contrib) => {
@@ -280,7 +319,10 @@ export function TeamCanvasView({ team, onClose }: TeamCanvasViewProps) {
         value_proposition: null,
         target_audience: null,
         key_features: null,
-        revenue_model: null,
+        evidence: null,
+        pilot_plan: null,
+        success_metrics: null,
+        resources_risks: null,
       }
 
       ;(data || []).forEach((decision: TeamDecision) => {

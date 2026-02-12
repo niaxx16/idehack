@@ -18,7 +18,7 @@ import { CollaborativeCanvasSection } from '@/components/student/collaborative-c
 import { PresentationUpload } from '@/components/team/presentation-upload'
 import { CanvasPdfExport } from '@/components/student/canvas-pdf-export'
 import { CanvasContributionWithUser, TeamDecision } from '@/types'
-import { Loader2, Users, Crown, FileText, Upload, LogOut, AlertCircle, Lightbulb, Target, Star, Zap, DollarSign, Save, CheckCircle } from 'lucide-react'
+import { Loader2, Users, Crown, FileText, Upload, LogOut, AlertCircle, Lightbulb, Target, Star, Zap, Search, FlaskConical, BarChart3, ShieldAlert, Save, CheckCircle } from 'lucide-react'
 import { useLanguage } from '@/lib/i18n/language-provider'
 import { Locale } from '@/lib/i18n/config'
 import { useTranslations } from 'next-intl'
@@ -302,7 +302,10 @@ export default function StudentPage() {
         value_proposition: [],
         target_audience: [],
         key_features: [],
-        revenue_model: [],
+        evidence: [],
+        pilot_plan: [],
+        success_metrics: [],
+        resources_risks: [],
       }
 
       ;(contribData || []).forEach((contrib) => {
@@ -332,7 +335,10 @@ export default function StudentPage() {
         value_proposition: null,
         target_audience: null,
         key_features: null,
-        revenue_model: null,
+        evidence: null,
+        pilot_plan: null,
+        success_metrics: null,
+        resources_risks: null,
       }
 
       ;(decisionsData || []).forEach((decision: TeamDecision) => {
@@ -600,15 +606,35 @@ export default function StudentPage() {
                       onMarkFeedbackAsRead={markFeedbackAsRead}
                     />
 
-                    {/* Revenue Model */}
+                    {/* Evidence / Insight */}
                     <CollaborativeCanvasSection
                       teamId={team.id}
                       currentUserId={currentUserId}
-                      section="revenue_model"
-                      title={t('canvas.revenueModel')}
-                      description={t('canvas.revenueModelDesc')}
-                      placeholder={t('canvas.revenueModelPlaceholder')}
-                      icon={<DollarSign className="h-5 w-5 text-orange-600" />}
+                      section="evidence"
+                      title={t('canvas.evidence')}
+                      description={t('canvas.evidenceDesc')}
+                      placeholder={t('canvas.evidencePlaceholder')}
+                      icon={<Search className="h-5 w-5 text-cyan-600" />}
+                      colorClasses={{
+                        border: 'border-l-4 border-cyan-400',
+                        bg: 'bg-cyan-50',
+                        iconBg: 'bg-cyan-100',
+                        badgeBg: 'bg-cyan-100',
+                      }}
+                      teamMembers={members}
+                      feedbacks={getFeedbackForSection('evidence')}
+                      onMarkFeedbackAsRead={markFeedbackAsRead}
+                    />
+
+                    {/* Pilot Plan */}
+                    <CollaborativeCanvasSection
+                      teamId={team.id}
+                      currentUserId={currentUserId}
+                      section="pilot_plan"
+                      title={t('canvas.pilotPlan')}
+                      description={t('canvas.pilotPlanDesc')}
+                      placeholder={t('canvas.pilotPlanPlaceholder')}
+                      icon={<FlaskConical className="h-5 w-5 text-orange-600" />}
                       colorClasses={{
                         border: 'border-l-4 border-orange-400',
                         bg: 'bg-orange-50',
@@ -616,7 +642,47 @@ export default function StudentPage() {
                         badgeBg: 'bg-orange-100',
                       }}
                       teamMembers={members}
-                      feedbacks={getFeedbackForSection('revenue_model')}
+                      feedbacks={getFeedbackForSection('pilot_plan')}
+                      onMarkFeedbackAsRead={markFeedbackAsRead}
+                    />
+
+                    {/* Success Metrics */}
+                    <CollaborativeCanvasSection
+                      teamId={team.id}
+                      currentUserId={currentUserId}
+                      section="success_metrics"
+                      title={t('canvas.successMetrics')}
+                      description={t('canvas.successMetricsDesc')}
+                      placeholder={t('canvas.successMetricsPlaceholder')}
+                      icon={<BarChart3 className="h-5 w-5 text-indigo-600" />}
+                      colorClasses={{
+                        border: 'border-l-4 border-indigo-400',
+                        bg: 'bg-indigo-50',
+                        iconBg: 'bg-indigo-100',
+                        badgeBg: 'bg-indigo-100',
+                      }}
+                      teamMembers={members}
+                      feedbacks={getFeedbackForSection('success_metrics')}
+                      onMarkFeedbackAsRead={markFeedbackAsRead}
+                    />
+
+                    {/* Resources & Risks */}
+                    <CollaborativeCanvasSection
+                      teamId={team.id}
+                      currentUserId={currentUserId}
+                      section="resources_risks"
+                      title={t('canvas.resourcesRisks')}
+                      description={t('canvas.resourcesRisksDesc')}
+                      placeholder={t('canvas.resourcesRisksPlaceholder')}
+                      icon={<ShieldAlert className="h-5 w-5 text-rose-600" />}
+                      colorClasses={{
+                        border: 'border-l-4 border-rose-400',
+                        bg: 'bg-rose-50',
+                        iconBg: 'bg-rose-100',
+                        badgeBg: 'bg-rose-100',
+                      }}
+                      teamMembers={members}
+                      feedbacks={getFeedbackForSection('resources_risks')}
                       onMarkFeedbackAsRead={markFeedbackAsRead}
                     />
                   </div>

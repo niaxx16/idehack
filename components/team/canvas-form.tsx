@@ -16,7 +16,12 @@ const canvasSchema = z.object({
   problem: z.string().min(10, 'Please describe the problem (min 10 characters)'),
   solution: z.string().min(10, 'Please describe the solution (min 10 characters)'),
   target_audience: z.string().min(5, 'Please specify the target audience'),
-  revenue_model: z.string().min(5, 'Please describe the revenue model'),
+  value_proposition: z.string().optional(),
+  key_features: z.string().optional(),
+  evidence: z.string().optional(),
+  pilot_plan: z.string().optional(),
+  success_metrics: z.string().optional(),
+  resources_risks: z.string().optional(),
 })
 
 type CanvasFormData = z.infer<typeof canvasSchema>
@@ -124,19 +129,16 @@ export function CanvasForm({ team, isLocked, onUpdate }: CanvasFormProps) {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="revenue_model">
-              Revenue Model <span className="text-red-500">*</span>
+            <Label htmlFor="evidence">
+              Evidence / Insight
             </Label>
             <Textarea
-              id="revenue_model"
-              placeholder="How will you make money?"
+              id="evidence"
+              placeholder="What data supports the problem?"
               rows={3}
               disabled={isLocked}
-              {...register('revenue_model')}
+              {...register('evidence')}
             />
-            {errors.revenue_model && (
-              <p className="text-sm text-red-600">{errors.revenue_model.message}</p>
-            )}
           </div>
 
           {saveMessage && (

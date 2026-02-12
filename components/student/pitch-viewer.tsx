@@ -24,7 +24,10 @@ export function PitchViewer({ event }: PitchViewerProps) {
     value_proposition: [],
     target_audience: [],
     key_features: [],
-    revenue_model: [],
+    evidence: [],
+    pilot_plan: [],
+    success_metrics: [],
+    resources_risks: [],
   })
   const [teamDecisions, setTeamDecisions] = useState<Record<CanvasSection, TeamDecision | null>>({
     problem: null,
@@ -32,7 +35,10 @@ export function PitchViewer({ event }: PitchViewerProps) {
     value_proposition: null,
     target_audience: null,
     key_features: null,
-    revenue_model: null,
+    evidence: null,
+    pilot_plan: null,
+    success_metrics: null,
+    resources_risks: null,
   })
   const { sendHype, hypeEvents } = useHype(event.id)
   const { user } = useAuth()
@@ -50,7 +56,10 @@ export function PitchViewer({ event }: PitchViewerProps) {
         value_proposition: [],
         target_audience: [],
         key_features: [],
-        revenue_model: [],
+        evidence: [],
+        pilot_plan: [],
+        success_metrics: [],
+        resources_risks: [],
       })
       setTeamDecisions({
         problem: null,
@@ -58,7 +67,10 @@ export function PitchViewer({ event }: PitchViewerProps) {
         value_proposition: null,
         target_audience: null,
         key_features: null,
-        revenue_model: null,
+        evidence: null,
+        pilot_plan: null,
+        success_metrics: null,
+        resources_risks: null,
       })
     }
   }, [event.current_team_id, event.id])
@@ -133,7 +145,10 @@ export function PitchViewer({ event }: PitchViewerProps) {
         value_proposition: [],
         target_audience: [],
         key_features: [],
-        revenue_model: [],
+        evidence: [],
+        pilot_plan: [],
+        success_metrics: [],
+        resources_risks: [],
       }
 
       ;(data || []).forEach((contrib: any) => {
@@ -173,7 +188,10 @@ export function PitchViewer({ event }: PitchViewerProps) {
         value_proposition: null,
         target_audience: null,
         key_features: null,
-        revenue_model: null,
+        evidence: null,
+        pilot_plan: null,
+        success_metrics: null,
+        resources_risks: null,
       }
 
       ;(data || []).forEach((decision: TeamDecision) => {
@@ -417,24 +435,129 @@ export function PitchViewer({ event }: PitchViewerProps) {
             )}
           </div>
 
-          {/* Revenue Model */}
+          {/* Evidence / Insight */}
           <div>
             <h4 className="font-medium mb-1 text-sm flex items-center gap-2">
-              <div className="w-1 h-3 bg-emerald-500 rounded"></div>
-              Revenue Model
+              <div className="w-1 h-3 bg-cyan-500 rounded"></div>
+              Evidence / Insight
             </h4>
-            {teamDecisions.revenue_model ? (
+            {teamDecisions.evidence ? (
               <div className="bg-green-50 border-2 border-green-400 rounded-lg p-2">
                 <div className="flex items-center gap-1 mb-1">
                   <CheckCircle className="h-3 w-3 text-green-600" />
                   <span className="text-xs font-semibold text-green-700">Team Decision</span>
                 </div>
-                <p className="text-xs font-medium">{teamDecisions.revenue_model.content}</p>
+                <p className="text-xs font-medium">{teamDecisions.evidence.content}</p>
               </div>
-            ) : contributions.revenue_model.length > 0 ? (
+            ) : contributions.evidence.length > 0 ? (
               <div className="space-y-1">
-                {contributions.revenue_model.map((contrib) => (
-                  <div key={contrib.id} className="bg-emerald-50 border border-emerald-200 rounded p-2">
+                {contributions.evidence.map((contrib) => (
+                  <div key={contrib.id} className="bg-cyan-50 border border-cyan-200 rounded p-2">
+                    <div className="flex items-center gap-1 mb-1">
+                      {contrib.is_captain ? (
+                        <Crown className="h-3 w-3 text-yellow-600" />
+                      ) : (
+                        <UserCircle className="h-3 w-3 text-gray-400" />
+                      )}
+                      <span className="text-xs font-medium">{contrib.member_name}</span>
+                    </div>
+                    <p className="text-xs">{contrib.content}</p>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p className="text-xs text-muted-foreground italic">Not specified</p>
+            )}
+          </div>
+
+          {/* Pilot Plan */}
+          <div>
+            <h4 className="font-medium mb-1 text-sm flex items-center gap-2">
+              <div className="w-1 h-3 bg-orange-500 rounded"></div>
+              Pilot Plan
+            </h4>
+            {teamDecisions.pilot_plan ? (
+              <div className="bg-green-50 border-2 border-green-400 rounded-lg p-2">
+                <div className="flex items-center gap-1 mb-1">
+                  <CheckCircle className="h-3 w-3 text-green-600" />
+                  <span className="text-xs font-semibold text-green-700">Team Decision</span>
+                </div>
+                <p className="text-xs font-medium">{teamDecisions.pilot_plan.content}</p>
+              </div>
+            ) : contributions.pilot_plan.length > 0 ? (
+              <div className="space-y-1">
+                {contributions.pilot_plan.map((contrib) => (
+                  <div key={contrib.id} className="bg-orange-50 border border-orange-200 rounded p-2">
+                    <div className="flex items-center gap-1 mb-1">
+                      {contrib.is_captain ? (
+                        <Crown className="h-3 w-3 text-yellow-600" />
+                      ) : (
+                        <UserCircle className="h-3 w-3 text-gray-400" />
+                      )}
+                      <span className="text-xs font-medium">{contrib.member_name}</span>
+                    </div>
+                    <p className="text-xs">{contrib.content}</p>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p className="text-xs text-muted-foreground italic">Not specified</p>
+            )}
+          </div>
+
+          {/* Success Metrics */}
+          <div>
+            <h4 className="font-medium mb-1 text-sm flex items-center gap-2">
+              <div className="w-1 h-3 bg-indigo-500 rounded"></div>
+              Success Metrics
+            </h4>
+            {teamDecisions.success_metrics ? (
+              <div className="bg-green-50 border-2 border-green-400 rounded-lg p-2">
+                <div className="flex items-center gap-1 mb-1">
+                  <CheckCircle className="h-3 w-3 text-green-600" />
+                  <span className="text-xs font-semibold text-green-700">Team Decision</span>
+                </div>
+                <p className="text-xs font-medium">{teamDecisions.success_metrics.content}</p>
+              </div>
+            ) : contributions.success_metrics.length > 0 ? (
+              <div className="space-y-1">
+                {contributions.success_metrics.map((contrib) => (
+                  <div key={contrib.id} className="bg-indigo-50 border border-indigo-200 rounded p-2">
+                    <div className="flex items-center gap-1 mb-1">
+                      {contrib.is_captain ? (
+                        <Crown className="h-3 w-3 text-yellow-600" />
+                      ) : (
+                        <UserCircle className="h-3 w-3 text-gray-400" />
+                      )}
+                      <span className="text-xs font-medium">{contrib.member_name}</span>
+                    </div>
+                    <p className="text-xs">{contrib.content}</p>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p className="text-xs text-muted-foreground italic">Not specified</p>
+            )}
+          </div>
+
+          {/* Resources & Risks */}
+          <div>
+            <h4 className="font-medium mb-1 text-sm flex items-center gap-2">
+              <div className="w-1 h-3 bg-rose-500 rounded"></div>
+              Resources & Risks
+            </h4>
+            {teamDecisions.resources_risks ? (
+              <div className="bg-green-50 border-2 border-green-400 rounded-lg p-2">
+                <div className="flex items-center gap-1 mb-1">
+                  <CheckCircle className="h-3 w-3 text-green-600" />
+                  <span className="text-xs font-semibold text-green-700">Team Decision</span>
+                </div>
+                <p className="text-xs font-medium">{teamDecisions.resources_risks.content}</p>
+              </div>
+            ) : contributions.resources_risks.length > 0 ? (
+              <div className="space-y-1">
+                {contributions.resources_risks.map((contrib) => (
+                  <div key={contrib.id} className="bg-rose-50 border border-rose-200 rounded p-2">
                     <div className="flex items-center gap-1 mb-1">
                       {contrib.is_captain ? (
                         <Crown className="h-3 w-3 text-yellow-600" />
