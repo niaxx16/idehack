@@ -19,7 +19,10 @@ export interface CanvasData {
   target_audience: string
   value_proposition: string
   key_features: string
-  revenue_model: string
+  evidence: string
+  pilot_plan: string
+  success_metrics: string
+  resources_risks: string
 }
 
 // Canvas contribution (new collaborative system)
@@ -27,7 +30,7 @@ export interface CanvasContribution {
   id: string
   team_id: string
   user_id: string
-  section: 'problem' | 'solution' | 'value_proposition' | 'target_audience' | 'key_features' | 'revenue_model'
+  section: 'problem' | 'solution' | 'value_proposition' | 'target_audience' | 'key_features' | 'evidence' | 'pilot_plan' | 'success_metrics' | 'resources_risks'
   content: string
   created_at: string
   updated_at: string
@@ -47,7 +50,7 @@ export interface CanvasContributionWithUser extends CanvasContribution {
 }
 
 // Team Decision (captain's final decision for each canvas section)
-export type CanvasSection = 'problem' | 'solution' | 'value_proposition' | 'target_audience' | 'key_features' | 'revenue_model'
+export type CanvasSection = 'problem' | 'solution' | 'value_proposition' | 'target_audience' | 'key_features' | 'evidence' | 'pilot_plan' | 'success_metrics' | 'resources_risks'
 
 export interface TeamDecision {
   id: string
@@ -73,7 +76,7 @@ export interface MentorFeedback {
   id: string
   team_id: string
   mentor_id: string
-  canvas_section: 'problem' | 'solution' | 'value_proposition' | 'target_audience' | 'key_features' | 'revenue_model'
+  canvas_section: 'problem' | 'solution' | 'value_proposition' | 'target_audience' | 'key_features' | 'evidence' | 'pilot_plan' | 'success_metrics' | 'resources_risks'
   feedback_text: string
   is_read: boolean
   created_at: string

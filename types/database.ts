@@ -64,7 +64,12 @@ export type Database = {
             problem: string
             solution: string
             target_audience: string
-            revenue_model: string
+            value_proposition: string
+            key_features: string
+            evidence: string
+            pilot_plan: string
+            success_metrics: string
+            resources_risks: string
           }
           presentation_url: string | null
           total_investment: number
@@ -85,7 +90,12 @@ export type Database = {
             problem: string
             solution: string
             target_audience: string
-            revenue_model: string
+            value_proposition: string
+            key_features: string
+            evidence: string
+            pilot_plan: string
+            success_metrics: string
+            resources_risks: string
           }
           presentation_url?: string | null
           total_investment?: number
@@ -106,7 +116,12 @@ export type Database = {
             problem: string
             solution: string
             target_audience: string
-            revenue_model: string
+            value_proposition: string
+            key_features: string
+            evidence: string
+            pilot_plan: string
+            success_metrics: string
+            resources_risks: string
           }
           presentation_url?: string | null
           total_investment?: number
