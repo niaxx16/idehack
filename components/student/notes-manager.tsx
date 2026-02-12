@@ -16,6 +16,7 @@ interface NotesManagerProps {
 
 export function NotesManager({ event }: NotesManagerProps) {
   const [currentTeam, setCurrentTeam] = useState<Team | null>(null)
+  const [isTeamLoading, setIsTeamLoading] = useState(false)
   const [notes, setNotes] = useState<Record<string, { text: string; rating: number }>>({})
   const [isSaving, setIsSaving] = useState<string | null>(null)
   const { user } = useAuth()
@@ -26,42 +27,48 @@ export function NotesManager({ event }: NotesManagerProps) {
       loadPitchTeamAndNote()
     } else {
       setCurrentTeam(null)
+      setIsTeamLoading(false)
     }
   }, [user, event.id, event.current_team_id])
 
   const loadPitchTeamAndNote = async () => {
     if (!user) return
+    setIsTeamLoading(true)
+    try {
 
-    // Load currently pitching team
-    const { data: teamData } = await supabase
-      .from('teams')
-      .select('*')
-      .eq('id', event.current_team_id)
-      .maybeSingle()
+      // Load currently pitching team
+      const { data: teamData } = await supabase
+        .from('teams')
+        .select('*')
+        .eq('id', event.current_team_id)
+        .maybeSingle()
 
-    setCurrentTeam(teamData || null)
+      setCurrentTeam(teamData || null)
 
-    if (!event.current_team_id) return
+      if (!event.current_team_id) return
 
-    // Load current user's note for pitching team
-    const { data: noteData } = await supabase
-      .from('user_notes')
-      .select('*')
-      .eq('user_id', user.id)
-      .eq('target_team_id', event.current_team_id)
-      .maybeSingle()
+      // Load current user's note for pitching team
+      const { data: noteData } = await supabase
+        .from('user_notes')
+        .select('*')
+        .eq('user_id', user.id)
+        .eq('target_team_id', event.current_team_id)
+        .maybeSingle()
 
-    if (noteData) {
-      setNotes({
-        [event.current_team_id]: {
-          text: noteData.note_text || '',
-          rating: noteData.temp_rating || 5,
-        },
-      })
-    } else {
-      setNotes({
-        [event.current_team_id]: { text: '', rating: 5 },
-      })
+      if (noteData) {
+        setNotes({
+          [event.current_team_id]: {
+            text: noteData.note_text || '',
+            rating: noteData.temp_rating || 5,
+          },
+        })
+      } else {
+        setNotes({
+          [event.current_team_id]: { text: '', rating: 5 },
+        })
+      }
+    } finally {
+      setIsTeamLoading(false)
     }
   }
 
@@ -111,7 +118,7 @@ export function NotesManager({ event }: NotesManagerProps) {
     )
   }
 
-  if (!currentTeam) {
+  if (!currentTeam && isTeamLoading) {
     return (
       <Card>
         <CardHeader>
@@ -122,7 +129,10 @@ export function NotesManager({ event }: NotesManagerProps) {
     )
   }
 
-  const teamNote = notes[currentTeam.id] || { text: '', rating: 5 }
+  const activeTeamId = event.current_team_id
+  const teamNote = notes[activeTeamId] || { text: '', rating: 5 }
+  const teamName = currentTeam?.name || 'Current Team'
+  const teamTable = currentTeam?.table_number
 
   return (
     <div className="space-y-4">
@@ -139,8 +149,12 @@ export function NotesManager({ event }: NotesManagerProps) {
         <CardHeader>
           <div className="flex items-start justify-between">
             <div>
-              <CardTitle className="text-lg">{currentTeam.name}</CardTitle>
-              <CardDescription>Table {currentTeam.table_number}</CardDescription>
+              <CardTitle className="text-lg">{teamName}</CardTitle>
+              {teamTable ? (
+                <CardDescription>Table {teamTable}</CardDescription>
+              ) : (
+                <CardDescription>Live pitch in progress</CardDescription>
+              )}
             </div>
             <span className="text-xs bg-primary text-primary-foreground px-2 py-1 rounded">
               Now Pitching
@@ -149,38 +163,38 @@ export function NotesManager({ event }: NotesManagerProps) {
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor={`note-${currentTeam.id}`}>Notes</Label>
+            <Label htmlFor={`note-${activeTeamId}`}>Notes</Label>
             <Textarea
-              id={`note-${currentTeam.id}`}
+              id={`note-${activeTeamId}`}
               placeholder="Your private notes about this team..."
               rows={3}
               value={teamNote.text}
-              onChange={(e) => updateNote(currentTeam.id, 'text', e.target.value)}
+              onChange={(e) => updateNote(activeTeamId, 'text', e.target.value)}
             />
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor={`rating-${currentTeam.id}`}>
+            <Label htmlFor={`rating-${activeTeamId}`}>
               Quick Rating: {teamNote.rating}/10
             </Label>
             <input
-              id={`rating-${currentTeam.id}`}
+              id={`rating-${activeTeamId}`}
               type="range"
               min="1"
               max="10"
               value={teamNote.rating}
-              onChange={(e) => updateNote(currentTeam.id, 'rating', parseInt(e.target.value))}
+              onChange={(e) => updateNote(activeTeamId, 'rating', parseInt(e.target.value))}
               className="w-full"
             />
           </div>
 
           <Button
-            onClick={() => saveNote(currentTeam.id)}
-            disabled={isSaving === currentTeam.id}
+            onClick={() => saveNote(activeTeamId)}
+            disabled={isSaving === activeTeamId}
             size="sm"
             className="w-full"
           >
-            {isSaving === currentTeam.id ? (
+            {isSaving === activeTeamId ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                 Saving...
