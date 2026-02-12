@@ -61,7 +61,7 @@ export function PitchViewer({ event }: PitchViewerProps) {
         revenue_model: null,
       })
     }
-  }, [event.current_team_id])
+  }, [event.current_team_id, event.id])
 
   // Load contributions and team decisions when current team changes
   useEffect(() => {
@@ -95,9 +95,14 @@ export function PitchViewer({ event }: PitchViewerProps) {
       .from('teams')
       .select('*')
       .eq('id', event.current_team_id)
+      .eq('event_id', event.id)
       .single()
 
-    if (data) setCurrentTeam(data)
+    if (data) {
+      setCurrentTeam(data)
+    } else {
+      setCurrentTeam(null)
+    }
   }
 
   const loadContributions = async (teamId: string) => {

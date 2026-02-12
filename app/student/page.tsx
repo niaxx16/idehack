@@ -96,6 +96,38 @@ export default function StudentPage() {
     }
   }, [currentEvent?.id, supabase])
 
+  // Fallback sync for cases where realtime updates are delayed/missed.
+  useEffect(() => {
+    if (!currentEvent?.id) return
+
+    let isMounted = true
+    const syncEvent = async () => {
+      const { data, error } = await supabase
+        .from('events')
+        .select('*')
+        .eq('id', currentEvent.id)
+        .single()
+
+      if (!error && data && isMounted) {
+        setCurrentEvent(data)
+      }
+    }
+
+    // Initial sync + periodic refresh while user is on student page.
+    syncEvent()
+    const interval = setInterval(syncEvent, 3000)
+    const onFocus = () => {
+      syncEvent()
+    }
+    window.addEventListener('focus', onFocus)
+
+    return () => {
+      isMounted = false
+      clearInterval(interval)
+      window.removeEventListener('focus', onFocus)
+    }
+  }, [currentEvent?.id, supabase])
+
   // Real-time feedback subscription
   useEffect(() => {
     if (!team?.id) return
