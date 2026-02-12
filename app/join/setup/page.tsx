@@ -28,6 +28,15 @@ export default function TeamSetupPage() {
   const [memberName, setMemberName] = useState('')
   const [memberRole, setMemberRole] = useState('')
 
+  const generateLocalPersonalCode = () => {
+    const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'
+    let code = ''
+    for (let i = 0; i < 6; i++) {
+      code += chars.charAt(Math.floor(Math.random() * chars.length))
+    }
+    return code
+  }
+
   useEffect(() => {
     // Get activation code from session
     const code = sessionStorage.getItem('pending_activation_code')
@@ -120,12 +129,33 @@ export default function TeamSetupPage() {
         if (nameError) throw nameError
       }
 
-      // Show success screen with personal code
-      if (joinResult.personal_code) {
-        setPersonalCode(joinResult.personal_code)
+      // Ensure personal code exists so rejoin code is visible in admin panel.
+      let resolvedPersonalCode = joinResult?.personal_code as string | null
+      const { data: authData } = await supabase.auth.getUser()
+      if (authData?.user?.id && !resolvedPersonalCode) {
+        const { data: profileData } = await supabase
+          .from('profiles')
+          .select('personal_code')
+          .eq('id', authData.user.id)
+          .single()
+
+        resolvedPersonalCode = profileData?.personal_code || null
+      }
+
+      if (authData?.user?.id && !resolvedPersonalCode) {
+        const { data: generatedCode } = await supabase.rpc('generate_personal_code')
+        resolvedPersonalCode = (generatedCode as string) || generateLocalPersonalCode()
+        await supabase
+          .from('profiles')
+          .update({ personal_code: resolvedPersonalCode })
+          .eq('id', authData.user.id)
+          .is('personal_code', null)
+      }
+
+      if (resolvedPersonalCode) {
+        setPersonalCode(resolvedPersonalCode)
         setShowSuccess(true)
       } else {
-        // If no personal code (shouldn't happen), redirect immediately
         sessionStorage.removeItem('pending_activation_code')
         sessionStorage.removeItem('pending_user_id')
         router.push('/student')
