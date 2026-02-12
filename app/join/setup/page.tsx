@@ -110,6 +110,11 @@ export default function TeamSetupPage() {
     const normalizedCode = activationCode.replace(/\s+/g, '').toUpperCase()
 
     try {
+      let resolvedTeamId: string | null = null
+      let resolvedTeamName: string | null = null
+      let resolvedIsCaptain = Boolean(isFirstMember)
+      let resolvedPersonalCode: string | null = null
+
       // Join team
       const { data: joinResult, error: joinError } = await supabase.rpc('join_team_by_code', {
         activation_code_input: normalizedCode,
@@ -117,12 +122,53 @@ export default function TeamSetupPage() {
         member_role: memberRole,
       })
 
-      if (joinError) throw joinError
+      if (joinError || !joinResult?.success) {
+        // Fallback path: resolve team by code and bind current user profile to team directly.
+        const { data: teamData, error: teamError } = await supabase
+          .from('teams')
+          .select('id, name, captain_id')
+          .eq('activation_code', normalizedCode)
+          .single()
+
+        if (teamError || !teamData) {
+          throw joinError || teamError || new Error('Invalid activation code')
+        }
+
+        const { data: authData } = await supabase.auth.getUser()
+        if (!authData?.user?.id) {
+          throw new Error('Not authenticated')
+        }
+
+        const { error: profileError } = await supabase
+          .from('profiles')
+          .upsert(
+            {
+              id: authData.user.id,
+              role: 'student',
+              team_id: teamData.id,
+              full_name: memberName,
+              display_name: memberName,
+              wallet_balance: 1000,
+            },
+            { onConflict: 'id' }
+          )
+
+        if (profileError) throw profileError
+
+        resolvedTeamId = teamData.id
+        resolvedTeamName = teamData.name
+        resolvedIsCaptain = !teamData.captain_id
+      } else {
+        resolvedTeamId = joinResult.team_id
+        resolvedTeamName = joinResult.team_name
+        resolvedIsCaptain = Boolean(joinResult.is_captain)
+        resolvedPersonalCode = (joinResult.personal_code as string) || null
+      }
 
       // If first member (captain), set team name
-      if (isFirstMember && teamName) {
+      if (resolvedIsCaptain && teamName && resolvedTeamId) {
         const { error: nameError } = await supabase.rpc('setup_team_name', {
-          team_id_input: joinResult.team_id,
+          team_id_input: resolvedTeamId,
           new_team_name: teamName,
         })
 
@@ -130,7 +176,6 @@ export default function TeamSetupPage() {
       }
 
       // Ensure personal code exists so rejoin code is visible in admin panel.
-      let resolvedPersonalCode = joinResult?.personal_code as string | null
       const { data: authData } = await supabase.auth.getUser()
       if (authData?.user?.id && !resolvedPersonalCode) {
         const { data: profileData } = await supabase
