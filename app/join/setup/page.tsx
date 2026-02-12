@@ -72,7 +72,9 @@ export default function TeamSetupPage() {
 
       if (error) throw error
       if (!team) {
-        throw new Error('Invalid activation code')
+        // Do not block here; final source of truth is join_team_by_code RPC.
+        setIsFirstMember(false)
+        return
       }
 
       // Check if this is the first member
@@ -106,7 +108,7 @@ export default function TeamSetupPage() {
     const normalizedCode = activationCode.replace(/\s+/g, '').toUpperCase()
 
     try {
-      // Join team
+      // Join team (final validation should happen here)
       const { data: joinResult, error: joinError } = await supabase.rpc('join_team_by_code', {
         activation_code_input: normalizedCode,
         member_name: memberName,
@@ -114,9 +116,12 @@ export default function TeamSetupPage() {
       })
 
       if (joinError) throw joinError
+      if (!joinResult?.success) {
+        throw new Error(joinResult?.error || 'Invalid activation code')
+      }
 
       // If first member (captain), set team name
-      if (isFirstMember && teamName) {
+      if (isFirstMember && teamName && joinResult?.team_id) {
         const { error: nameError } = await supabase.rpc('setup_team_name', {
           team_id_input: joinResult.team_id,
           new_team_name: teamName,
