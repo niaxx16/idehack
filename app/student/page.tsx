@@ -440,14 +440,29 @@ export default function StudentPage() {
               {team.name}
             </h1>
             <p className="text-muted-foreground">{t('table')} {team.table_number}</p>
-            {profile?.personal_code && (
-              <div className="mt-2 inline-flex items-center gap-2 px-3 py-1 bg-purple-100 border border-purple-300 rounded-lg">
-                <Users className="h-3 w-3 text-purple-600" />
-                <span className="text-xs text-purple-900">
-                  {t('yourCode')}: <span className="font-mono font-bold">{profile.personal_code}</span>
-                </span>
-              </div>
-            )}
+            <div className="mt-2 flex flex-wrap items-center gap-2">
+              {(profile?.display_name || profile?.full_name) && (
+                <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-blue-50 border border-blue-200 rounded-lg">
+                  <Users className="h-3 w-3 text-blue-600" />
+                  <span className="text-xs text-blue-900 font-medium">
+                    {profile.display_name || profile.full_name}
+                  </span>
+                  {isCaptain && (
+                    <span className="inline-flex items-center gap-0.5 ml-1 text-xs bg-yellow-100 text-yellow-800 px-1.5 py-0.5 rounded">
+                      <Crown className="h-2.5 w-2.5" />
+                      {t('captain')}
+                    </span>
+                  )}
+                </div>
+              )}
+              {profile?.personal_code && (
+                <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-purple-100 border border-purple-300 rounded-lg">
+                  <span className="text-xs text-purple-900">
+                    {t('yourCode')}: <span className="font-mono font-bold">{profile.personal_code}</span>
+                  </span>
+                </div>
+              )}
+            </div>
           </div>
           <Button variant="outline" onClick={handleSignOut}>
             <LogOut className="mr-2 h-4 w-4" />
