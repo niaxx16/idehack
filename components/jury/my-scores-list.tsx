@@ -13,6 +13,7 @@ interface MyScoresListProps {
   eventId: string
   onSelectTeam?: (team: { id: string; name: string; table_number: number }) => void
   selectedTeamId?: string | null
+  refreshTrigger?: number
 }
 
 interface ScoredTeam {
@@ -35,7 +36,7 @@ const CRITERIA_KEYS: (keyof JuryScoreData)[] = [
   'presentation_teamwork',
 ]
 
-export function MyScoresList({ juryId, eventId, onSelectTeam, selectedTeamId }: MyScoresListProps) {
+export function MyScoresList({ juryId, eventId, onSelectTeam, selectedTeamId, refreshTrigger }: MyScoresListProps) {
   const t = useTranslations('jury')
   const [scoredTeams, setScoredTeams] = useState<ScoredTeam[]>([])
   const [isLoading, setIsLoading] = useState(true)
@@ -43,7 +44,7 @@ export function MyScoresList({ juryId, eventId, onSelectTeam, selectedTeamId }: 
 
   useEffect(() => {
     loadMyScores()
-  }, [juryId, eventId])
+  }, [juryId, eventId, refreshTrigger])
 
   // Listen for score changes
   useEffect(() => {

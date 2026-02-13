@@ -24,6 +24,7 @@ export default function JuryPage() {
   const [currentEvent, setCurrentEvent] = useState<Event | null>(null)
   const [currentTeam, setCurrentTeam] = useState<Team | null>(null)
   const [editingTeam, setEditingTeam] = useState<{ id: string; name: string; table_number: number } | null>(null)
+  const [scoreRefresh, setScoreRefresh] = useState(0)
   const [isLoading, setIsLoading] = useState(true)
   const supabase = createClient()
 
@@ -182,7 +183,10 @@ export default function JuryPage() {
                   event={currentEvent}
                   team={currentTeam}
                   juryId={profile.id}
-                  onScoreSubmitted={loadEventData}
+                  onScoreSubmitted={() => {
+                    loadEventData()
+                    setScoreRefresh(n => n + 1)
+                  }}
                 />
               </div>
             </div>
@@ -202,7 +206,10 @@ export default function JuryPage() {
                   event={currentEvent}
                   team={{ id: editingTeam.id, name: editingTeam.name, table_number: editingTeam.table_number } as Team}
                   juryId={profile.id}
-                  onScoreSubmitted={() => setEditingTeam(null)}
+                  onScoreSubmitted={() => {
+                    setEditingTeam(null)
+                    setScoreRefresh(n => n + 1)
+                  }}
                 />
               </div>
             </div>
@@ -244,6 +251,7 @@ export default function JuryPage() {
                   setEditingTeam(prev => prev?.id === team.id ? null : team)
                 }}
                 selectedTeamId={editingTeam?.id}
+                refreshTrigger={scoreRefresh}
               />
             </div>
           )}
