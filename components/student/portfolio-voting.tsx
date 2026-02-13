@@ -48,9 +48,11 @@ export function PortfolioVoting({ event, profile }: PortfolioVotingProps) {
       // Refresh auth session first to prevent stale token errors
       await supabase.auth.getSession()
 
+      console.log('[PortfolioVoting] loadAll starting, event.id:', event.id, 'profile.id:', profile.id)
       await Promise.all([loadTeamsAndNotes(), checkIfVoted()])
+      console.log('[PortfolioVoting] loadAll done')
     } catch (err: any) {
-      console.error('Failed to load voting data:', err)
+      console.error('[PortfolioVoting] Failed to load voting data:', err)
       setLoadError(err.message || 'Bağlantı hatası. Lütfen tekrar deneyin.')
     } finally {
       setIsLoading(false)
@@ -65,26 +67,30 @@ export function PortfolioVoting({ event, profile }: PortfolioVotingProps) {
       .eq('event_id', event.id)
       .order('table_number')
 
+    console.log('[PortfolioVoting] teams query:', { count: teamsData?.length, error: teamsError, eventId: event.id })
+
     if (teamsError) throw teamsError
 
     if (teamsData) {
       setTeams(teamsData)
 
-      // Load user's notes
-      const { data: notesData, error: notesError } = await supabase
-        .from('user_notes')
-        .select('*')
-        .eq('user_id', profile.id)
-        .in('target_team_id', teamsData.map(t => t.id))
+      // Only load notes if there are teams
+      if (teamsData.length > 0) {
+        const { data: notesData, error: notesError } = await supabase
+          .from('user_notes')
+          .select('*')
+          .eq('user_id', profile.id)
+          .in('target_team_id', teamsData.map(t => t.id))
 
-      if (notesError) throw notesError
+        if (notesError) throw notesError
 
-      if (notesData) {
-        const notesMap: Record<string, UserNote> = {}
-        notesData.forEach((note: UserNote) => {
-          notesMap[note.target_team_id] = note
-        })
-        setUserNotes(notesMap)
+        if (notesData) {
+          const notesMap: Record<string, UserNote> = {}
+          notesData.forEach((note: UserNote) => {
+            notesMap[note.target_team_id] = note
+          })
+          setUserNotes(notesMap)
+        }
       }
     }
   }
@@ -110,7 +116,9 @@ export function PortfolioVoting({ event, profile }: PortfolioVotingProps) {
 
     if (txError) throw txError
 
-    setHasVoted(!!data && data.length > 0)
+    const voted = !!data && data.length > 0
+    console.log('[PortfolioVoting] checkIfVoted:', { voted, transactionCount: data?.length, eventTeamCount: eventTeams.length })
+    setHasVoted(voted)
   }
 
   const handleAmountChange = (teamId: string, value: string) => {
