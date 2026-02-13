@@ -22,6 +22,7 @@ import { Loader2, Users, Crown, FileText, Upload, LogOut, AlertCircle, Lightbulb
 import { useLanguage } from '@/lib/i18n/language-provider'
 import { Locale } from '@/lib/i18n/config'
 import { useTranslations } from 'next-intl'
+import { getRoleLabel } from '@/lib/utils/role-label'
 
 interface TeamMember {
   user_id: string
@@ -441,20 +442,28 @@ export default function StudentPage() {
             </h1>
             <p className="text-muted-foreground">{t('table')} {team.table_number}</p>
             <div className="mt-2 flex flex-wrap items-center gap-2">
-              {(profile?.display_name || profile?.full_name) && (
-                <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-blue-50 border border-blue-200 rounded-lg">
-                  <Users className="h-3 w-3 text-blue-600" />
-                  <span className="text-xs text-blue-900 font-medium">
-                    {profile.display_name || profile.full_name}
-                  </span>
-                  {isCaptain && (
-                    <span className="inline-flex items-center gap-0.5 ml-1 text-xs bg-yellow-100 text-yellow-800 px-1.5 py-0.5 rounded">
-                      <Crown className="h-2.5 w-2.5" />
-                      {t('captain')}
+              {(profile?.display_name || profile?.full_name) && (() => {
+                const currentMember = members.find(m => m.user_id === currentUserId)
+                return (
+                  <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-blue-50 border border-blue-200 rounded-lg">
+                    <Users className="h-3 w-3 text-blue-600" />
+                    <span className="text-xs text-blue-900 font-medium">
+                      {profile.display_name || profile.full_name}
                     </span>
-                  )}
-                </div>
-              )}
+                    {currentMember?.role && (
+                      <span className="text-xs text-blue-600">
+                        · {getRoleLabel(currentMember.role, tCommon)}
+                      </span>
+                    )}
+                    {isCaptain && (
+                      <span className="inline-flex items-center gap-0.5 ml-1 text-xs bg-yellow-100 text-yellow-800 px-1.5 py-0.5 rounded">
+                        <Crown className="h-2.5 w-2.5" />
+                        {t('captain')}
+                      </span>
+                    )}
+                  </div>
+                )
+              })()}
               {profile?.personal_code && (
                 <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-purple-100 border border-purple-300 rounded-lg">
                   <span className="text-xs text-purple-900">
@@ -734,7 +743,7 @@ export default function StudentPage() {
                                 </span>
                               )}
                             </div>
-                            <p className="text-sm text-muted-foreground">{member.role}</p>
+                            <p className="text-sm text-muted-foreground">{getRoleLabel(member.role, tCommon)}</p>
                           </div>
                           <p className="text-xs text-muted-foreground">
                             {t('joined')} {new Date(member.joined_at).toLocaleDateString()}

@@ -9,10 +9,12 @@ import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { createClient } from '@/lib/supabase/client'
 import { Loader2, Users, Crown, CheckCircle, Key } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 
 export default function TeamSetupPage() {
   const router = useRouter()
   const supabase = createClient()
+  const t = useTranslations('student.setup')
 
   const [activationCode, setActivationCode] = useState('')
   const [userId, setUserId] = useState('')
@@ -297,10 +299,10 @@ export default function TeamSetupPage() {
               <CheckCircle className="h-8 w-8 text-white" />
             </div>
             <CardTitle className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
-              Welcome to Your Team!
+              {t('successTitle')}
             </CardTitle>
             <CardDescription>
-              Save your personal code to rejoin later
+              {t('successDesc')}
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
@@ -308,25 +310,25 @@ export default function TeamSetupPage() {
             <div className="p-6 bg-gradient-to-br from-purple-100 to-blue-100 rounded-lg border-2 border-purple-300">
               <div className="flex items-center justify-center gap-2 mb-3">
                 <Key className="h-5 w-5 text-purple-600" />
-                <p className="text-sm font-semibold text-purple-900">Your Personal Code</p>
+                <p className="text-sm font-semibold text-purple-900">{t('personalCode')}</p>
               </div>
               <div className="text-center">
                 <p className="text-4xl font-bold font-mono tracking-wider text-purple-900 mb-2">
                   {personalCode}
                 </p>
                 <p className="text-xs text-purple-700">
-                  Save this code! You'll need it to rejoin if you sign out.
+                  {t('saveCodeHint')}
                 </p>
               </div>
             </div>
 
             {/* Instructions */}
             <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-              <p className="text-sm text-yellow-800 font-medium mb-2">⚠️ Important</p>
+              <p className="text-sm text-yellow-800 font-medium mb-2">⚠️ {t('importantTitle')}</p>
               <ul className="text-xs text-yellow-700 space-y-1">
-                <li>• Take a screenshot or write down this code</li>
-                <li>• If you sign out, use this code at /rejoin to return</li>
-                <li>• Don't share your code with others</li>
+                <li>• {t('importantTip1')}</li>
+                <li>• {t('importantTip2')}</li>
+                <li>• {t('importantTip3')}</li>
               </ul>
             </div>
 
@@ -340,7 +342,7 @@ export default function TeamSetupPage() {
               className="w-full"
               size="lg"
             >
-              Continue to Dashboard
+              {t('continueToDashboard')}
             </Button>
           </CardContent>
         </Card>
@@ -358,10 +360,10 @@ export default function TeamSetupPage() {
                 <Crown className="h-6 w-6 text-white" />
               </div>
               <CardTitle className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
-                You're the Team Captain!
+                {t('captainTitle')}
               </CardTitle>
               <CardDescription>
-                Set up your team name and add your details
+                {t('captainDesc')}
               </CardDescription>
             </>
           ) : (
@@ -370,10 +372,10 @@ export default function TeamSetupPage() {
                 <Users className="h-6 w-6 text-white" />
               </div>
               <CardTitle className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
-                Join Your Team
+                {t('joinTitle')}
               </CardTitle>
               <CardDescription>
-                Enter your details to join the team
+                {t('joinDesc')}
               </CardDescription>
             </>
           )}
@@ -382,26 +384,26 @@ export default function TeamSetupPage() {
           <form onSubmit={handleSubmit} className="space-y-4">
             {isFirstMember && (
               <div className="space-y-2">
-                <Label htmlFor="teamName">Team Name</Label>
+                <Label htmlFor="teamName">{t('teamName')}</Label>
                 <Input
                   id="teamName"
-                  placeholder="e.g., Innovation Wizards"
+                  placeholder={t('teamNamePlaceholder')}
                   value={teamName}
                   onChange={(e) => setTeamName(e.target.value)}
                   required
                   autoFocus
                 />
                 <p className="text-xs text-muted-foreground">
-                  Choose a creative name for your team
+                  {t('teamNameHint')}
                 </p>
               </div>
             )}
 
             <div className="space-y-2">
-              <Label htmlFor="memberName">Your Name</Label>
+              <Label htmlFor="memberName">{t('yourName')}</Label>
               <Input
                 id="memberName"
-                placeholder="e.g., Ahmet Yılmaz"
+                placeholder={t('yourNamePlaceholder')}
                 value={memberName}
                 onChange={(e) => setMemberName(e.target.value)}
                 required
@@ -410,17 +412,18 @@ export default function TeamSetupPage() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="memberRole">Your Role</Label>
+              <Label htmlFor="memberRole">{t('yourRole')}</Label>
               <Select value={memberRole} onValueChange={setMemberRole} required>
                 <SelectTrigger id="memberRole">
-                  <SelectValue placeholder="Select your role" />
+                  <SelectValue placeholder={t('selectRole')} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="Product Manager">Product Manager</SelectItem>
-                  <SelectItem value="Designer">Designer</SelectItem>
-                  <SelectItem value="Developer">Developer</SelectItem>
-                  <SelectItem value="Marketer">Marketer</SelectItem>
-                  <SelectItem value="Other">Other</SelectItem>
+                  <SelectItem value="projectLeader">{t('roles.projectLeader')}</SelectItem>
+                  <SelectItem value="researcher">{t('roles.researcher')}</SelectItem>
+                  <SelectItem value="designer">{t('roles.designer')}</SelectItem>
+                  <SelectItem value="developer">{t('roles.developer')}</SelectItem>
+                  <SelectItem value="marketing">{t('roles.marketing')}</SelectItem>
+                  <SelectItem value="strategy">{t('roles.strategy')}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -440,12 +443,12 @@ export default function TeamSetupPage() {
               {isSubmitting ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Joining...
+                  {t('joining')}
                 </>
               ) : isFirstMember ? (
-                'Create Team & Continue'
+                t('createAndContinue')
               ) : (
-                'Join Team'
+                t('joinTeam')
               )}
             </Button>
           </form>

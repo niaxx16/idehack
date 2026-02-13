@@ -16,7 +16,15 @@
     "search": "Search",
     "filter": "Filter",
     "reset": "Reset",
-    "noData": "No data available"
+    "noData": "No data available",
+    "roles": {
+      "projectLeader": "Project Leader",
+      "researcher": "Researcher",
+      "designer": "Designer",
+      "developer": "Developer",
+      "marketing": "Marketing & Communication",
+      "strategy": "Business Model & Strategy"
+    }
   },
   "auth": {
     "login": "Login",
@@ -512,6 +520,39 @@
       "clap": "Clap",
       "fire": "Fire",
       "currentTeam": "Current Team"
+    },
+    "setup": {
+      "captainTitle": "You're the Team Captain!",
+      "captainDesc": "Set up your team name and add your details",
+      "joinTitle": "Join Your Team",
+      "joinDesc": "Enter your details to join the team",
+      "teamName": "Team Name",
+      "teamNamePlaceholder": "e.g., Innovation Wizards",
+      "teamNameHint": "Choose a creative name for your team",
+      "yourName": "Your Name",
+      "yourNamePlaceholder": "e.g., John Smith",
+      "yourRole": "Your Role in the Team",
+      "selectRole": "Select your role",
+      "roles": {
+        "projectLeader": "Project Leader",
+        "researcher": "Researcher",
+        "designer": "Designer",
+        "developer": "Developer",
+        "marketing": "Marketing & Communication",
+        "strategy": "Business Model & Strategy"
+      },
+      "joining": "Joining...",
+      "createAndContinue": "Create Team & Continue",
+      "joinTeam": "Join Team",
+      "successTitle": "Welcome to Your Team!",
+      "successDesc": "Save your personal code to rejoin later",
+      "personalCode": "Your Personal Code",
+      "saveCodeHint": "Save this code! You'll need it to rejoin if you sign out.",
+      "importantTitle": "Important",
+      "importantTip1": "Take a screenshot or write down this code",
+      "importantTip2": "If you sign out, use this code at /rejoin to return",
+      "importantTip3": "Don't share your code with others",
+      "continueToDashboard": "Continue to Dashboard"
     },
     "tabs": {
       "canvas": "Canvas",

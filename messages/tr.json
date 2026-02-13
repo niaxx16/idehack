@@ -16,7 +16,15 @@
     "search": "Ara",
     "filter": "Filtrele",
     "reset": "Sıfırla",
-    "noData": "Veri bulunamadı"
+    "noData": "Veri bulunamadı",
+    "roles": {
+      "projectLeader": "Proje Lideri",
+      "researcher": "Araştırmacı",
+      "designer": "Tasarımcı",
+      "developer": "Geliştirici",
+      "marketing": "Pazarlama & İletişim",
+      "strategy": "İş Modeli & Strateji"
+    }
   },
   "auth": {
     "login": "Giriş Yap",
@@ -512,6 +520,39 @@
       "clap": "Alkış",
       "fire": "Ateş",
       "currentTeam": "Mevcut Takım"
+    },
+    "setup": {
+      "captainTitle": "Takım Kaptanısınız!",
+      "captainDesc": "Takım adınızı belirleyin ve bilgilerinizi girin",
+      "joinTitle": "Takımına Katıl",
+      "joinDesc": "Takıma katılmak için bilgilerinizi girin",
+      "teamName": "Takım Adı",
+      "teamNamePlaceholder": "örn., Yenilik Sihirbazları",
+      "teamNameHint": "Takımınız için yaratıcı bir isim seçin",
+      "yourName": "Adınız Soyadınız",
+      "yourNamePlaceholder": "örn., Ahmet Yılmaz",
+      "yourRole": "Takımdaki Rolünüz",
+      "selectRole": "Rol seçin",
+      "roles": {
+        "projectLeader": "Proje Lideri",
+        "researcher": "Araştırmacı",
+        "designer": "Tasarımcı",
+        "developer": "Geliştirici",
+        "marketing": "Pazarlama & İletişim",
+        "strategy": "İş Modeli & Strateji"
+      },
+      "joining": "Katılınıyor...",
+      "createAndContinue": "Takımı Oluştur ve Devam Et",
+      "joinTeam": "Takıma Katıl",
+      "successTitle": "Takıma Hoş Geldiniz!",
+      "successDesc": "Daha sonra tekrar giriş yapmak için kişisel kodunuzu kaydedin",
+      "personalCode": "Kişisel Kodunuz",
+      "saveCodeHint": "Bu kodu kaydedin! Çıkış yaparsanız tekrar giriş için gerekli.",
+      "importantTitle": "Önemli",
+      "importantTip1": "Ekran görüntüsü alın veya bu kodu not edin",
+      "importantTip2": "Çıkış yaparsanız /rejoin adresinden bu kodla geri dönün",
+      "importantTip3": "Kodunuzu başkalarıyla paylaşmayın",
+      "continueToDashboard": "Panele Devam Et"
     },
     "tabs": {
       "canvas": "Canvas",
