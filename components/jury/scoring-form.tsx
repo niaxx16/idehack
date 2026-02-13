@@ -8,7 +8,8 @@ import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Slider } from '@/components/ui/slider'
 import { createClient } from '@/lib/supabase/client'
-import { Loader2, Save, CheckCircle } from 'lucide-react'
+import { Checkbox } from '@/components/ui/checkbox'
+import { Loader2, Save, CheckCircle, Route } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 
 interface ScoringFormProps {
@@ -31,6 +32,9 @@ const SCORE_LEVELS = [
   { min: 17, max: 20, color: 'text-green-600' },
 ] as const
 
+const PROJECT_PATH_KEYS = ['startup', 'tubitak2204', 'teknofest', 'socialApp'] as const
+type ProjectPath = typeof PROJECT_PATH_KEYS[number]
+
 function getScoreColor(value: number) {
   return SCORE_LEVELS.find(l => value >= l.min && value <= l.max)?.color || ''
 }
@@ -45,6 +49,7 @@ export function ScoringForm({ event, team, juryId, onScoreSubmitted }: ScoringFo
     presentation_teamwork: 10,
   })
   const [comments, setComments] = useState('')
+  const [projectPaths, setProjectPaths] = useState<ProjectPath[]>([])
   const [isSaving, setIsSaving] = useState(false)
   const [hasExistingScore, setHasExistingScore] = useState(false)
   const [saveMessage, setSaveMessage] = useState<{ type: 'success' | 'error'; key: string } | null>(null)
@@ -82,6 +87,7 @@ export function ScoringForm({ event, team, juryId, onScoreSubmitted }: ScoringFo
         })
       }
       setComments(data.comments || '')
+      setProjectPaths(loadedScores.project_paths || [])
       setHasExistingScore(true)
     } else {
       // Reset form for new team
@@ -93,6 +99,7 @@ export function ScoringForm({ event, team, juryId, onScoreSubmitted }: ScoringFo
         presentation_teamwork: 10,
       })
       setComments('')
+      setProjectPaths([])
       setHasExistingScore(false)
     }
   }
@@ -114,7 +121,7 @@ export function ScoringForm({ event, team, juryId, onScoreSubmitted }: ScoringFo
         .upsert({
           jury_id: juryId,
           team_id: team.id,
-          scores,
+          scores: { ...scores, project_paths: projectPaths },
           comments,
         })
 
@@ -131,6 +138,12 @@ export function ScoringForm({ event, team, juryId, onScoreSubmitted }: ScoringFo
     } finally {
       setIsSaving(false)
     }
+  }
+
+  const toggleProjectPath = (path: ProjectPath) => {
+    setProjectPaths((prev) =>
+      prev.includes(path) ? prev.filter((p) => p !== path) : [...prev, path]
+    )
   }
 
   const totalScore = Object.values(scores).reduce((sum, score) => sum + score, 0)
@@ -192,6 +205,33 @@ export function ScoringForm({ event, team, juryId, onScoreSubmitted }: ScoringFo
             </div>
           )
         })}
+
+        {/* Project Path Suggestion */}
+        <div className="space-y-3 p-4 bg-muted/50 rounded-lg border">
+          <div className="flex items-center gap-2">
+            <Route className="h-4 w-4 text-primary" />
+            <Label className="text-sm font-semibold">{t('projectPathTitle')}</Label>
+          </div>
+          <p className="text-xs text-muted-foreground">{t('projectPathDesc')}</p>
+          <div className="grid grid-cols-2 gap-3">
+            {PROJECT_PATH_KEYS.map((pathKey) => (
+              <label
+                key={pathKey}
+                className={`flex items-center gap-2 p-2.5 rounded-lg border cursor-pointer transition-colors ${
+                  projectPaths.includes(pathKey)
+                    ? 'bg-primary/10 border-primary'
+                    : 'bg-background hover:bg-muted'
+                }`}
+              >
+                <Checkbox
+                  checked={projectPaths.includes(pathKey)}
+                  onCheckedChange={() => toggleProjectPath(pathKey)}
+                />
+                <span className="text-sm font-medium">{t(`projectPaths.${pathKey}`)}</span>
+              </label>
+            ))}
+          </div>
+        </div>
 
         <div className="space-y-2">
           <Label htmlFor="comments">{t('comments')}</Label>

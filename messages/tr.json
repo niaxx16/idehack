@@ -654,6 +654,14 @@
       "presentation_teamworkDesc": "Sunum kalitesi ve takım içi koordinasyon",
       "presentation_teamworkIndicators": "Mesaj net, süreye uygun mu? • Takım rolleri dengeli mi, koordinasyon var mı? • Sorulara yanıtlar tutarlı mı?",
       "scaleLevels": "1–4 Başlangıç  •  5–8 Geliştirilmeli  •  9–12 Yeterli  •  13–16 İyi  •  17–20 Mükemmel",
+      "projectPathTitle": "Proje Yolu Önerisi",
+      "projectPathDesc": "Bu fikir hangi yola daha uygun? (Birden fazla seçilebilir)",
+      "projectPaths": {
+        "startup": "Startup / Girişim",
+        "tubitak2204": "TÜBİTAK 2204",
+        "teknofest": "TEKNOFEST",
+        "socialApp": "Sosyal Uygulama"
+      },
       "comments": "Yorumlar (İsteğe Bağlı)",
       "commentsPlaceholder": "Bu takım için geri bildiriminizi ekleyin...",
       "saving": "Kaydediliyor...",

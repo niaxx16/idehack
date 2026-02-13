@@ -654,6 +654,14 @@
       "presentation_teamworkDesc": "Quality of presentation and team coordination",
       "presentation_teamworkIndicators": "Is the message clear and within time? • Are team roles balanced with good coordination? • Are responses to questions consistent?",
       "scaleLevels": "1–4 Beginner  •  5–8 Needs Work  •  9–12 Adequate  •  13–16 Good  •  17–20 Excellent",
+      "projectPathTitle": "Suggested Project Path",
+      "projectPathDesc": "Which path fits this idea best? (Multiple selections allowed)",
+      "projectPaths": {
+        "startup": "Startup",
+        "tubitak2204": "TÜBİTAK 2204",
+        "teknofest": "TEKNOFEST",
+        "socialApp": "Social Application"
+      },
       "comments": "Comments (Optional)",
       "commentsPlaceholder": "Add your feedback for this team...",
       "saving": "Saving...",
