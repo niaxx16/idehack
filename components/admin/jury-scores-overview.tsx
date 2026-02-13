@@ -101,7 +101,10 @@ export function JuryScoresOverview({ event, juryMembers }: JuryScoresOverviewPro
   }
 
   const getTotalScore = (s: JuryScoreData) => {
-    return Object.values(s).reduce((sum, v) => sum + v, 0)
+    const keys: (keyof JuryScoreData)[] = [
+      'problem_understanding', 'innovation', 'value_impact', 'feasibility', 'presentation_teamwork',
+    ]
+    return keys.reduce((sum, key) => sum + (s[key] || 0), 0)
   }
 
   const getScoreForCell = (teamId: string, juryId: string): number | null => {

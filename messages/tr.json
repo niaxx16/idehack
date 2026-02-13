@@ -672,7 +672,8 @@
       "alreadyScored": "Bu takımı zaten puanladınız. Güncellemek için tıklayın."
     },
     "myScores": {
-      "title": "Verdiğim Puanlar"
+      "title": "Verdiğim Puanlar",
+      "editingScore": "Puanı düzenleniyor"
     },
     "scoring": {
       "title": "Takımı Puanla",

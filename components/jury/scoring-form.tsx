@@ -72,10 +72,16 @@ export function ScoringForm({ event, team, juryId, onScoreSubmitted }: ScoringFo
     }
 
     if (data) {
-      // Handle migration from old 4-criteria to new 5-criteria system
       const loadedScores = data.scores as any
       if (loadedScores.problem_understanding !== undefined) {
-        setScores(loadedScores as JuryScoreData)
+        // Only extract the 5 scoring criteria, exclude project_paths and other extra fields
+        setScores({
+          problem_understanding: loadedScores.problem_understanding,
+          innovation: loadedScores.innovation,
+          value_impact: loadedScores.value_impact,
+          feasibility: loadedScores.feasibility,
+          presentation_teamwork: loadedScores.presentation_teamwork,
+        })
       } else {
         // Old format - reset to new defaults
         setScores({
@@ -146,7 +152,7 @@ export function ScoringForm({ event, team, juryId, onScoreSubmitted }: ScoringFo
     )
   }
 
-  const totalScore = Object.values(scores).reduce((sum, score) => sum + score, 0)
+  const totalScore = SCORING_CRITERIA_KEYS.reduce((sum, key) => sum + (scores[key as keyof JuryScoreData] || 0), 0)
 
   return (
     <Card>

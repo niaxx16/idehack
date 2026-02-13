@@ -23,6 +23,7 @@ export default function JuryPage() {
   const tCommon = useTranslations('common')
   const [currentEvent, setCurrentEvent] = useState<Event | null>(null)
   const [currentTeam, setCurrentTeam] = useState<Team | null>(null)
+  const [editingTeam, setEditingTeam] = useState<{ id: string; name: string; table_number: number } | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const supabase = createClient()
 
@@ -86,6 +87,8 @@ export default function JuryPage() {
   useEffect(() => {
     if (currentEvent?.current_team_id) {
       loadCurrentTeam()
+      // Active pitch started, clear manual editing
+      setEditingTeam(null)
     } else {
       setCurrentTeam(null)
     }
@@ -183,6 +186,26 @@ export default function JuryPage() {
                 />
               </div>
             </div>
+          ) : editingTeam && currentEvent ? (
+            <div className="p-4 max-w-screen-2xl mx-auto">
+              <div className="max-w-2xl mx-auto space-y-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h2 className="text-lg font-semibold">{editingTeam.name}</h2>
+                    <p className="text-sm text-muted-foreground">{t('streamViewer.table')} {editingTeam.table_number} · {t('myScores.editingScore')}</p>
+                  </div>
+                  <Button variant="outline" size="sm" onClick={() => setEditingTeam(null)}>
+                    {tCommon('close')}
+                  </Button>
+                </div>
+                <ScoringForm
+                  event={currentEvent}
+                  team={{ id: editingTeam.id, name: editingTeam.name, table_number: editingTeam.table_number } as Team}
+                  juryId={profile.id}
+                  onScoreSubmitted={() => setEditingTeam(null)}
+                />
+              </div>
+            </div>
           ) : (
             <div className="flex items-center justify-center p-4 py-12">
               <Card className="max-w-md w-full">
@@ -213,7 +236,15 @@ export default function JuryPage() {
           {/* My Scores List */}
           {currentEvent && profile && (
             <div className="p-4 pt-0 max-w-screen-2xl mx-auto">
-              <MyScoresList juryId={profile.id} eventId={currentEvent.id} />
+              <MyScoresList
+                juryId={profile.id}
+                eventId={currentEvent.id}
+                onSelectTeam={(team) => {
+                  if (currentTeam) return // Active pitch running, don't allow manual editing
+                  setEditingTeam(prev => prev?.id === team.id ? null : team)
+                }}
+                selectedTeamId={editingTeam?.id}
+              />
             </div>
           )}
         </div>

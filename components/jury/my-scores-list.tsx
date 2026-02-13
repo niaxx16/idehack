@@ -4,13 +4,15 @@ import { useEffect, useState } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { createClient } from '@/lib/supabase/client'
-import { Loader2, ClipboardList } from 'lucide-react'
+import { Loader2, ClipboardList, Pencil } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 import { JuryScoreData } from '@/types'
 
 interface MyScoresListProps {
   juryId: string
   eventId: string
+  onSelectTeam?: (team: { id: string; name: string; table_number: number }) => void
+  selectedTeamId?: string | null
 }
 
 interface ScoredTeam {
@@ -33,7 +35,7 @@ const CRITERIA_KEYS: (keyof JuryScoreData)[] = [
   'presentation_teamwork',
 ]
 
-export function MyScoresList({ juryId, eventId }: MyScoresListProps) {
+export function MyScoresList({ juryId, eventId, onSelectTeam, selectedTeamId }: MyScoresListProps) {
   const t = useTranslations('jury')
   const [scoredTeams, setScoredTeams] = useState<ScoredTeam[]>([])
   const [isLoading, setIsLoading] = useState(true)
@@ -98,7 +100,7 @@ export function MyScoresList({ juryId, eventId }: MyScoresListProps) {
   }
 
   const getTotalScore = (scores: JuryScoreData) => {
-    return Object.values(scores).reduce((sum, s) => sum + s, 0)
+    return CRITERIA_KEYS.reduce((sum, key) => sum + (scores[key] || 0), 0)
   }
 
   const getScoreBadgeColor = (total: number) => {
@@ -137,7 +139,14 @@ export function MyScoresList({ juryId, eventId }: MyScoresListProps) {
             return (
               <div
                 key={item.id}
-                className="flex items-center justify-between p-3 rounded-lg border bg-white hover:bg-slate-50 transition-colors"
+                onClick={() => onSelectTeam?.({ id: item.team_id, name: item.team.name, table_number: item.team.table_number })}
+                className={`flex items-center justify-between p-3 rounded-lg border transition-colors ${
+                  onSelectTeam ? 'cursor-pointer' : ''
+                } ${
+                  selectedTeamId === item.team_id
+                    ? 'bg-primary/5 border-primary ring-1 ring-primary/20'
+                    : 'bg-white hover:bg-slate-50'
+                }`}
               >
                 <div className="flex items-center gap-3 min-w-0">
                   <div className="min-w-0">
@@ -172,6 +181,9 @@ export function MyScoresList({ juryId, eventId }: MyScoresListProps) {
                   >
                     {total}/100
                   </Badge>
+                  {onSelectTeam && (
+                    <Pencil className={`h-4 w-4 ${selectedTeamId === item.team_id ? 'text-primary' : 'text-muted-foreground'}`} />
+                  )}
                 </div>
               </div>
             )
