@@ -7,7 +7,7 @@ import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Progress } from '@/components/ui/progress'
 import { createClient } from '@/lib/supabase/client'
-import { Loader2, Star, User, MessageSquare } from 'lucide-react'
+import { Loader2, Star, User, MessageSquare, Route } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 
 interface JuryEvaluationsDialogProps {
@@ -30,6 +30,7 @@ export function JuryEvaluationsDialog({ team }: JuryEvaluationsDialogProps) {
   const supabase = createClient()
   const t = useTranslations('admin.teamTracking.juryDialog')
   const tCriteria = useTranslations('jury.scoringForm')
+  const tPaths = useTranslations('jury.scoringForm.projectPaths')
   const [scores, setScores] = useState<JuryScoreWithJury[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [averages, setAverages] = useState<Record<string, number>>({})
@@ -182,6 +183,21 @@ export function JuryEvaluationsDialog({ team }: JuryEvaluationsDialogProps) {
                       </div>
                     ))}
                   </div>
+
+                  {scoreData?.project_paths?.length > 0 && (
+                    <div className="mt-3 pt-3 border-t">
+                      <div className="flex items-start gap-2">
+                        <Route className="h-4 w-4 text-primary mt-0.5" />
+                        <div className="flex flex-wrap gap-1.5">
+                          {scoreData.project_paths.map((path: string) => (
+                            <Badge key={path} variant="outline" className="text-xs">
+                              {tPaths(path)}
+                            </Badge>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  )}
 
                   {score.comments && (
                     <div className="mt-3 pt-3 border-t">
