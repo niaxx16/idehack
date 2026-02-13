@@ -10,6 +10,7 @@ import { useAuth } from '@/hooks/use-auth'
 import { Flame, HandMetal, Crown, UserCircle, CheckCircle } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { Progress } from '@/components/ui/progress'
+import { useTranslations } from 'next-intl'
 
 interface PitchViewerProps {
   event: Event
@@ -47,6 +48,7 @@ export function PitchViewer({ event }: PitchViewerProps) {
   const { sendHype, hypeEvents } = useHype(event.id)
   const { user } = useAuth()
   const supabase = createClient()
+  const t = useTranslations('student.pitch')
 
   useEffect(() => {
     console.log('[PitchViewer] event changed:', { current_team_id: event.current_team_id, event_id: event.id, status: event.status })
@@ -222,35 +224,35 @@ export function PitchViewer({ event }: PitchViewerProps) {
     return (
       <Card>
         <CardHeader>
-          <CardTitle>No Team Pitching</CardTitle>
+          <CardTitle>{t('noTeamPitching')}</CardTitle>
         </CardHeader>
         <CardContent>
-          <p className="text-muted-foreground">Waiting for the next pitch...</p>
+          <p className="text-muted-foreground">{t('waitingForNext')}</p>
         </CardContent>
       </Card>
     )
   }
 
   const progressPercentage = (timeRemaining / (3 * 60)) * 100
-  const teamTitle = currentTeam?.name || pitchingTeamInfo.name || 'Current Team'
+  const teamTitle = currentTeam?.name || pitchingTeamInfo.name || t('currentTeam')
   const teamTable = currentTeam?.table_number || pitchingTeamInfo.table_number
 
   return (
     <div className="space-y-4">
       <Card>
         <CardHeader className="text-center pb-3">
-          <Badge className="mx-auto mb-2 w-fit">Now Pitching</Badge>
+          <Badge className="mx-auto mb-2 w-fit">{t('nowPitching')}</Badge>
           <CardTitle className="text-3xl">{teamTitle}</CardTitle>
           {teamTable ? (
-            <p className="text-muted-foreground">Table {teamTable}</p>
+            <p className="text-muted-foreground">{t('table')} {teamTable}</p>
           ) : (
-            <p className="text-muted-foreground">Live pitch in progress</p>
+            <p className="text-muted-foreground">{t('livePitch')}</p>
           )}
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="space-y-2">
             <div className="flex justify-between items-center">
-              <span className="text-sm font-medium">Time Remaining</span>
+              <span className="text-sm font-medium">{t('timeRemaining')}</span>
               <span className={`text-2xl font-mono font-bold ${
                 timeRemaining < 30 ? 'text-red-600' : ''
               }`}>
@@ -264,21 +266,21 @@ export function PitchViewer({ event }: PitchViewerProps) {
 
       <Card>
         <CardHeader>
-          <CardTitle>Project Details</CardTitle>
-          <CardDescription>Team decisions are highlighted</CardDescription>
+          <CardTitle>{t('projectDetails')}</CardTitle>
+          <CardDescription>{t('decisionsHighlighted')}</CardDescription>
         </CardHeader>
         <CardContent className="space-y-3">
           {/* Problem */}
           <div>
             <h4 className="font-medium mb-1 text-sm flex items-center gap-2">
               <div className="w-1 h-3 bg-red-500 rounded"></div>
-              Problem
+              {t('problem')}
             </h4>
             {teamDecisions.problem ? (
               <div className="bg-green-50 border-2 border-green-400 rounded-lg p-2">
                 <div className="flex items-center gap-1 mb-1">
                   <CheckCircle className="h-3 w-3 text-green-600" />
-                  <span className="text-xs font-semibold text-green-700">Team Decision</span>
+                  <span className="text-xs font-semibold text-green-700">{t('teamDecision')}</span>
                 </div>
                 <p className="text-xs font-medium">{teamDecisions.problem.content}</p>
               </div>
@@ -299,7 +301,7 @@ export function PitchViewer({ event }: PitchViewerProps) {
                 ))}
               </div>
             ) : (
-              <p className="text-xs text-muted-foreground italic">Not specified</p>
+              <p className="text-xs text-muted-foreground italic">{t('notSpecified')}</p>
             )}
           </div>
 
@@ -307,13 +309,13 @@ export function PitchViewer({ event }: PitchViewerProps) {
           <div>
             <h4 className="font-medium mb-1 text-sm flex items-center gap-2">
               <div className="w-1 h-3 bg-yellow-500 rounded"></div>
-              Solution
+              {t('solution')}
             </h4>
             {teamDecisions.solution ? (
               <div className="bg-green-50 border-2 border-green-400 rounded-lg p-2">
                 <div className="flex items-center gap-1 mb-1">
                   <CheckCircle className="h-3 w-3 text-green-600" />
-                  <span className="text-xs font-semibold text-green-700">Team Decision</span>
+                  <span className="text-xs font-semibold text-green-700">{t('teamDecision')}</span>
                 </div>
                 <p className="text-xs font-medium">{teamDecisions.solution.content}</p>
               </div>
@@ -334,7 +336,7 @@ export function PitchViewer({ event }: PitchViewerProps) {
                 ))}
               </div>
             ) : (
-              <p className="text-xs text-muted-foreground italic">Not specified</p>
+              <p className="text-xs text-muted-foreground italic">{t('notSpecified')}</p>
             )}
           </div>
 
@@ -342,13 +344,13 @@ export function PitchViewer({ event }: PitchViewerProps) {
           <div>
             <h4 className="font-medium mb-1 text-sm flex items-center gap-2">
               <div className="w-1 h-3 bg-purple-500 rounded"></div>
-              Unique Value
+              {t('uniqueValue')}
             </h4>
             {teamDecisions.value_proposition ? (
               <div className="bg-green-50 border-2 border-green-400 rounded-lg p-2">
                 <div className="flex items-center gap-1 mb-1">
                   <CheckCircle className="h-3 w-3 text-green-600" />
-                  <span className="text-xs font-semibold text-green-700">Team Decision</span>
+                  <span className="text-xs font-semibold text-green-700">{t('teamDecision')}</span>
                 </div>
                 <p className="text-xs font-medium">{teamDecisions.value_proposition.content}</p>
               </div>
@@ -369,7 +371,7 @@ export function PitchViewer({ event }: PitchViewerProps) {
                 ))}
               </div>
             ) : (
-              <p className="text-xs text-muted-foreground italic">Not specified</p>
+              <p className="text-xs text-muted-foreground italic">{t('notSpecified')}</p>
             )}
           </div>
 
@@ -377,13 +379,13 @@ export function PitchViewer({ event }: PitchViewerProps) {
           <div>
             <h4 className="font-medium mb-1 text-sm flex items-center gap-2">
               <div className="w-1 h-3 bg-blue-500 rounded"></div>
-              Target Audience
+              {t('targetAudience')}
             </h4>
             {teamDecisions.target_audience ? (
               <div className="bg-green-50 border-2 border-green-400 rounded-lg p-2">
                 <div className="flex items-center gap-1 mb-1">
                   <CheckCircle className="h-3 w-3 text-green-600" />
-                  <span className="text-xs font-semibold text-green-700">Team Decision</span>
+                  <span className="text-xs font-semibold text-green-700">{t('teamDecision')}</span>
                 </div>
                 <p className="text-xs font-medium">{teamDecisions.target_audience.content}</p>
               </div>
@@ -404,7 +406,7 @@ export function PitchViewer({ event }: PitchViewerProps) {
                 ))}
               </div>
             ) : (
-              <p className="text-xs text-muted-foreground italic">Not specified</p>
+              <p className="text-xs text-muted-foreground italic">{t('notSpecified')}</p>
             )}
           </div>
 
@@ -412,13 +414,13 @@ export function PitchViewer({ event }: PitchViewerProps) {
           <div>
             <h4 className="font-medium mb-1 text-sm flex items-center gap-2">
               <div className="w-1 h-3 bg-green-500 rounded"></div>
-              Key Features
+              {t('keyFeatures')}
             </h4>
             {teamDecisions.key_features ? (
               <div className="bg-green-50 border-2 border-green-400 rounded-lg p-2">
                 <div className="flex items-center gap-1 mb-1">
                   <CheckCircle className="h-3 w-3 text-green-600" />
-                  <span className="text-xs font-semibold text-green-700">Team Decision</span>
+                  <span className="text-xs font-semibold text-green-700">{t('teamDecision')}</span>
                 </div>
                 <p className="text-xs font-medium">{teamDecisions.key_features.content}</p>
               </div>
@@ -439,7 +441,7 @@ export function PitchViewer({ event }: PitchViewerProps) {
                 ))}
               </div>
             ) : (
-              <p className="text-xs text-muted-foreground italic">Not specified</p>
+              <p className="text-xs text-muted-foreground italic">{t('notSpecified')}</p>
             )}
           </div>
 
@@ -447,13 +449,13 @@ export function PitchViewer({ event }: PitchViewerProps) {
           <div>
             <h4 className="font-medium mb-1 text-sm flex items-center gap-2">
               <div className="w-1 h-3 bg-cyan-500 rounded"></div>
-              Evidence / Insight
+              {t('evidence')}
             </h4>
             {teamDecisions.evidence ? (
               <div className="bg-green-50 border-2 border-green-400 rounded-lg p-2">
                 <div className="flex items-center gap-1 mb-1">
                   <CheckCircle className="h-3 w-3 text-green-600" />
-                  <span className="text-xs font-semibold text-green-700">Team Decision</span>
+                  <span className="text-xs font-semibold text-green-700">{t('teamDecision')}</span>
                 </div>
                 <p className="text-xs font-medium">{teamDecisions.evidence.content}</p>
               </div>
@@ -474,7 +476,7 @@ export function PitchViewer({ event }: PitchViewerProps) {
                 ))}
               </div>
             ) : (
-              <p className="text-xs text-muted-foreground italic">Not specified</p>
+              <p className="text-xs text-muted-foreground italic">{t('notSpecified')}</p>
             )}
           </div>
 
@@ -482,13 +484,13 @@ export function PitchViewer({ event }: PitchViewerProps) {
           <div>
             <h4 className="font-medium mb-1 text-sm flex items-center gap-2">
               <div className="w-1 h-3 bg-orange-500 rounded"></div>
-              Pilot Plan
+              {t('pilotPlan')}
             </h4>
             {teamDecisions.pilot_plan ? (
               <div className="bg-green-50 border-2 border-green-400 rounded-lg p-2">
                 <div className="flex items-center gap-1 mb-1">
                   <CheckCircle className="h-3 w-3 text-green-600" />
-                  <span className="text-xs font-semibold text-green-700">Team Decision</span>
+                  <span className="text-xs font-semibold text-green-700">{t('teamDecision')}</span>
                 </div>
                 <p className="text-xs font-medium">{teamDecisions.pilot_plan.content}</p>
               </div>
@@ -509,7 +511,7 @@ export function PitchViewer({ event }: PitchViewerProps) {
                 ))}
               </div>
             ) : (
-              <p className="text-xs text-muted-foreground italic">Not specified</p>
+              <p className="text-xs text-muted-foreground italic">{t('notSpecified')}</p>
             )}
           </div>
 
@@ -517,13 +519,13 @@ export function PitchViewer({ event }: PitchViewerProps) {
           <div>
             <h4 className="font-medium mb-1 text-sm flex items-center gap-2">
               <div className="w-1 h-3 bg-indigo-500 rounded"></div>
-              Success Metrics
+              {t('successMetrics')}
             </h4>
             {teamDecisions.success_metrics ? (
               <div className="bg-green-50 border-2 border-green-400 rounded-lg p-2">
                 <div className="flex items-center gap-1 mb-1">
                   <CheckCircle className="h-3 w-3 text-green-600" />
-                  <span className="text-xs font-semibold text-green-700">Team Decision</span>
+                  <span className="text-xs font-semibold text-green-700">{t('teamDecision')}</span>
                 </div>
                 <p className="text-xs font-medium">{teamDecisions.success_metrics.content}</p>
               </div>
@@ -544,7 +546,7 @@ export function PitchViewer({ event }: PitchViewerProps) {
                 ))}
               </div>
             ) : (
-              <p className="text-xs text-muted-foreground italic">Not specified</p>
+              <p className="text-xs text-muted-foreground italic">{t('notSpecified')}</p>
             )}
           </div>
 
@@ -552,13 +554,13 @@ export function PitchViewer({ event }: PitchViewerProps) {
           <div>
             <h4 className="font-medium mb-1 text-sm flex items-center gap-2">
               <div className="w-1 h-3 bg-rose-500 rounded"></div>
-              Resources & Risks
+              {t('resourcesRisks')}
             </h4>
             {teamDecisions.resources_risks ? (
               <div className="bg-green-50 border-2 border-green-400 rounded-lg p-2">
                 <div className="flex items-center gap-1 mb-1">
                   <CheckCircle className="h-3 w-3 text-green-600" />
-                  <span className="text-xs font-semibold text-green-700">Team Decision</span>
+                  <span className="text-xs font-semibold text-green-700">{t('teamDecision')}</span>
                 </div>
                 <p className="text-xs font-medium">{teamDecisions.resources_risks.content}</p>
               </div>
@@ -579,7 +581,7 @@ export function PitchViewer({ event }: PitchViewerProps) {
                 ))}
               </div>
             ) : (
-              <p className="text-xs text-muted-foreground italic">Not specified</p>
+              <p className="text-xs text-muted-foreground italic">{t('notSpecified')}</p>
             )}
           </div>
         </CardContent>
@@ -587,7 +589,7 @@ export function PitchViewer({ event }: PitchViewerProps) {
 
       <Card>
         <CardHeader>
-          <CardTitle>Show Your Support!</CardTitle>
+          <CardTitle>{t('showSupport')}</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-2 gap-3">
@@ -597,7 +599,7 @@ export function PitchViewer({ event }: PitchViewerProps) {
               className="h-20 text-lg"
             >
               <HandMetal className="mr-2 h-6 w-6" />
-              Clap
+              {t('clap')}
             </Button>
             <Button
               onClick={() => handleHype('fire')}
@@ -605,7 +607,7 @@ export function PitchViewer({ event }: PitchViewerProps) {
               className="h-20 text-lg"
             >
               <Flame className="mr-2 h-6 w-6" />
-              Fire
+              {t('fire')}
             </Button>
           </div>
 
