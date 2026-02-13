@@ -129,7 +129,7 @@ export function ScoringForm({ event, team, juryId, onScoreSubmitted }: ScoringFo
           team_id: team.id,
           scores: { ...scores, project_paths: projectPaths },
           comments,
-        })
+        }, { onConflict: 'jury_id,team_id' })
 
       if (error) throw error
 
