@@ -167,9 +167,14 @@ export function StreamViewer({ event, team }: StreamViewerProps) {
       const videoId = new URL(url).searchParams.get('v')
       return `https://www.youtube.com/embed/${videoId}`
     }
+    // Convert YouTube live URL to embed URL
+    if (url.includes('youtube.com/live/')) {
+      const videoId = url.split('youtube.com/live/')[1]?.split(/[?&#]/)[0]
+      return `https://www.youtube.com/embed/${videoId}`
+    }
     // Convert YouTube short URL to embed URL
     if (url.includes('youtu.be/')) {
-      const videoId = url.split('youtu.be/')[1]?.split('?')[0]
+      const videoId = url.split('youtu.be/')[1]?.split(/[?&#]/)[0]
       return `https://www.youtube.com/embed/${videoId}`
     }
     // For Zoom or other embeddable URLs, return as is
