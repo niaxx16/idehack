@@ -164,12 +164,15 @@ export function ScoringForm({ event, team, juryId, onScoreSubmitted }: ScoringFo
           return (
             <div key={criterionKey} className="space-y-3">
               <div className="flex items-start justify-between">
-                <div className="space-y-1">
+                <div className="space-y-1 flex-1 min-w-0">
                   <Label className="text-base font-semibold">
                     {t(criterionKey)} <span className="text-muted-foreground font-normal">({MAX_SCORE_PER_CRITERION}p)</span>
                   </Label>
                   <p className="text-xs text-muted-foreground">
                     {t(`${criterionKey}Desc`)}
+                  </p>
+                  <p className="text-[10px] text-muted-foreground/70 leading-relaxed">
+                    {t(`${criterionKey}Indicators`)}
                   </p>
                 </div>
                 <div className={`text-2xl font-bold w-12 text-right ${getScoreColor(value)}`}>
