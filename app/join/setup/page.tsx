@@ -26,7 +26,6 @@ export default function TeamSetupPage() {
   const [personalCode, setPersonalCode] = useState<string | null>(null)
 
   // Form fields
-  const [teamName, setTeamName] = useState('')
   const [memberName, setMemberName] = useState('')
   const [memberRole, setMemberRole] = useState('')
 
@@ -233,16 +232,6 @@ export default function TeamSetupPage() {
         if (syncTeamError) throw syncTeamError
       }
 
-      // If first member (captain), set team name
-      if (shouldBeCaptain && teamName && resolvedTeamId) {
-        const { error: nameError } = await supabase.rpc('setup_team_name', {
-          team_id_input: resolvedTeamId,
-          new_team_name: teamName,
-        })
-
-        if (nameError) throw nameError
-      }
-
       // Ensure personal code exists so rejoin code is visible in admin panel.
       const { data: authData } = await supabase.auth.getUser()
       if (authData?.user?.id && !resolvedPersonalCode) {
@@ -382,23 +371,6 @@ export default function TeamSetupPage() {
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
-            {isFirstMember && (
-              <div className="space-y-2">
-                <Label htmlFor="teamName">{t('teamName')}</Label>
-                <Input
-                  id="teamName"
-                  placeholder={t('teamNamePlaceholder')}
-                  value={teamName}
-                  onChange={(e) => setTeamName(e.target.value)}
-                  required
-                  autoFocus
-                />
-                <p className="text-xs text-muted-foreground">
-                  {t('teamNameHint')}
-                </p>
-              </div>
-            )}
-
             <div className="space-y-2">
               <Label htmlFor="memberName">{t('yourName')}</Label>
               <Input
@@ -407,7 +379,7 @@ export default function TeamSetupPage() {
                 value={memberName}
                 onChange={(e) => setMemberName(e.target.value)}
                 required
-                autoFocus={!isFirstMember}
+                autoFocus
               />
             </div>
 
@@ -438,15 +410,13 @@ export default function TeamSetupPage() {
               type="submit"
               className="w-full"
               size="lg"
-              disabled={isSubmitting || !memberName || !memberRole || (isFirstMember && !teamName)}
+              disabled={isSubmitting || !memberName || !memberRole}
             >
               {isSubmitting ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                   {t('joining')}
                 </>
-              ) : isFirstMember ? (
-                t('createAndContinue')
               ) : (
                 t('joinTeam')
               )}
