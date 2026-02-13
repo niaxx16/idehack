@@ -23,6 +23,18 @@ const SCORING_CRITERIA_KEYS = ['problem_understanding', 'innovation', 'value_imp
 const MAX_SCORE_PER_CRITERION = 20
 const TOTAL_MAX_SCORE = 100
 
+const SCORE_LEVELS = [
+  { min: 1, max: 4, color: 'text-red-600' },
+  { min: 5, max: 8, color: 'text-orange-600' },
+  { min: 9, max: 12, color: 'text-yellow-600' },
+  { min: 13, max: 16, color: 'text-blue-600' },
+  { min: 17, max: 20, color: 'text-green-600' },
+] as const
+
+function getScoreColor(value: number) {
+  return SCORE_LEVELS.find(l => value >= l.min && value <= l.max)?.color || ''
+}
+
 export function ScoringForm({ event, team, juryId, onScoreSubmitted }: ScoringFormProps) {
   const t = useTranslations('jury.scoringForm')
   const [scores, setScores] = useState<JuryScoreData>({
@@ -132,11 +144,19 @@ export function ScoringForm({ event, team, juryId, onScoreSubmitted }: ScoringFo
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
-        <div className="p-4 bg-primary/5 rounded-lg">
+        <div className="p-4 bg-primary/5 rounded-lg space-y-3">
           <div className="flex items-center justify-between">
             <span className="text-sm font-medium">{t('totalScore')}</span>
             <span className="text-3xl font-bold">{totalScore}/{TOTAL_MAX_SCORE}</span>
           </div>
+          <div className="flex flex-wrap gap-1.5 justify-center text-[10px] font-medium">
+            <span className="px-2 py-0.5 rounded bg-red-100 text-red-700">1–4</span>
+            <span className="px-2 py-0.5 rounded bg-orange-100 text-orange-700">5–8</span>
+            <span className="px-2 py-0.5 rounded bg-yellow-100 text-yellow-700">9–12</span>
+            <span className="px-2 py-0.5 rounded bg-blue-100 text-blue-700">13–16</span>
+            <span className="px-2 py-0.5 rounded bg-green-100 text-green-700">17–20</span>
+          </div>
+          <p className="text-[10px] text-center text-muted-foreground">{t('scaleLevels')}</p>
         </div>
 
         {SCORING_CRITERIA_KEYS.map((criterionKey) => {
@@ -152,7 +172,7 @@ export function ScoringForm({ event, team, juryId, onScoreSubmitted }: ScoringFo
                     {t(`${criterionKey}Desc`)}
                   </p>
                 </div>
-                <div className="text-2xl font-bold w-12 text-right">
+                <div className={`text-2xl font-bold w-12 text-right ${getScoreColor(value)}`}>
                   {value}
                 </div>
               </div>
@@ -166,10 +186,6 @@ export function ScoringForm({ event, team, juryId, onScoreSubmitted }: ScoringFo
                 step={1}
                 className="w-full"
               />
-              <div className="flex justify-between text-xs text-muted-foreground">
-                <span>{t('poor')} (1)</span>
-                <span>{t('excellent')} ({MAX_SCORE_PER_CRITERION})</span>
-              </div>
             </div>
           )
         })}
