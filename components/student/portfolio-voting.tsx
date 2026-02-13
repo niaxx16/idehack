@@ -90,11 +90,22 @@ export function PortfolioVoting({ event, profile }: PortfolioVotingProps) {
   }
 
   const checkIfVoted = async () => {
-    // Check if user has already made transactions
+    // Check if user has already made transactions for THIS event's teams
+    const { data: eventTeams } = await supabase
+      .from('teams')
+      .select('id')
+      .eq('event_id', event.id)
+
+    if (!eventTeams?.length) {
+      setHasVoted(false)
+      return
+    }
+
     const { data, error: txError } = await supabase
       .from('transactions')
       .select('id')
       .eq('sender_id', profile.id)
+      .in('receiver_team_id', eventTeams.map(t => t.id))
       .limit(1)
 
     if (txError) throw txError
