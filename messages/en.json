@@ -350,7 +350,15 @@
         "averageScores": "Average Scores",
         "individualEvaluations": "Individual Evaluations",
         "anonymousJury": "Anonymous Jury"
-      }
+      },
+      "mentorEvalDialog": {
+        "title": "Mentor Evaluations",
+        "noEvaluations": "No mentor evaluations yet",
+        "generalEvaluation": "General Evaluation",
+        "suggestedPaths": "Suggested Project Paths",
+        "reasoning": "Reasoning"
+      },
+      "mentorEvaluations": "Mentor Eval."
     },
     "juryScoresOverview": {
       "title": "Jury Scores",
@@ -783,6 +791,24 @@
     "ideas": "ideas",
     "feedback": "feedback",
     "decision": "Decision",
+    "generalEvaluation": {
+      "title": "General Evaluation",
+      "description": "Write your general evaluation and project path suggestion for this team",
+      "evaluationPlaceholder": "Write your evaluation about the team's overall performance, strengths, and areas for improvement...",
+      "projectPathTitle": "Suggested Project Path",
+      "projectPaths": {
+        "startup": "Startup",
+        "tubitak2204": "TÜBİTAK 2204",
+        "teknofest": "TEKNOFEST",
+        "socialApp": "Social Application"
+      },
+      "reasoningPlaceholder": "Explain why you suggest this project path...",
+      "reasoningTitle": "Project Path Reasoning",
+      "save": "Save Evaluation",
+      "saving": "Saving...",
+      "saved": "Evaluation saved!",
+      "saveFailed": "Failed to save evaluation"
+    },
     "canvas": {
       "problem": "Problem",
       "problemDesc": "What problem are they solving?",

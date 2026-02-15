@@ -92,6 +92,22 @@ export interface MentorAssignmentWithDetails extends MentorAssignment {
   team?: Team
 }
 
+// Mentor evaluation (general evaluation per team, independent from section feedback)
+export interface MentorEvaluation {
+  id: string
+  team_id: string
+  mentor_id: string
+  evaluation_text: string
+  project_paths: string[]
+  project_path_reasoning: string
+  created_at: string
+  updated_at: string
+}
+
+export interface MentorEvaluationWithMentor extends MentorEvaluation {
+  mentor?: Profile
+}
+
 // Jury scoring structure (5 criteria, each 1-20 points, total 100)
 export interface JuryScoreData {
   problem_understanding: number    // Problemi ve ihtiyacı anlama

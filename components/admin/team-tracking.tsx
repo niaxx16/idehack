@@ -12,10 +12,11 @@ import { Badge } from '@/components/ui/badge'
 import { Textarea } from '@/components/ui/textarea'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import { createClient } from '@/lib/supabase/client'
-import { Loader2, Eye, ClipboardList, Phone, Save, Check, School, User, Download } from 'lucide-react'
+import { Loader2, Eye, ClipboardList, Phone, Save, Check, School, User, Download, MessageSquare } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 import { TeamCanvasViewer } from './team-canvas-viewer'
 import { JuryEvaluationsDialog } from './jury-evaluations-dialog'
+import { MentorEvaluationsDialog } from './mentor-evaluations-dialog'
 
 interface TeamTrackingProps {
   event: Event | null
@@ -411,6 +412,7 @@ export function TeamTracking({ event, teams, onUpdate }: TeamTrackingProps) {
                 <TableHead className="w-[80px] text-center">{t('score')}</TableHead>
                 <TableHead className="w-[80px] text-center">{t('viewCanvas')}</TableHead>
                 <TableHead className="w-[80px] text-center">{t('juryEvaluations')}</TableHead>
+                <TableHead className="w-[80px] text-center">{t('mentorEvaluations')}</TableHead>
                 <TableHead className="min-w-[130px]">{t('projectPath')}</TableHead>
                 <TableHead className="min-w-[130px]">{t('incubation')}</TableHead>
                 <TableHead className="min-w-[150px]">{t('supportingExperts')}</TableHead>
@@ -514,6 +516,23 @@ export function TeamTracking({ event, teams, onUpdate }: TeamTrackingProps) {
                       </DialogTrigger>
                       <DialogContent className="max-w-2xl">
                         <JuryEvaluationsDialog team={team} />
+                      </DialogContent>
+                    </Dialog>
+                  </TableCell>
+
+                  {/* Mentor Evaluations Button */}
+                  <TableCell className="text-center">
+                    <Dialog>
+                      <DialogTrigger asChild>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                        >
+                          <MessageSquare className="h-4 w-4" />
+                        </Button>
+                      </DialogTrigger>
+                      <DialogContent className="max-w-2xl">
+                        <MentorEvaluationsDialog team={team} />
                       </DialogContent>
                     </Dialog>
                   </TableCell>

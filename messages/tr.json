@@ -350,7 +350,15 @@
         "averageScores": "Ortalama Puanlar",
         "individualEvaluations": "Bireysel Değerlendirmeler",
         "anonymousJury": "Anonim Jüri"
-      }
+      },
+      "mentorEvalDialog": {
+        "title": "Mentor Değerlendirmeleri",
+        "noEvaluations": "Henüz mentor değerlendirmesi yok",
+        "generalEvaluation": "Genel Değerlendirme",
+        "suggestedPaths": "Önerilen Proje Yolları",
+        "reasoning": "Gerekçe"
+      },
+      "mentorEvaluations": "Mentor Değ."
     },
     "juryScoresOverview": {
       "title": "Jüri Puanları",
@@ -783,6 +791,24 @@
     "ideas": "fikir",
     "feedback": "geri bildirim",
     "decision": "Karar",
+    "generalEvaluation": {
+      "title": "Genel Değerlendirme",
+      "description": "Bu takım için genel değerlendirmenizi ve proje yolu önerinizi yazın",
+      "evaluationPlaceholder": "Takımın genel performansı, güçlü yönleri ve gelişim alanları hakkında değerlendirmenizi yazın...",
+      "projectPathTitle": "Önerilen Proje Yolu",
+      "projectPaths": {
+        "startup": "Startup / Girişim",
+        "tubitak2204": "TÜBİTAK 2204",
+        "teknofest": "TEKNOFEST",
+        "socialApp": "Sosyal Uygulama"
+      },
+      "reasoningPlaceholder": "Bu proje yolunu neden önerdiğinizi açıklayın...",
+      "reasoningTitle": "Proje Yolu Gerekçesi",
+      "save": "Değerlendirmeyi Kaydet",
+      "saving": "Kaydediliyor...",
+      "saved": "Değerlendirme kaydedildi!",
+      "saveFailed": "Değerlendirme kaydedilemedi"
+    },
     "canvas": {
       "problem": "Problem",
       "problemDesc": "Hangi problemi çözüyorlar?",

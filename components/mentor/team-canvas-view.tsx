@@ -10,6 +10,7 @@ import { createClient } from '@/lib/supabase/client'
 import { AlertCircle, Lightbulb, Target, Star, Zap, Search, FlaskConical, BarChart3, ShieldAlert, MessageSquare, Send, Loader2, Users, Crown, UserCircle, CheckCircle } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { useTranslations } from 'next-intl'
+import { MentorGeneralEvaluation } from './mentor-general-evaluation'
 
 interface TeamCanvasViewProps {
   team: Team
@@ -394,6 +395,9 @@ export function TeamCanvasView({ team, onClose }: TeamCanvasViewProps) {
           </div>
         </CardContent>
       </Card>
+
+      {/* General Evaluation */}
+      {currentMentorId && <MentorGeneralEvaluation team={team} mentorId={currentMentorId} />}
 
       {/* Canvas Grid */}
       <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
