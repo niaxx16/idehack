@@ -488,6 +488,16 @@
       "markAsRead": "Okundu İşaretle",
       "read": "Okundu"
     },
+    "pdf": {
+      "subtitle": "İş Modeli Kanvası",
+      "teamDecision": "Takım Kararı",
+      "teamContributions": "Takım Katkıları",
+      "captain": "Kaptan",
+      "noContributions": "Henüz katkı yok",
+      "generatedBy": "InovaSprint tarafından oluşturuldu",
+      "download": "PDF İndir",
+      "exporting": "Dışa aktarılıyor..."
+    },
     "notes": {
       "title": "Notlarım",
       "description": "Diğer takımları değerlendirirken not alın",
