@@ -763,6 +763,7 @@
     "member": "member",
     "canvasInProgress": "Canvas in progress",
     "viewAndFeedback": "View & Give Feedback",
+    "canvasLocked": "Canvases locked - Submissions frozen",
     "backToTeams": "← Back to Teams",
     "teamMembers": "Team Members",
     "teamDecision": "Team Decision",

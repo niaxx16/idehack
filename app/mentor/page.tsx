@@ -7,7 +7,7 @@ import { useRealtimeEvent } from '@/hooks/use-realtime-event'
 import { Event, Team, Profile, MentorAssignmentWithDetails } from '@/types'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { Loader2, LogOut, Users, FileText, MessageSquare } from 'lucide-react'
+import { Loader2, LogOut, Users, FileText, MessageSquare, Lock } from 'lucide-react'
 import { TeamCanvasView } from '@/components/mentor/team-canvas-view'
 import { useLanguage } from '@/lib/i18n/language-provider'
 import { Locale } from '@/lib/i18n/config'
@@ -227,7 +227,16 @@ export default function MentorPage() {
         </Card>
 
         {/* Team Canvas View or Team List */}
-        {selectedTeam ? (
+        {currentEvent && currentEvent.status !== 'IDEATION' && (
+          <Card className="border-orange-200 bg-orange-50/50">
+            <CardContent className="flex items-center gap-3 py-4">
+              <Lock className="h-5 w-5 text-orange-600" />
+              <p className="text-sm text-orange-800 font-medium">{t('canvasLocked')}</p>
+            </CardContent>
+          </Card>
+        )}
+
+        {selectedTeam && currentEvent?.status === 'IDEATION' ? (
           <div className="space-y-4">
             <Button variant="outline" onClick={() => setSelectedTeam(null)}>
               {t('backToTeams')}
@@ -270,11 +279,13 @@ export default function MentorPage() {
                       team.canvas_data.resources_risks
                     )
 
+                    const canAccess = currentEvent?.status === 'IDEATION'
+
                     return (
                       <Card
                         key={assignment.id}
-                        className="hover:shadow-lg transition-shadow cursor-pointer border-purple-100"
-                        onClick={() => setSelectedTeam(team)}
+                        className={`transition-shadow border-purple-100 ${canAccess ? 'hover:shadow-lg cursor-pointer' : 'opacity-60'}`}
+                        onClick={() => canAccess && setSelectedTeam(team)}
                       >
                         <CardHeader className="pb-3">
                           <CardTitle className="text-lg">{team.name}</CardTitle>
@@ -293,9 +304,18 @@ export default function MentorPage() {
                             </div>
                           )}
 
-                          <Button className="w-full" size="sm">
-                            <MessageSquare className="mr-2 h-4 w-4" />
-                            {t('viewAndFeedback')}
+                          <Button className="w-full" size="sm" disabled={!canAccess}>
+                            {canAccess ? (
+                              <>
+                                <MessageSquare className="mr-2 h-4 w-4" />
+                                {t('viewAndFeedback')}
+                              </>
+                            ) : (
+                              <>
+                                <Lock className="mr-2 h-4 w-4" />
+                                {t('canvasLocked')}
+                              </>
+                            )}
                           </Button>
                         </CardContent>
                       </Card>
