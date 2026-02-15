@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
+import { RealtimeChannel } from '@supabase/supabase-js'
 import { createClient } from '@/lib/supabase/client'
 import { CanvasContributionWithUser, TeamDecision } from '@/types'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -65,6 +66,9 @@ export function CollaborativeCanvasSection({
   const [isEditingDecision, setIsEditingDecision] = useState(false)
   const [isSavingDecision, setIsSavingDecision] = useState(false)
 
+  // Channel ref for broadcasting decisions
+  const decisionChannelRef = useRef<RealtimeChannel | null>(null)
+
   // Check if current user is captain
   const isCaptain = teamMembers.find(m => m.user_id === currentUserId)?.is_captain || false
 
@@ -102,10 +106,13 @@ export function CollaborativeCanvasSection({
     }
   }, [teamId, section, supabase])
 
-  // Real-time subscription for team decisions
+  // Real-time subscription for team decisions via broadcast + postgres_changes
   useEffect(() => {
     const channel = supabase
-      .channel(`decisions-${teamId}-${section}`)
+      .channel(`decisions-broadcast-${teamId}-${section}`)
+      .on('broadcast', { event: 'decision_updated' }, () => {
+        loadTeamDecision()
+      })
       .on(
         'postgres_changes',
         {
@@ -122,7 +129,10 @@ export function CollaborativeCanvasSection({
       )
       .subscribe()
 
+    decisionChannelRef.current = channel
+
     return () => {
+      decisionChannelRef.current = null
       supabase.removeChannel(channel)
     }
   }, [teamId, section, supabase])
@@ -212,6 +222,13 @@ export function CollaborativeCanvasSection({
 
       await loadTeamDecision()
       setIsEditingDecision(false)
+
+      // Broadcast to other team members so they get the update in realtime
+      decisionChannelRef.current?.send({
+        type: 'broadcast',
+        event: 'decision_updated',
+        payload: { section },
+      })
     } catch (err: any) {
       console.error('Failed to save team decision:', err)
       alert('Failed to save team decision. Please try again.')
