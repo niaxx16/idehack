@@ -11,6 +11,7 @@ import { useVotingStore } from '@/stores/voting-store'
 import { Coins, Loader2, CheckCircle, AlertCircle } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { Progress } from '@/components/ui/progress'
+import { useTranslations } from 'next-intl'
 
 interface PortfolioVotingProps {
   event: Event
@@ -18,6 +19,7 @@ interface PortfolioVotingProps {
 }
 
 export function PortfolioVoting({ event, profile }: PortfolioVotingProps) {
+  const t = useTranslations('student.voting')
   const [teams, setTeams] = useState<Team[]>([])
   const [userNotes, setUserNotes] = useState<Record<string, UserNote>>({})
   const [hasVoted, setHasVoted] = useState(false)
@@ -45,36 +47,28 @@ export function PortfolioVoting({ event, profile }: PortfolioVotingProps) {
     setIsLoading(true)
     setLoadError(null)
     try {
-      // Refresh auth session first to prevent stale token errors
       await supabase.auth.getSession()
-
-      console.log('[PortfolioVoting] loadAll starting, event.id:', event.id, 'profile.id:', profile.id)
       await Promise.all([loadTeamsAndNotes(), checkIfVoted()])
-      console.log('[PortfolioVoting] loadAll done')
     } catch (err: any) {
       console.error('[PortfolioVoting] Failed to load voting data:', err)
-      setLoadError(err.message || 'Bağlantı hatası. Lütfen tekrar deneyin.')
+      setLoadError(err.message || t('connectionError'))
     } finally {
       setIsLoading(false)
     }
   }
 
   const loadTeamsAndNotes = async () => {
-    // Load all teams
     const { data: teamsData, error: teamsError } = await supabase
       .from('teams')
       .select('*')
       .eq('event_id', event.id)
       .order('table_number')
 
-    console.log('[PortfolioVoting] teams query:', { count: teamsData?.length, error: teamsError, eventId: event.id })
-
     if (teamsError) throw teamsError
 
     if (teamsData) {
       setTeams(teamsData)
 
-      // Only load notes if there are teams
       if (teamsData.length > 0) {
         const { data: notesData, error: notesError } = await supabase
           .from('user_notes')
@@ -96,7 +90,6 @@ export function PortfolioVoting({ event, profile }: PortfolioVotingProps) {
   }
 
   const checkIfVoted = async () => {
-    // Check if user has already made transactions for THIS event's teams
     const { data: eventTeams } = await supabase
       .from('teams')
       .select('id')
@@ -116,9 +109,7 @@ export function PortfolioVoting({ event, profile }: PortfolioVotingProps) {
 
     if (txError) throw txError
 
-    const voted = !!data && data.length > 0
-    console.log('[PortfolioVoting] checkIfVoted:', { voted, transactionCount: data?.length, eventTeamCount: eventTeams.length })
-    setHasVoted(voted)
+    setHasVoted(!!data && data.length > 0)
   }
 
   const handleAmountChange = (teamId: string, value: string) => {
@@ -135,17 +126,17 @@ export function PortfolioVoting({ event, profile }: PortfolioVotingProps) {
     const teamsInvested = getTeamsWithInvestment()
 
     if (totalAllocated > WALLET_BALANCE) {
-      setError(`You can't allocate more than ${WALLET_BALANCE} idecoin`)
+      setError(t('errorExceedBalance', { balance: WALLET_BALANCE }))
       return
     }
 
     if (totalAllocated === 0) {
-      setError('Please allocate some investment')
+      setError(t('errorNoInvestment'))
       return
     }
 
     if (teamsInvested < 3) {
-      setError('You must invest in exactly 3 teams')
+      setError(t('errorMin3Teams'))
       return
     }
 
@@ -153,7 +144,6 @@ export function PortfolioVoting({ event, profile }: PortfolioVotingProps) {
     setError(null)
 
     try {
-      // Refresh session before submitting
       await supabase.auth.getSession()
 
       const votesArray = getVotesArray()
@@ -168,11 +158,11 @@ export function PortfolioVoting({ event, profile }: PortfolioVotingProps) {
         setHasVoted(true)
         clearVotes()
       } else {
-        setError(data.error || 'Failed to submit votes')
+        setError(data.error || t('errorNoInvestment'))
       }
     } catch (error: any) {
       console.error('Failed to submit votes:', error)
-      setError(error.message || 'Failed to submit votes')
+      setError(error.message || t('errorNoInvestment'))
     } finally {
       setSubmitting(false)
     }
@@ -190,7 +180,7 @@ export function PortfolioVoting({ event, profile }: PortfolioVotingProps) {
           <div className="flex justify-center mb-4">
             <Loader2 className="h-12 w-12 animate-spin text-purple-600" />
           </div>
-          <CardTitle>Loading...</CardTitle>
+          <CardTitle>{t('loading')}</CardTitle>
         </CardHeader>
       </Card>
     )
@@ -203,12 +193,12 @@ export function PortfolioVoting({ event, profile }: PortfolioVotingProps) {
           <div className="flex justify-center mb-4">
             <AlertCircle className="h-16 w-16 text-red-500" />
           </div>
-          <CardTitle>Bağlantı Hatası</CardTitle>
+          <CardTitle>{t('connectionError')}</CardTitle>
           <CardDescription>{loadError}</CardDescription>
         </CardHeader>
         <CardContent className="flex justify-center">
           <Button onClick={loadAll}>
-            Tekrar Dene
+            {t('retry')}
           </Button>
         </CardContent>
       </Card>
@@ -222,9 +212,9 @@ export function PortfolioVoting({ event, profile }: PortfolioVotingProps) {
           <div className="flex justify-center mb-4">
             <CheckCircle className="h-16 w-16 text-green-600" />
           </div>
-          <CardTitle>Portfolio Submitted!</CardTitle>
+          <CardTitle>{t('submitted')}</CardTitle>
           <CardDescription>
-            Thank you for voting. Your investments have been recorded.
+            {t('submittedDesc')}
           </CardDescription>
         </CardHeader>
       </Card>
@@ -235,15 +225,15 @@ export function PortfolioVoting({ event, profile }: PortfolioVotingProps) {
     <div className="space-y-4">
       <Card className="border-primary">
         <CardHeader>
-          <CardTitle>Portfolio Voting</CardTitle>
+          <CardTitle>{t('title')}</CardTitle>
           <CardDescription>
-            Distribute your {WALLET_BALANCE} idecoin among the teams you believe in
+            {t('description', { balance: WALLET_BALANCE })}
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="space-y-2">
             <div className="flex justify-between items-center">
-              <span className="text-sm font-medium">Allocated</span>
+              <span className="text-sm font-medium">{t('allocated')}</span>
               <Badge variant={remaining < 0 ? 'destructive' : 'default'}>
                 <Coins className="h-3 w-3 mr-1" />
                 {totalAllocated} / {WALLET_BALANCE}
@@ -254,13 +244,13 @@ export function PortfolioVoting({ event, profile }: PortfolioVotingProps) {
               className={`h-3 ${remaining < 0 ? 'bg-red-200' : ''}`}
             />
             <div className="flex justify-between text-xs text-muted-foreground">
-              <span>Teams: {teamsInvested}/3</span>
-              <span>Remaining: {remaining} idecoin</span>
+              <span>{t('teams', { count: teamsInvested })}</span>
+              <span>{t('remaining', { amount: remaining })}</span>
             </div>
             {teamsInvested < 3 && totalAllocated > 0 && (
               <div className="flex items-center gap-1.5 p-2 rounded bg-yellow-50 border border-yellow-200 text-yellow-800 text-xs">
                 <AlertCircle className="h-3.5 w-3.5 flex-shrink-0" />
-                <span>You must invest in exactly 3 different teams</span>
+                <span>{t('mustInvest3')}</span>
               </div>
             )}
           </div>
@@ -275,7 +265,7 @@ export function PortfolioVoting({ event, profile }: PortfolioVotingProps) {
 
       <div className="space-y-3">
         {teams
-          .filter((team) => team.id !== profile.team_id) // Don't let users vote for their own team
+          .filter((team) => team.id !== profile.team_id)
           .map((team) => {
             const note = userNotes[team.id]
             const currentVote = votes[team.id] || 0
@@ -286,7 +276,7 @@ export function PortfolioVoting({ event, profile }: PortfolioVotingProps) {
                   <div className="flex items-start justify-between">
                     <div>
                       <CardTitle className="text-lg">{team.name}</CardTitle>
-                      <CardDescription>Table {team.table_number}</CardDescription>
+                      <CardDescription>{t('table', { number: team.table_number })}</CardDescription>
                     </div>
                     {note?.temp_rating && (
                       <Badge variant="outline">
@@ -307,7 +297,7 @@ export function PortfolioVoting({ event, profile }: PortfolioVotingProps) {
                   <div className="flex items-end gap-2">
                     <div className="flex-1 space-y-1">
                       <Label htmlFor={`invest-${team.id}`} className="text-xs">
-                        Investment Amount
+                        {t('investmentAmount')}
                       </Label>
                       <div className="relative">
                         <Coins className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -340,12 +330,12 @@ export function PortfolioVoting({ event, profile }: PortfolioVotingProps) {
             {isSubmitting ? (
               <>
                 <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-                Submitting...
+                {t('submitting')}
               </>
             ) : (
               <>
                 <CheckCircle className="mr-2 h-5 w-5" />
-                Submit Portfolio ({totalAllocated} idecoin)
+                {t('submitPortfolio', { amount: totalAllocated })}
               </>
             )}
           </Button>

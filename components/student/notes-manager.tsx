@@ -9,12 +9,14 @@ import { Label } from '@/components/ui/label'
 import { createClient } from '@/lib/supabase/client'
 import { useAuth } from '@/hooks/use-auth'
 import { Save, Loader2 } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 
 interface NotesManagerProps {
   event: Event
 }
 
 export function NotesManager({ event }: NotesManagerProps) {
+  const t = useTranslations('student.notes')
   const [currentTeam, setCurrentTeam] = useState<Team | null>(null)
   const [isTeamLoading, setIsTeamLoading] = useState(false)
   const [notes, setNotes] = useState<Record<string, { text: string; rating: number }>>({})
@@ -35,8 +37,6 @@ export function NotesManager({ event }: NotesManagerProps) {
     if (!user) return
     setIsTeamLoading(true)
     try {
-
-      // Load currently pitching team
       const { data: teamData } = await supabase
         .from('teams')
         .select('*')
@@ -47,7 +47,6 @@ export function NotesManager({ event }: NotesManagerProps) {
 
       if (!event.current_team_id) return
 
-      // Load current user's note for pitching team
       const { data: noteData } = await supabase
         .from('user_notes')
         .select('*')
@@ -111,8 +110,8 @@ export function NotesManager({ event }: NotesManagerProps) {
     return (
       <Card>
         <CardHeader>
-          <CardTitle>No Team Pitching</CardTitle>
-          <CardDescription>Notes are available when a team starts pitching.</CardDescription>
+          <CardTitle>{t('noTeamPitching')}</CardTitle>
+          <CardDescription>{t('noTeamPitchingDesc')}</CardDescription>
         </CardHeader>
       </Card>
     )
@@ -122,8 +121,8 @@ export function NotesManager({ event }: NotesManagerProps) {
     return (
       <Card>
         <CardHeader>
-          <CardTitle>Loading Team...</CardTitle>
-          <CardDescription>Please wait while we fetch the current pitching team.</CardDescription>
+          <CardTitle>{t('loadingTeam')}</CardTitle>
+          <CardDescription>{t('loadingTeamDesc')}</CardDescription>
         </CardHeader>
       </Card>
     )
@@ -131,16 +130,16 @@ export function NotesManager({ event }: NotesManagerProps) {
 
   const activeTeamId = event.current_team_id
   const teamNote = notes[activeTeamId] || { text: '', rating: 5 }
-  const teamName = currentTeam?.name || 'Current Team'
+  const teamName = currentTeam?.name || ''
   const teamTable = currentTeam?.table_number
 
   return (
     <div className="space-y-4">
       <Card>
         <CardHeader>
-          <CardTitle>My Notes</CardTitle>
+          <CardTitle>{t('title')}</CardTitle>
           <CardDescription>
-            Take private notes for the team currently pitching.
+            {t('description')}
           </CardDescription>
         </CardHeader>
       </Card>
@@ -151,22 +150,22 @@ export function NotesManager({ event }: NotesManagerProps) {
             <div>
               <CardTitle className="text-lg">{teamName}</CardTitle>
               {teamTable ? (
-                <CardDescription>Table {teamTable}</CardDescription>
+                <CardDescription>{t('table')} {teamTable}</CardDescription>
               ) : (
-                <CardDescription>Live pitch in progress</CardDescription>
+                <CardDescription>{t('livePitch')}</CardDescription>
               )}
             </div>
             <span className="text-xs bg-primary text-primary-foreground px-2 py-1 rounded">
-              Now Pitching
+              {t('nowPitching')}
             </span>
           </div>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor={`note-${activeTeamId}`}>Notes</Label>
+            <Label htmlFor={`note-${activeTeamId}`}>{t('notesLabel')}</Label>
             <Textarea
               id={`note-${activeTeamId}`}
-              placeholder="Your private notes about this team..."
+              placeholder={t('notesPlaceholder')}
               rows={3}
               value={teamNote.text}
               onChange={(e) => updateNote(activeTeamId, 'text', e.target.value)}
@@ -175,7 +174,7 @@ export function NotesManager({ event }: NotesManagerProps) {
 
           <div className="space-y-2">
             <Label htmlFor={`rating-${activeTeamId}`}>
-              Quick Rating: {teamNote.rating}/10
+              {t('ratingLabel', { rating: teamNote.rating })}
             </Label>
             <input
               id={`rating-${activeTeamId}`}
@@ -197,12 +196,12 @@ export function NotesManager({ event }: NotesManagerProps) {
             {isSaving === activeTeamId ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Saving...
+                {t('saving')}
               </>
             ) : (
               <>
                 <Save className="mr-2 h-4 w-4" />
-                Save Note
+                {t('saveNote')}
               </>
             )}
           </Button>
