@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { useRealtimeEvent } from '@/hooks/use-realtime-event'
+import { useEventStore } from '@/stores/event-store'
 import { Event, Team, Profile, MentorAssignmentWithDetails } from '@/types'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -27,6 +28,18 @@ export default function MentorPage() {
   const [selectedTeam, setSelectedTeam] = useState<Team | null>(null)
 
   useRealtimeEvent(currentEvent?.id || null)
+  const storeEvent = useEventStore((s) => s.currentEvent)
+
+  // Sync realtime event updates from store to local state
+  useEffect(() => {
+    if (storeEvent && storeEvent.id === currentEvent?.id) {
+      setCurrentEvent(storeEvent)
+      // If canvas was open and event is no longer IDEATION, close it
+      if (storeEvent.status !== 'IDEATION') {
+        setSelectedTeam(null)
+      }
+    }
+  }, [storeEvent])
 
   // Update language when event changes
   useEffect(() => {
