@@ -36,7 +36,7 @@ export function MentorEvaluationsDialog({ team }: MentorEvaluationsDialogProps) 
     try {
       const { data, error } = await supabase
         .from('mentor_evaluations')
-        .select('*, mentor:profiles!mentor_evaluations_mentor_id_fkey(id, full_name, display_name)')
+        .select('*, mentor:profiles(*)')
         .eq('team_id', team.id)
         .order('created_at', { ascending: false })
 
