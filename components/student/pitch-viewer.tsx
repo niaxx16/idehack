@@ -49,6 +49,8 @@ export function PitchViewer({ event }: PitchViewerProps) {
   const { user } = useAuth()
   const supabase = createClient()
   const t = useTranslations('student.pitch')
+  // Track which hype types the student already used for the current pitch
+  const [usedHypes, setUsedHypes] = useState<Record<string, Set<string>>>({})
 
   useEffect(() => {
     console.log('[PitchViewer] event changed:', { current_team_id: event.current_team_id, event_id: event.id, status: event.status })
@@ -208,10 +210,21 @@ export function PitchViewer({ event }: PitchViewerProps) {
     }
   }
 
+  const hasUsedHype = (type: 'clap' | 'fire') => {
+    const teamId = event.current_team_id
+    if (!teamId) return false
+    return usedHypes[teamId]?.has(type) ?? false
+  }
+
   const handleHype = (type: 'clap' | 'fire') => {
-    if (user) {
-      sendHype(type, user.id)
-    }
+    const teamId = event.current_team_id
+    if (!user || !teamId || hasUsedHype(type)) return
+    sendHype(type, user.id)
+    setUsedHypes(prev => {
+      const teamSet = new Set(prev[teamId] || [])
+      teamSet.add(type)
+      return { ...prev, [teamId]: teamSet }
+    })
   }
 
   const formatTime = (seconds: number) => {
@@ -596,18 +609,20 @@ export function PitchViewer({ event }: PitchViewerProps) {
             <Button
               onClick={() => handleHype('clap')}
               variant="outline"
-              className="h-20 text-lg"
+              disabled={hasUsedHype('clap')}
+              className={`h-20 text-lg ${hasUsedHype('clap') ? 'opacity-50' : ''}`}
             >
               <HandMetal className="mr-2 h-6 w-6" />
-              {t('clap')}
+              {hasUsedHype('clap') ? '👏' : t('clap')}
             </Button>
             <Button
               onClick={() => handleHype('fire')}
               variant="outline"
-              className="h-20 text-lg"
+              disabled={hasUsedHype('fire')}
+              className={`h-20 text-lg ${hasUsedHype('fire') ? 'opacity-50' : ''}`}
             >
               <Flame className="mr-2 h-6 w-6" />
-              {t('fire')}
+              {hasUsedHype('fire') ? '🔥' : t('fire')}
             </Button>
           </div>
 
