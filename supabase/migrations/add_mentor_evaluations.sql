@@ -5,7 +5,7 @@
 CREATE TABLE IF NOT EXISTS mentor_evaluations (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
   team_id UUID NOT NULL REFERENCES teams(id) ON DELETE CASCADE,
-  mentor_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+  mentor_id UUID NOT NULL REFERENCES profiles(id) ON DELETE CASCADE,
   evaluation_text TEXT NOT NULL DEFAULT '',
   project_paths TEXT[] NOT NULL DEFAULT '{}',
   project_path_reasoning TEXT NOT NULL DEFAULT '',
