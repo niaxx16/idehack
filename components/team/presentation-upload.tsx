@@ -52,6 +52,18 @@ export function PresentationUpload({ team, isLocked, onUpdate }: PresentationUpl
     setUploadProgress(0)
 
     try {
+      // Delete old presentation files from storage before uploading new one
+      const { data: existingFiles } = await supabase.storage
+        .from('team-presentations')
+        .list(team.id)
+
+      if (existingFiles && existingFiles.length > 0) {
+        const filesToDelete = existingFiles.map(f => `${team.id}/${f.name}`)
+        await supabase.storage
+          .from('team-presentations')
+          .remove(filesToDelete)
+      }
+
       // Generate a unique file name
       const fileExt = file.name.split('.').pop()
       const fileName = `${team.id}/${Date.now()}.${fileExt}`
