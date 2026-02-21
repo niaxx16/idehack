@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import { createClient } from '@/lib/supabase/client'
-import { AlertCircle, Lightbulb, Target, Star, Zap, Search, FlaskConical, BarChart3, ShieldAlert, MessageSquare, Send, Loader2, Users, Crown, UserCircle, CheckCircle } from 'lucide-react'
+import { AlertCircle, Lightbulb, Target, Star, Zap, Search, FlaskConical, BarChart3, ShieldAlert, MessageSquare, Send, Loader2, Users, Crown, UserCircle, CheckCircle, Pencil, Trash2, X } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { useTranslations } from 'next-intl'
 import { MentorGeneralEvaluation } from './mentor-general-evaluation'
@@ -127,11 +127,16 @@ export function TeamCanvasView({ team, onClose }: TeamCanvasViewProps) {
   const supabase = createClient()
   const t = useTranslations('mentor')
   const tCanvas = useTranslations('mentor.canvas')
+  const tCommon = useTranslations('common')
   const [feedbacks, setFeedbacks] = useState<MentorFeedbackWithMentor[]>([])
   const [isLoadingFeedback, setIsLoadingFeedback] = useState(true)
   const [selectedSection, setSelectedSection] = useState<CanvasSection | null>(null)
   const [feedbackText, setFeedbackText] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [editingFeedbackId, setEditingFeedbackId] = useState<string | null>(null)
+  const [editFeedbackText, setEditFeedbackText] = useState('')
+  const [isSavingEdit, setIsSavingEdit] = useState(false)
+  const [deletingFeedbackId, setDeletingFeedbackId] = useState<string | null>(null)
   const [currentMentorId, setCurrentMentorId] = useState<string | null>(null)
   const [contributions, setContributions] = useState<Record<CanvasSection, CanvasContributionWithUser[]>>({
     problem: [],
@@ -362,6 +367,56 @@ export function TeamCanvasView({ team, onClose }: TeamCanvasViewProps) {
     }
   }
 
+  const handleEditFeedback = (fb: MentorFeedbackWithMentor) => {
+    setEditingFeedbackId(fb.id)
+    setEditFeedbackText(fb.feedback_text)
+  }
+
+  const handleCancelEdit = () => {
+    setEditingFeedbackId(null)
+    setEditFeedbackText('')
+  }
+
+  const handleSaveEdit = async () => {
+    if (!editingFeedbackId || !editFeedbackText.trim()) return
+
+    setIsSavingEdit(true)
+    try {
+      const { error } = await supabase
+        .from('mentor_feedback')
+        .update({ feedback_text: editFeedbackText.trim() })
+        .eq('id', editingFeedbackId)
+
+      if (error) throw error
+
+      setEditingFeedbackId(null)
+      setEditFeedbackText('')
+      loadFeedback()
+    } catch (error: any) {
+      console.error('Failed to update feedback:', error)
+    } finally {
+      setIsSavingEdit(false)
+    }
+  }
+
+  const handleDeleteFeedback = async (feedbackId: string) => {
+    setDeletingFeedbackId(feedbackId)
+    try {
+      const { error } = await supabase
+        .from('mentor_feedback')
+        .delete()
+        .eq('id', feedbackId)
+
+      if (error) throw error
+
+      loadFeedback()
+    } catch (error: any) {
+      console.error('Failed to delete feedback:', error)
+    } finally {
+      setDeletingFeedbackId(null)
+    }
+  }
+
   const getFeedbackForSection = (section: CanvasSection) => {
     return feedbacks.filter((f) => f.canvas_section === section)
   }
@@ -566,34 +621,100 @@ export function TeamCanvasView({ team, onClose }: TeamCanvasViewProps) {
                         <div>
                           <p className="text-sm font-medium mb-2">{t('previousFeedback')}:</p>
                           <div className="space-y-2 max-h-48 overflow-y-auto">
-                            {sectionFeedback.map((fb) => (
-                              <div
-                                key={fb.id}
-                                className={`p-3 rounded-md border ${
-                                  fb.mentor_id === currentMentorId
-                                    ? 'bg-purple-50 border-purple-200'
-                                    : 'bg-slate-50 border-slate-200'
-                                }`}
-                              >
-                                <div className="flex items-start justify-between gap-2 mb-1">
-                                  <p className="text-xs font-medium">
-                                    {fb.mentor?.full_name || 'Mentor'}
-                                  </p>
-                                  <p className="text-xs text-muted-foreground">
-                                    {new Date(fb.created_at).toLocaleString('tr-TR', {
-                                      month: 'short',
-                                      day: 'numeric',
-                                      hour: '2-digit',
-                                      minute: '2-digit',
-                                    })}
-                                  </p>
+                            {sectionFeedback.map((fb) => {
+                              const isOwn = fb.mentor_id === currentMentorId
+                              const isEditing = editingFeedbackId === fb.id
+
+                              return (
+                                <div
+                                  key={fb.id}
+                                  className={`p-3 rounded-md border ${
+                                    isOwn
+                                      ? 'bg-purple-50 border-purple-200'
+                                      : 'bg-slate-50 border-slate-200'
+                                  }`}
+                                >
+                                  <div className="flex items-start justify-between gap-2 mb-1">
+                                    <p className="text-xs font-medium">
+                                      {fb.mentor?.full_name || 'Mentor'}
+                                    </p>
+                                    <div className="flex items-center gap-1">
+                                      <p className="text-xs text-muted-foreground">
+                                        {new Date(fb.created_at).toLocaleString('tr-TR', {
+                                          month: 'short',
+                                          day: 'numeric',
+                                          hour: '2-digit',
+                                          minute: '2-digit',
+                                        })}
+                                      </p>
+                                      {isOwn && !isEditing && (
+                                        <>
+                                          <Button
+                                            variant="ghost"
+                                            size="icon"
+                                            className="h-6 w-6"
+                                            onClick={() => handleEditFeedback(fb)}
+                                          >
+                                            <Pencil className="h-3 w-3" />
+                                          </Button>
+                                          <Button
+                                            variant="ghost"
+                                            size="icon"
+                                            className="h-6 w-6 text-red-500 hover:text-red-700"
+                                            onClick={() => handleDeleteFeedback(fb.id)}
+                                            disabled={deletingFeedbackId === fb.id}
+                                          >
+                                            {deletingFeedbackId === fb.id ? (
+                                              <Loader2 className="h-3 w-3 animate-spin" />
+                                            ) : (
+                                              <Trash2 className="h-3 w-3" />
+                                            )}
+                                          </Button>
+                                        </>
+                                      )}
+                                    </div>
+                                  </div>
+                                  {isEditing ? (
+                                    <div className="space-y-2">
+                                      <Textarea
+                                        value={editFeedbackText}
+                                        onChange={(e) => setEditFeedbackText(e.target.value)}
+                                        rows={3}
+                                        maxLength={1000}
+                                        className="text-sm"
+                                      />
+                                      <div className="flex items-center gap-2">
+                                        <Button
+                                          size="sm"
+                                          onClick={handleSaveEdit}
+                                          disabled={!editFeedbackText.trim() || isSavingEdit}
+                                        >
+                                          {isSavingEdit ? (
+                                            <Loader2 className="h-3 w-3 animate-spin mr-1" />
+                                          ) : (
+                                            <Send className="h-3 w-3 mr-1" />
+                                          )}
+                                          {t('submitFeedback')}
+                                        </Button>
+                                        <Button
+                                          size="sm"
+                                          variant="ghost"
+                                          onClick={handleCancelEdit}
+                                        >
+                                          <X className="h-3 w-3 mr-1" />
+                                          {tCommon('cancel')}
+                                        </Button>
+                                      </div>
+                                    </div>
+                                  ) : (
+                                    <p className="text-sm whitespace-pre-wrap">{fb.feedback_text}</p>
+                                  )}
+                                  {fb.is_read && !isEditing && (
+                                    <p className="text-xs text-green-600 mt-1">✓ {t('readByTeam')}</p>
+                                  )}
                                 </div>
-                                <p className="text-sm whitespace-pre-wrap">{fb.feedback_text}</p>
-                                {fb.is_read && (
-                                  <p className="text-xs text-green-600 mt-1">✓ {t('readByTeam')}</p>
-                                )}
-                              </div>
-                            ))}
+                              )
+                            })}
                           </div>
                         </div>
                       )}
