@@ -384,7 +384,7 @@ export function TeamCanvasView({ team, onClose }: TeamCanvasViewProps) {
     try {
       const { error } = await supabase
         .from('mentor_feedback')
-        .update({ feedback_text: editFeedbackText.trim() })
+        .update({ feedback_text: editFeedbackText.trim(), is_read: false })
         .eq('id', editingFeedbackId)
 
       if (error) throw error
@@ -709,8 +709,15 @@ export function TeamCanvasView({ team, onClose }: TeamCanvasViewProps) {
                                   ) : (
                                     <p className="text-sm whitespace-pre-wrap">{fb.feedback_text}</p>
                                   )}
-                                  {fb.is_read && !isEditing && (
-                                    <p className="text-xs text-green-600 mt-1">✓ {t('readByTeam')}</p>
+                                  {!isEditing && (
+                                    <div className="flex items-center gap-2 mt-1">
+                                      {fb.updated_at !== fb.created_at && (
+                                        <span className="text-xs text-muted-foreground italic">({t('edited')})</span>
+                                      )}
+                                      {fb.is_read && (
+                                        <span className="text-xs text-green-600">✓ {t('readByTeam')}</span>
+                                      )}
+                                    </div>
                                   )}
                                 </div>
                               )

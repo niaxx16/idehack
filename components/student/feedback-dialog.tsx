@@ -92,9 +92,14 @@ export function FeedbackDialog({
                 )}
               </div>
               <p className="text-sm whitespace-pre-wrap">{feedback.feedback_text}</p>
-              {feedback.is_read && (
-                <p className="text-xs text-green-600 mt-2">✓ {t('canvas.read')}</p>
-              )}
+              <div className="flex items-center gap-2 mt-2">
+                {feedback.updated_at !== feedback.created_at && (
+                  <span className="text-xs text-muted-foreground italic">({t('canvas.edited')})</span>
+                )}
+                {feedback.is_read && (
+                  <span className="text-xs text-green-600">✓ {t('canvas.read')}</span>
+                )}
+              </div>
             </div>
           ))}
         </div>

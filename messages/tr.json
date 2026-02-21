@@ -494,7 +494,8 @@
       "mentorFeedbackFor": "Mentor Geri Bildirimi: {section}",
       "feedbackDescription": "Mentörleriniz bu bölümü geliştirmenize yardımcı olacak rehberlik sağladı",
       "markAsRead": "Okundu İşaretle",
-      "read": "Okundu"
+      "read": "Okundu",
+      "edited": "düzenlendi"
     },
     "pdf": {
       "subtitle": "İş Modeli Kanvası",
@@ -790,6 +791,7 @@
     "allFeedbackDesc": "Bu takım için tüm geri bildirim geçmişi",
     "noFeedbackYet": "Henüz geri bildirim yok. Takıma rehberlik etmeye başlayın!",
     "read": "Okundu",
+    "edited": "düzenlendi",
     "ideas": "fikir",
     "feedback": "geri bildirim",
     "decision": "Karar",

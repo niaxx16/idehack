@@ -494,7 +494,8 @@
       "mentorFeedbackFor": "Mentor Feedback: {section}",
       "feedbackDescription": "Your mentors have provided guidance to help improve this section",
       "markAsRead": "Mark as Read",
-      "read": "Read"
+      "read": "Read",
+      "edited": "edited"
     },
     "pdf": {
       "subtitle": "Business Model Canvas",
@@ -790,6 +791,7 @@
     "allFeedbackDesc": "Complete feedback history for this team",
     "noFeedbackYet": "No feedback yet. Start guiding the team!",
     "read": "Read",
+    "edited": "edited",
     "ideas": "ideas",
     "feedback": "feedback",
     "decision": "Decision",
