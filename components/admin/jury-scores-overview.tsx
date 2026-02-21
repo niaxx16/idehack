@@ -271,9 +271,15 @@ export function JuryScoresOverview({ event, juryMembers }: JuryScoresOverviewPro
     )
   }
 
-  // Only show teams that have at least one score
+  // Only show teams that have at least one score, sorted by average (highest first)
   const scoredTeamIds = new Set(scores.map(s => s.team_id))
-  const scoredTeams = teams.filter(t => scoredTeamIds.has(t.id))
+  const scoredTeams = teams
+    .filter(t => scoredTeamIds.has(t.id))
+    .sort((a, b) => {
+      const avgA = getTeamAverage(a.id) ?? 0
+      const avgB = getTeamAverage(b.id) ?? 0
+      return avgB - avgA
+    })
 
   // Only show jury members that have at least one score
   const scoredJuryIds = new Set(scores.map(s => s.jury_id))
