@@ -1,4 +1,4 @@
--- Update leaderboard calculation to use 70% jury score and 30% student investment
+-- Update leaderboard calculation to use 85% jury score and 15% student investment
 -- Updated for new 5-criteria scoring system (100 points total):
 -- - problem_understanding (1-20)
 -- - innovation (1-20)
@@ -28,15 +28,15 @@ BEGIN
       COALESCE((js.scores->>'feasibility')::INTEGER, 0) +
       COALESCE((js.scores->>'presentation_teamwork')::INTEGER, 0)
     ), 0) AS jury_avg_score,
-    -- Final score: 70% jury score (out of 100) + 30% investment (normalized to 100)
+    -- Final score: 85% jury score (out of 100) + 15% investment (normalized to 100)
     (COALESCE(AVG(
       COALESCE((js.scores->>'problem_understanding')::INTEGER, 0) +
       COALESCE((js.scores->>'innovation')::INTEGER, 0) +
       COALESCE((js.scores->>'value_impact')::INTEGER, 0) +
       COALESCE((js.scores->>'feasibility')::INTEGER, 0) +
       COALESCE((js.scores->>'presentation_teamwork')::INTEGER, 0)
-    ), 0) * 0.7) +
-    (t.total_investment::NUMERIC / NULLIF((SELECT MAX(t2.total_investment) FROM public.teams t2 WHERE t2.event_id = event_id_input), 0) * 100 * 0.3) AS final_score
+    ), 0) * 0.85) +
+    (t.total_investment::NUMERIC / NULLIF((SELECT MAX(t2.total_investment) FROM public.teams t2 WHERE t2.event_id = event_id_input), 0) * 100 * 0.15) AS final_score
   FROM public.teams t
   LEFT JOIN public.jury_scores js ON js.team_id = t.id
   WHERE t.event_id = event_id_input

@@ -254,7 +254,7 @@
     },
     "leaderboard": {
       "title": "Leaderboard",
-      "description": "Final scores combine jury scores (70%) and student investments (30%)",
+      "description": "Final scores combine jury scores (85%) and student investments (15%)",
       "noScores": "No scores yet. Wait for jury scoring and student voting.",
       "jury": "Jury",
       "investment": "Investment",

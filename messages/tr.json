@@ -254,7 +254,7 @@
     },
     "leaderboard": {
       "title": "Sıralama",
-      "description": "Final skorları jüri puanlarını (%70) ve öğrenci yatırımlarını (%30) birleştirir",
+      "description": "Final skorları jüri puanlarını (%85) ve öğrenci yatırımlarını (%15) birleştirir",
       "noScores": "Henüz skor yok. Jüri puanlaması ve öğrenci oylamasını bekleyin.",
       "jury": "Jüri",
       "investment": "Yatırım",
