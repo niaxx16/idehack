@@ -514,7 +514,7 @@ export function TeamTracking({ event, teams, onUpdate }: TeamTrackingProps) {
                           <ClipboardList className="h-4 w-4" />
                         </Button>
                       </DialogTrigger>
-                      <DialogContent className="max-w-2xl">
+                      <DialogContent className="max-w-2xl max-h-[85vh] overflow-y-auto">
                         <JuryEvaluationsDialog team={team} />
                       </DialogContent>
                     </Dialog>
