@@ -770,6 +770,8 @@
     "members": "üye",
     "member": "üye",
     "canvasInProgress": "Canvas devam ediyor",
+    "newIdeas": "Yeni fikir",
+    "newIdeasInSection": "{section} bölümünde yeni fikir",
     "viewAndFeedback": "Görüntüle ve Geri Bildirim Ver",
     "canvasLocked": "Kanvaslar kilitli - Gönderimler donduruldu",
     "backToTeams": "← Takımlara Dön",

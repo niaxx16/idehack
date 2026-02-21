@@ -5,10 +5,11 @@ import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { useRealtimeEvent } from '@/hooks/use-realtime-event'
 import { useEventStore } from '@/stores/event-store'
-import { Event, Team, Profile, MentorAssignmentWithDetails } from '@/types'
+import { Event, Team, Profile, MentorAssignmentWithDetails, CanvasSection } from '@/types'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { Loader2, LogOut, Users, FileText, MessageSquare, Lock } from 'lucide-react'
+import { Badge } from '@/components/ui/badge'
+import { Loader2, LogOut, Users, FileText, MessageSquare, Lock, Sparkles } from 'lucide-react'
 import { TeamCanvasView } from '@/components/mentor/team-canvas-view'
 import { useLanguage } from '@/lib/i18n/language-provider'
 import { Locale } from '@/lib/i18n/config'
@@ -26,6 +27,9 @@ export default function MentorPage() {
   const [profile, setProfile] = useState<Profile | null>(null)
   const [assignments, setAssignments] = useState<MentorAssignmentWithDetails[]>([])
   const [selectedTeam, setSelectedTeam] = useState<Team | null>(null)
+  const [newContributions, setNewContributions] = useState<Record<string, CanvasSection[]>>({})
+
+  const tCanvas = useTranslations('mentor.canvas')
 
   useRealtimeEvent(currentEvent?.id || null)
   const storeEvent = useEventStore((s) => s.currentEvent)
@@ -101,6 +105,65 @@ export default function MentorPage() {
       supabase.removeChannel(channel)
     }
   }, [supabase, selectedTeam])
+
+  // Real-time subscription for canvas contributions (new ideas notification)
+  useEffect(() => {
+    if (!assignments.length) return
+
+    const teamIds = assignments
+      .map((a) => (a.team as Team)?.id)
+      .filter(Boolean) as string[]
+
+    if (teamIds.length === 0) return
+
+    const channel = supabase
+      .channel('mentor-canvas-contributions')
+      .on(
+        'postgres_changes',
+        {
+          event: 'INSERT',
+          schema: 'public',
+          table: 'canvas_contributions',
+        },
+        (payload) => {
+          const newRow = payload.new as { team_id: string; section: CanvasSection }
+          if (teamIds.includes(newRow.team_id) && (!selectedTeam || selectedTeam.id !== newRow.team_id)) {
+            setNewContributions((prev) => {
+              const existing = prev[newRow.team_id] || []
+              if (existing.includes(newRow.section)) return prev
+              return { ...prev, [newRow.team_id]: [...existing, newRow.section] }
+            })
+          }
+        }
+      )
+      .subscribe()
+
+    return () => {
+      supabase.removeChannel(channel)
+    }
+  }, [supabase, assignments, selectedTeam])
+
+  const handleSelectTeam = (team: Team) => {
+    setSelectedTeam(team)
+    // Clear notifications for this team
+    setNewContributions((prev) => {
+      const updated = { ...prev }
+      delete updated[team.id]
+      return updated
+    })
+  }
+
+  const SECTION_LABELS: Record<CanvasSection, string> = {
+    problem: tCanvas('problem'),
+    solution: tCanvas('solution'),
+    value_proposition: tCanvas('uniqueValue'),
+    target_audience: tCanvas('targetUsers'),
+    key_features: tCanvas('keyFeatures'),
+    evidence: tCanvas('evidence'),
+    pilot_plan: tCanvas('pilotPlan'),
+    success_metrics: tCanvas('successMetrics'),
+    resources_risks: tCanvas('resourcesRisks'),
+  }
 
   const loadData = async () => {
     try {
@@ -254,7 +317,7 @@ export default function MentorPage() {
             <Button variant="outline" onClick={() => setSelectedTeam(null)}>
               {t('backToTeams')}
             </Button>
-            <TeamCanvasView team={selectedTeam} onClose={() => setSelectedTeam(null)} />
+            <TeamCanvasView team={selectedTeam} onClose={() => setSelectedTeam(null)} key={selectedTeam.id} />
           </div>
         ) : (
           <Card>
@@ -293,16 +356,29 @@ export default function MentorPage() {
                     )
 
                     const canAccess = currentEvent?.status === 'IDEATION'
+                    const teamNotifications = newContributions[team.id] || []
 
                     return (
                       <Card
                         key={assignment.id}
-                        className={`transition-shadow border-purple-100 ${canAccess ? 'hover:shadow-lg cursor-pointer' : 'opacity-60'}`}
-                        onClick={() => canAccess && setSelectedTeam(team)}
+                        className={`transition-shadow ${teamNotifications.length > 0 ? 'border-amber-300 ring-1 ring-amber-200' : 'border-purple-100'} ${canAccess ? 'hover:shadow-lg cursor-pointer' : 'opacity-60'}`}
+                        onClick={() => canAccess && handleSelectTeam(team)}
                       >
                         <CardHeader className="pb-3">
-                          <CardTitle className="text-lg">{team.name}</CardTitle>
-                          <CardDescription>{t('table')} {team.table_number}</CardDescription>
+                          <div className="flex items-center justify-between">
+                            <div>
+                              <CardTitle className="text-lg">{team.name}</CardTitle>
+                              <CardDescription>{t('table')} {team.table_number}</CardDescription>
+                            </div>
+                            {teamNotifications.length > 0 && (
+                              <div className="relative">
+                                <Sparkles className="h-5 w-5 text-amber-500 animate-pulse" />
+                                <span className="absolute -top-1 -right-1 bg-amber-500 text-white text-[10px] font-bold rounded-full h-4 w-4 flex items-center justify-center">
+                                  {teamNotifications.length}
+                                </span>
+                              </div>
+                            )}
+                          </div>
                         </CardHeader>
                         <CardContent className="space-y-3">
                           <div className="flex items-center gap-2 text-sm">
@@ -314,6 +390,17 @@ export default function MentorPage() {
                             <div className="flex items-center gap-2 text-sm text-green-600">
                               <FileText className="h-4 w-4" />
                               <span>{t('canvasInProgress')}</span>
+                            </div>
+                          )}
+
+                          {teamNotifications.length > 0 && (
+                            <div className="flex flex-wrap gap-1">
+                              {teamNotifications.map((section) => (
+                                <Badge key={section} variant="outline" className="text-[10px] bg-amber-50 text-amber-700 border-amber-300 animate-in fade-in">
+                                  <Sparkles className="h-3 w-3 mr-1" />
+                                  {SECTION_LABELS[section]}
+                                </Badge>
+                              ))}
                             </div>
                           )}
 

@@ -770,6 +770,8 @@
     "members": "members",
     "member": "member",
     "canvasInProgress": "Canvas in progress",
+    "newIdeas": "New idea",
+    "newIdeasInSection": "New idea in {section}",
     "viewAndFeedback": "View & Give Feedback",
     "canvasLocked": "Canvases locked - Submissions frozen",
     "backToTeams": "← Back to Teams",
