@@ -96,7 +96,7 @@ export function InvestmentsOverview({ event, teams }: InvestmentsOverviewProps) 
       }
 
       // Get unique sender IDs
-      const senderIds = [...new Set(transactions.map(tx => tx.sender_id))]
+      const senderIds = Array.from(new Set(transactions.map(tx => tx.sender_id)))
 
       // Load sender profiles with their team membership
       const { data: profiles } = await supabase

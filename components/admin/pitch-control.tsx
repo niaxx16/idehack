@@ -256,7 +256,7 @@ export function PitchControl({ event, teams, onUpdate }: PitchControlProps) {
         resources_risks: null,
       }
 
-      ;(data || []).forEach((decision: TeamDecision) => {
+      ;((data as unknown as TeamDecision[]) || []).forEach((decision) => {
         decisions[decision.section as CanvasSection] = decision
       })
 
@@ -411,7 +411,7 @@ export function PitchControl({ event, teams, onUpdate }: PitchControlProps) {
               animation: 'float 3s ease-out forwards',
             }}
           >
-            {hype.type === 'clap' ? '👏' : '🔥'}
+            {hype.type === 'clap' ? 'ğŸ‘' : 'ğŸ”¥'}
           </div>
         ))}
       </div>

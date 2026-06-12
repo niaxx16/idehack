@@ -91,7 +91,7 @@ export function TeamManagement({ event, teams, onUpdate }: TeamManagementProps) 
       const team = teams.find(t => t.id === teamId)
       if (!team) return
 
-      const members = (team.team_members as TeamMember[]) || []
+      const members = (team.team_members as unknown as TeamMember[]) || []
       const userIds = members.map(m => m.user_id)
 
       if (userIds.length === 0) return
@@ -422,7 +422,7 @@ export function TeamManagement({ event, teams, onUpdate }: TeamManagementProps) 
         <CardContent>
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
             {teams.map((team) => {
-              const members = (team.team_members as TeamMember[]) || []
+              const members = (team.team_members as unknown as TeamMember[]) || []
               const isExpanded = expandedTeams.has(team.id)
 
               return (

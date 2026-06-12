@@ -157,7 +157,7 @@ export function CollaborativeCanvasSection({
           member_name: member?.name || 'Unknown',
           member_role: member?.role || 'Student',
           is_captain: member?.is_captain || false,
-        }
+        } as CanvasContributionWithUser
       })
 
       setContributions(enriched)
@@ -180,7 +180,7 @@ export function CollaborativeCanvasSection({
 
       if (error) throw error
 
-      setTeamDecision(data)
+      setTeamDecision(data as TeamDecision | null)
       if (data) {
         setDecisionContent(data.content)
       }

@@ -151,7 +151,7 @@ export function StreamViewer({ event, team }: StreamViewerProps) {
         resources_risks: null,
       }
 
-      ;(data || []).forEach((decision: TeamDecision) => {
+      ;((data as unknown as TeamDecision[]) || []).forEach((decision) => {
         decisions[decision.section as CanvasSection] = decision
       })
 

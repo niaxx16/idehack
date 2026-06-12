@@ -132,6 +132,32 @@ export interface PortfolioVote {
   amount: number
 }
 
+// RPC result payloads (jsonb_build_object returns in supabase/ SQL functions)
+export interface JoinTeamResult {
+  success: boolean
+  error?: string
+  team_id?: string
+  team_name?: string
+  is_captain?: boolean
+  personal_code?: string
+}
+
+export interface RejoinResult {
+  success: boolean
+  error?: string
+  user_id?: string
+  team_id?: string
+  team_name?: string
+  full_name?: string
+}
+
+export interface SubmitPortfolioResult {
+  success: boolean
+  error?: string
+  invested?: number
+  teams?: number
+}
+
 // Leaderboard entry
 export interface LeaderboardEntry {
   team_id: string

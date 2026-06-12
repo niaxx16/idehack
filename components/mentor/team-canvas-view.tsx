@@ -259,7 +259,7 @@ export function TeamCanvasView({ team, onClose }: TeamCanvasViewProps) {
         .order('created_at', { ascending: false })
 
       if (error) throw error
-      setFeedbacks(data || [])
+      setFeedbacks((data as unknown as MentorFeedbackWithMentor[]) || [])
     } catch (error) {
       console.error('Failed to load feedback:', error)
     } finally {
@@ -298,7 +298,7 @@ export function TeamCanvasView({ team, onClose }: TeamCanvasViewProps) {
           member_name: member?.name || 'Unknown',
           member_role: member?.role || 'Student',
           is_captain: member?.is_captain || false,
-        }
+        } as CanvasContributionWithUser
         grouped[contrib.section as CanvasSection].push(enriched)
       })
 
@@ -331,7 +331,7 @@ export function TeamCanvasView({ team, onClose }: TeamCanvasViewProps) {
         resources_risks: null,
       }
 
-      ;(data || []).forEach((decision: TeamDecision) => {
+      ;((data as unknown as TeamDecision[]) || []).forEach((decision) => {
         decisionsMap[decision.section as CanvasSection] = decision
       })
 
@@ -715,7 +715,7 @@ export function TeamCanvasView({ team, onClose }: TeamCanvasViewProps) {
                                         <span className="text-xs text-muted-foreground italic">({t('edited')})</span>
                                       )}
                                       {fb.is_read && (
-                                        <span className="text-xs text-green-600">✓ {t('readByTeam')}</span>
+                                        <span className="text-xs text-green-600">âœ“ {t('readByTeam')}</span>
                                       )}
                                     </div>
                                   )}
@@ -816,7 +816,7 @@ export function TeamCanvasView({ team, onClose }: TeamCanvasViewProps) {
                           })}
                         </p>
                         {fb.is_read && (
-                          <p className="text-xs text-green-600 mt-1">✓ {t('read')}</p>
+                          <p className="text-xs text-green-600 mt-1">âœ“ {t('read')}</p>
                         )}
                       </div>
                     </div>

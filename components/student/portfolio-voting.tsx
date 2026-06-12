@@ -1,7 +1,8 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { Event, Team, Profile, UserNote } from '@/types'
+import { Event, Team, Profile, UserNote, SubmitPortfolioResult } from '@/types'
+import { Json } from '@/types/database'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -149,16 +150,17 @@ export function PortfolioVoting({ event, profile }: PortfolioVotingProps) {
       const votesArray = getVotesArray()
 
       const { data, error: rpcError } = await supabase.rpc('submit_portfolio', {
-        votes: votesArray,
+        votes: votesArray as unknown as Json,
       })
 
       if (rpcError) throw rpcError
 
-      if (data.success) {
+      const result = data as SubmitPortfolioResult | null
+      if (result?.success) {
         setHasVoted(true)
         clearVotes()
       } else {
-        setError(data.error || t('errorNoInvestment'))
+        setError(result?.error || t('errorNoInvestment'))
       }
     } catch (error: any) {
       console.error('Failed to submit votes:', error)

@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { useRealtimeEvent } from '@/hooks/use-realtime-event'
 import { useEventStore } from '@/stores/event-store'
-import { Event, Team, Profile, MentorAssignmentWithDetails, CanvasSection } from '@/types'
+import { Event, Team, Profile, MentorAssignmentWithDetails, CanvasSection, CanvasData } from '@/types'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -221,7 +221,7 @@ export default function MentorPage() {
         return team.event_id === profileData.event_id
       })
 
-      setAssignments(filteredAssignments)
+      setAssignments(filteredAssignments as unknown as MentorAssignmentWithDetails[])
     } catch (error) {
       console.error('Load data error:', error)
     } finally {
@@ -343,16 +343,17 @@ export default function MentorPage() {
                     if (!team) return null
 
                     const members = (team.team_members as any[]) || []
-                    const hasCanvas = team.canvas_data && (
-                      team.canvas_data.problem ||
-                      team.canvas_data.solution ||
-                      team.canvas_data.target_audience ||
-                      team.canvas_data.value_proposition ||
-                      team.canvas_data.key_features ||
-                      team.canvas_data.evidence ||
-                      team.canvas_data.pilot_plan ||
-                      team.canvas_data.success_metrics ||
-                      team.canvas_data.resources_risks
+                    const canvasData = team.canvas_data as unknown as CanvasData | null
+                    const hasCanvas = canvasData && (
+                      canvasData.problem ||
+                      canvasData.solution ||
+                      canvasData.target_audience ||
+                      canvasData.value_proposition ||
+                      canvasData.key_features ||
+                      canvasData.evidence ||
+                      canvasData.pilot_plan ||
+                      canvasData.success_metrics ||
+                      canvasData.resources_risks
                     )
 
                     const canAccess = currentEvent?.status === 'IDEATION'

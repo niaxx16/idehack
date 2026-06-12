@@ -186,7 +186,7 @@ export function TeamCanvasViewer({ team, onClose }: TeamCanvasViewerProps) {
           member_name: member?.name || 'Unknown',
           member_role: member?.role || 'Student',
           is_captain: member?.is_captain || false,
-        }
+        } as CanvasContributionWithUser
         grouped[contrib.section as CanvasSection].push(enriched)
       })
 
@@ -219,7 +219,7 @@ export function TeamCanvasViewer({ team, onClose }: TeamCanvasViewerProps) {
         resources_risks: null,
       }
 
-      ;(data || []).forEach((decision: TeamDecision) => {
+      ;((data as unknown as TeamDecision[]) || []).forEach((decision) => {
         decisionsMap[decision.section as CanvasSection] = decision
       })
 

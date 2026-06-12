@@ -208,7 +208,7 @@ export default function StudentPage() {
       setCurrentUserId(user.id)
 
       // Set members
-      setMembers(teamData.team_members || [])
+      setMembers((teamData.team_members as unknown as TeamMember[]) || [])
 
       // Check if current user is captain
       setIsCaptain(teamData.captain_id === user.id)
@@ -260,7 +260,7 @@ export default function StudentPage() {
 
       if (error) throw error
 
-      setFeedbacks(data || [])
+      setFeedbacks((data as unknown as MentorFeedbackWithMentor[]) || [])
     } catch (error) {
       console.error('Failed to load feedback:', error)
     }
@@ -316,7 +316,7 @@ export default function StudentPage() {
           member_name: member?.name || 'Unknown',
           member_role: member?.role || 'Student',
           is_captain: member?.is_captain || false,
-        }
+        } as CanvasContributionWithUser
         if (grouped[contrib.section]) {
           grouped[contrib.section].push(enriched)
         }
@@ -342,7 +342,7 @@ export default function StudentPage() {
         resources_risks: null,
       }
 
-      ;(decisionsData || []).forEach((decision: TeamDecision) => {
+      ;((decisionsData as unknown as TeamDecision[]) || []).forEach((decision) => {
         decisionsMap[decision.section] = decision
       })
 

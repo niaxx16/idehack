@@ -201,7 +201,7 @@ export function PitchViewer({ event }: PitchViewerProps) {
         resources_risks: null,
       }
 
-      ;(decisionsResult.data || []).forEach((decision: TeamDecision) => {
+      ;((decisionsResult.data as unknown as TeamDecision[]) || []).forEach((decision) => {
         decisions[decision.section as CanvasSection] = decision
       })
       setTeamDecisions(decisions)
@@ -613,7 +613,7 @@ export function PitchViewer({ event }: PitchViewerProps) {
               className={`h-20 text-lg ${hasUsedHype('clap') ? 'opacity-50' : ''}`}
             >
               <HandMetal className="mr-2 h-6 w-6" />
-              {hasUsedHype('clap') ? '👏' : t('clap')}
+              {hasUsedHype('clap') ? 'ğŸ‘' : t('clap')}
             </Button>
             <Button
               onClick={() => handleHype('fire')}
@@ -622,7 +622,7 @@ export function PitchViewer({ event }: PitchViewerProps) {
               className={`h-20 text-lg ${hasUsedHype('fire') ? 'opacity-50' : ''}`}
             >
               <Flame className="mr-2 h-6 w-6" />
-              {hasUsedHype('fire') ? '🔥' : t('fire')}
+              {hasUsedHype('fire') ? 'ğŸ”¥' : t('fire')}
             </Button>
           </div>
 
@@ -639,7 +639,7 @@ export function PitchViewer({ event }: PitchViewerProps) {
                   animation: 'float 3s ease-out forwards',
                 }}
               >
-                {hype.type === 'clap' ? '👏' : '🔥'}
+                {hype.type === 'clap' ? 'ğŸ‘' : 'ğŸ”¥'}
               </div>
             ))}
           </div>

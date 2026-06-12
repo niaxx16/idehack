@@ -92,7 +92,7 @@ export function JuryScoresOverview({ event, juryMembers }: JuryScoresOverviewPro
         .select('id, jury_id, team_id, scores, comments, updated_at')
         .in('team_id', teamsData.map(t => t.id))
 
-      setScores((scoresData as ScoreRecord[]) || [])
+      setScores((scoresData as unknown as ScoreRecord[]) || [])
     } catch (error) {
       console.error('Failed to load jury scores:', error)
     } finally {

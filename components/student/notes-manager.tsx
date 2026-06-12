@@ -37,6 +37,11 @@ export function NotesManager({ event }: NotesManagerProps) {
     if (!user) return
     setIsTeamLoading(true)
     try {
+      if (!event.current_team_id) {
+        setCurrentTeam(null)
+        return
+      }
+
       const { data: teamData } = await supabase
         .from('teams')
         .select('*')
@@ -44,8 +49,6 @@ export function NotesManager({ event }: NotesManagerProps) {
         .maybeSingle()
 
       setCurrentTeam(teamData || null)
-
-      if (!event.current_team_id) return
 
       const { data: noteData } = await supabase
         .from('user_notes')

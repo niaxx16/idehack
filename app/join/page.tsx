@@ -78,6 +78,7 @@ function JoinFormContent() {
         // No session, create anonymous user
         const { data: authData, error: authError } = await supabase.auth.signInAnonymously()
         if (authError) throw authError
+        if (!authData.user) throw new Error('Anonymous sign-in failed')
         userId = authData.user.id
       }
 

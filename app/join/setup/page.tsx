@@ -8,6 +8,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { createClient } from '@/lib/supabase/client'
+import { JoinTeamResult } from '@/types'
 import { Loader2, Users, Crown, CheckCircle, Key } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 
@@ -125,11 +126,12 @@ export default function TeamSetupPage() {
       let resolvedPersonalCode: string | null = null
 
       // Join team
-      const { data: joinResult, error: joinError } = await supabase.rpc('join_team_by_code', {
+      const { data: joinData, error: joinError } = await supabase.rpc('join_team_by_code', {
         activation_code_input: normalizedCode,
         member_name: memberName,
         member_role: memberRole,
       })
+      const joinResult = joinData as JoinTeamResult | null
 
       if (joinError || !joinResult?.success) {
         // Fallback path: resolve team by code and bind current user profile to team directly.
@@ -168,10 +170,10 @@ export default function TeamSetupPage() {
         resolvedTeamName = teamData.name
         resolvedIsCaptain = !teamData.captain_id
       } else {
-        resolvedTeamId = joinResult.team_id
-        resolvedTeamName = joinResult.team_name
+        resolvedTeamId = joinResult.team_id ?? null
+        resolvedTeamName = joinResult.team_name ?? null
         resolvedIsCaptain = Boolean(joinResult.is_captain)
-        resolvedPersonalCode = (joinResult.personal_code as string) || null
+        resolvedPersonalCode = joinResult.personal_code || null
       }
 
       if (!resolvedTeamId) {

@@ -39,7 +39,7 @@ export function TopInvestors({ event }: TopInvestorsProps) {
       })
 
       if (error) throw error
-      setInvestors(data || [])
+      setInvestors((data as unknown as TopInvestorEntry[]) || [])
     } catch (error) {
       console.error('Failed to load top investors:', error)
     } finally {

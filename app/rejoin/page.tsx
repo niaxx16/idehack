@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { createClient } from '@/lib/supabase/client'
+import { RejoinResult } from '@/types'
 import { Loader2, Key, ArrowLeft } from 'lucide-react'
 import Link from 'next/link'
 
@@ -37,7 +38,8 @@ export default function RejoinPage() {
 
       if (rejoinError) throw rejoinError
 
-      if (!rejoinData || !rejoinData.success) {
+      const rejoinResult = rejoinData as RejoinResult | null
+      if (!rejoinResult || !rejoinResult.success) {
         throw new Error('Failed to rejoin. Please try again.')
       }
 

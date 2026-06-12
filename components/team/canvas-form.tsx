@@ -43,7 +43,7 @@ export function CanvasForm({ team, isLocked, onUpdate }: CanvasFormProps) {
     formState: { errors, isDirty },
   } = useForm<CanvasFormData>({
     resolver: zodResolver(canvasSchema),
-    defaultValues: team.canvas_data,
+    defaultValues: (team.canvas_data as unknown as CanvasFormData) || undefined,
   })
 
   const onSubmit = async (data: CanvasFormData) => {

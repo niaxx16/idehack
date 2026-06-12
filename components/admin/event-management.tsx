@@ -12,7 +12,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { createClient } from '@/lib/supabase/client'
 import { Plus, Calendar, Trash2, CheckCircle, Circle, Loader2, Globe, Pencil } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
-import { locales, localeNames, localeFlags, defaultLocale } from '@/lib/i18n/config'
+import { locales, localeNames, localeFlags, defaultLocale, Locale } from '@/lib/i18n/config'
 import { useTranslations } from 'next-intl'
 
 interface EventManagementProps {
@@ -115,7 +115,7 @@ export function EventManagement({ currentEvent, onEventSelect, onUpdate, adminPr
     setEditingEvent(event)
     setEventName(event.name)
     setEventDescription(event.description || '')
-    setEventLanguage(event.language || defaultLocale)
+    setEventLanguage((event.language as Locale) || defaultLocale)
     setShowEditDialog(true)
   }
 
@@ -259,7 +259,7 @@ export function EventManagement({ currentEvent, onEventSelect, onUpdate, adminPr
                       <Globe className="h-4 w-4 inline mr-1" />
                       {t('eventForm.eventLanguageRequired')}
                     </Label>
-                    <Select value={eventLanguage} onValueChange={setEventLanguage}>
+                    <Select value={eventLanguage} onValueChange={(v) => setEventLanguage(v as Locale)}>
                       <SelectTrigger id="eventLanguage">
                         <SelectValue />
                       </SelectTrigger>
@@ -339,7 +339,7 @@ export function EventManagement({ currentEvent, onEventSelect, onUpdate, adminPr
                 <Globe className="h-4 w-4 inline mr-1" />
                 {t('eventForm.eventLanguageRequired')}
               </Label>
-              <Select value={eventLanguage} onValueChange={setEventLanguage}>
+              <Select value={eventLanguage} onValueChange={(v) => setEventLanguage(v as Locale)}>
                 <SelectTrigger id="editEventLanguage">
                   <SelectValue />
                 </SelectTrigger>

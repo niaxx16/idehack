@@ -47,7 +47,7 @@ export function MentorEvaluationsDialog({ team }: MentorEvaluationsDialogProps) 
         mentor: ev.mentor as Profile | undefined,
       }))
 
-      setEvaluations(evalsWithMentor)
+      setEvaluations(evalsWithMentor as unknown as MentorEvaluationWithMentor[])
     } catch (error) {
       console.error('Failed to load mentor evaluations:', error)
     } finally {

@@ -137,7 +137,7 @@ export function CanvasPdfExport({ teamName, contributions, teamDecisions }: Canv
 
             pdf.setFontSize(8)
             pdf.setTextColor(75, 85, 99)
-            const authorText = contrib.is_captain ? `${contrib.member_name} (${tPdf('captain')})` : contrib.member_name
+            const authorText = (contrib.is_captain ? `${contrib.member_name} (${tPdf('captain')})` : contrib.member_name) || ''
             pdf.text(authorText, margin + 4, yPosition + 4)
 
             pdf.setFontSize(9)
