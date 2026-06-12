@@ -136,6 +136,8 @@ BEGIN
 END;
 $$;
 
--- Supabase grants EXECUTE to PUBLIC by default; restrict to signed-in users
+-- Supabase grants EXECUTE to PUBLIC and directly to anon/authenticated via
+-- default privileges; revoke both paths so only signed-in users can call it
 REVOKE EXECUTE ON FUNCTION get_team_report_card(UUID) FROM PUBLIC;
+REVOKE EXECUTE ON FUNCTION get_team_report_card(UUID) FROM anon;
 GRANT EXECUTE ON FUNCTION get_team_report_card(UUID) TO authenticated;
