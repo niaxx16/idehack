@@ -4,6 +4,8 @@
 -- identities) never reach the client.
 -- Access: team members only while their event is COMPLETED; event-owner
 -- admins and super admins at any time. Everyone else gets NULL.
+-- Mentors are intentionally not granted access; they already see their own
+-- evaluations in the mentor panel.
 
 CREATE OR REPLACE FUNCTION get_team_report_card(team_id_input UUID)
 RETURNS JSONB
@@ -53,11 +55,11 @@ BEGIN
       'presentation_teamwork', ROUND(AVG((js.scores->>'presentation_teamwork')::NUMERIC), 1)
     ) END,
     CASE WHEN COUNT(*) = 0 THEN NULL ELSE ROUND(AVG(
-      (js.scores->>'problem_understanding')::NUMERIC +
-      (js.scores->>'innovation')::NUMERIC +
-      (js.scores->>'value_impact')::NUMERIC +
-      (js.scores->>'feasibility')::NUMERIC +
-      (js.scores->>'presentation_teamwork')::NUMERIC
+      COALESCE((js.scores->>'problem_understanding')::NUMERIC, 0) +
+      COALESCE((js.scores->>'innovation')::NUMERIC, 0) +
+      COALESCE((js.scores->>'value_impact')::NUMERIC, 0) +
+      COALESCE((js.scores->>'feasibility')::NUMERIC, 0) +
+      COALESCE((js.scores->>'presentation_teamwork')::NUMERIC, 0)
     ), 1) END
   INTO jury_count, jury_averages, jury_total
   FROM jury_scores js
@@ -90,7 +92,7 @@ BEGIN
 
   -- Named mentor evaluations (skip fully empty rows)
   SELECT COALESCE(jsonb_agg(jsonb_build_object(
-    'mentor_name', pr.full_name,
+    'mentor_name', COALESCE(pr.full_name, pr.display_name),
     'evaluation_text', me.evaluation_text,
     'project_paths', to_jsonb(me.project_paths),
     'project_path_reasoning', me.project_path_reasoning
@@ -114,3 +116,7 @@ BEGIN
   );
 END;
 $$;
+
+-- Supabase grants EXECUTE to PUBLIC by default; restrict to signed-in users
+REVOKE EXECUTE ON FUNCTION get_team_report_card(UUID) FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION get_team_report_card(UUID) TO authenticated;
