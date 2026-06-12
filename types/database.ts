@@ -650,6 +650,12 @@ export type Database = {
         Args: Record<PropertyKey, never>
         Returns: string
       }
+      get_team_report_card: {
+        Args: {
+          team_id_input: string
+        }
+        Returns: Json
+      }
       get_leaderboard: {
         Args: {
           event_id_input: string

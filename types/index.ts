@@ -237,3 +237,25 @@ export interface TeamWithTracking extends Team {
   jury_scores?: JuryScore[]
   leaderboard_score?: number
 }
+
+// Post-event team report card (get_team_report_card RPC response)
+export interface TeamReportCardJury {
+  jury_count: number
+  averages: JuryScoreData | null
+  total_avg: number | null
+  comments: string[]
+  project_paths: Record<string, number>
+}
+
+export interface TeamReportCardMentorEvaluation {
+  mentor_name: string | null
+  evaluation_text: string
+  project_paths: string[]
+  project_path_reasoning: string
+}
+
+export interface TeamReportCard {
+  team_name: string
+  jury: TeamReportCardJury
+  mentor_evaluations: TeamReportCardMentorEvaluation[]
+}
