@@ -89,11 +89,13 @@ export default function JuryPage() {
     if (currentEvent?.current_team_id) {
       loadCurrentTeam()
       // Active pitch started, clear manual editing
-      setEditingTeam(null)
+      if (currentEvent.status === 'PITCHING') {
+        setEditingTeam(null)
+      }
     } else {
       setCurrentTeam(null)
     }
-  }, [currentEvent?.current_team_id])
+  }, [currentEvent?.current_team_id, currentEvent?.status])
 
   const loadEventData = async () => {
     setIsLoading(true)
@@ -150,6 +152,10 @@ export default function JuryPage() {
     return null
   }
 
+  // Stale current_team_id can linger after the event leaves PITCHING;
+  // only treat it as a live pitch while the event is actually in PITCHING
+  const isPitchActive = currentEvent?.status === 'PITCHING' && !!currentTeam
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
       <div className="min-h-screen flex flex-col">
@@ -170,7 +176,7 @@ export default function JuryPage() {
 
         {/* Main Content */}
         <div className="flex-1 overflow-auto">
-          {currentEvent && currentTeam ? (
+          {isPitchActive && currentEvent && currentTeam ? (
             <div className="grid md:grid-cols-2 gap-4 p-4 max-w-screen-2xl mx-auto">
               {/* Left: Stream Viewer */}
               <div>
@@ -247,7 +253,7 @@ export default function JuryPage() {
                 juryId={profile.id}
                 eventId={currentEvent.id}
                 onSelectTeam={(team) => {
-                  if (currentTeam) return // Active pitch running, don't allow manual editing
+                  if (isPitchActive) return // Active pitch running, don't allow manual editing
                   setEditingTeam(prev => prev?.id === team.id ? null : team)
                 }}
                 selectedTeamId={editingTeam?.id}

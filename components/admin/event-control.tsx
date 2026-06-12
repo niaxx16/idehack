@@ -33,9 +33,13 @@ export function EventControl({ event, onUpdate }: EventControlProps) {
 
     setIsUpdating(true)
     try {
+      // Leaving PITCHING ends any active pitch; clear it so jury screens unlock
+      const updates: { status: EventStatus; current_team_id?: null } =
+        newStatus === 'PITCHING' ? { status: newStatus } : { status: newStatus, current_team_id: null }
+
       const { error } = await supabase
         .from('events')
-        .update({ status: newStatus })
+        .update(updates)
         .eq('id', event.id)
 
       if (error) throw error
