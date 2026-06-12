@@ -653,6 +653,24 @@
       "maxSize": "Maximum file size: 50MB",
       "invalidType": "Invalid file type. Please upload PDF, PPT, or DOCX files.",
       "tooLarge": "File is too large. Maximum size is 50MB."
+    },
+    "reportCard": {
+      "title": "Team Report Card",
+      "congrats": "Congratulations, you completed the event!",
+      "subtitle": "Your jury and mentor evaluations are below",
+      "juryScores": "Jury Evaluation",
+      "juryCount": "Evaluated by {count} juries",
+      "totalScore": "Overall Average",
+      "juryComments": "Jury Comments",
+      "juryLabel": "Jury {n}",
+      "projectPathsTitle": "Project Paths Suggested by Juries",
+      "mentorEvaluations": "Mentor Evaluations",
+      "reasoningLabel": "Reasoning",
+      "sectionFeedback": "Canvas Section Feedback",
+      "noScores": "Your team was not scored by the jury in this event.",
+      "notReady": "Your report card is not ready yet.",
+      "downloadPdf": "Download Report Card (PDF)",
+      "exporting": "Preparing PDF..."
     }
   },
   "jury": {

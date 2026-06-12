@@ -653,6 +653,24 @@
       "maxSize": "Maksimum dosya boyutu: 50MB",
       "invalidType": "Geçersiz dosya türü. Lütfen PDF, PPT veya DOCX dosyası yükleyin.",
       "tooLarge": "Dosya çok büyük. Maksimum boyut 50MB."
+    },
+    "reportCard": {
+      "title": "Takım Karnesi",
+      "congrats": "Tebrikler, etkinliği tamamladınız!",
+      "subtitle": "Jüri ve mentörlerinizin değerlendirmeleri aşağıda",
+      "juryScores": "Jüri Değerlendirmesi",
+      "juryCount": "{count} jüri değerlendirdi",
+      "totalScore": "Toplam Ortalama",
+      "juryComments": "Jüri Yorumları",
+      "juryLabel": "Jüri {n}",
+      "projectPathsTitle": "Jürilerin Önerdiği Proje Yolları",
+      "mentorEvaluations": "Mentör Değerlendirmeleri",
+      "reasoningLabel": "Gerekçe",
+      "sectionFeedback": "Kanvas Bölümü Geribildirimleri",
+      "noScores": "Bu etkinlikte takımınız jüri tarafından puanlanmadı.",
+      "notReady": "Karneniz henüz hazırlanmadı.",
+      "downloadPdf": "Karneyi İndir (PDF)",
+      "exporting": "PDF hazırlanıyor..."
     }
   },
   "jury": {
