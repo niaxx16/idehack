@@ -54,7 +54,7 @@ export function CanvasPdfExport({ teamName, contributions, teamDecisions }: Canv
 
       // Subtitle
       pdf.setFontSize(12)
-      pdf.setTextColor(107, 114, 128)
+      pdf.setTextColor(55, 65, 81)
       pdf.text(tPdf('subtitle'), pageWidth / 2, yPosition, { align: 'center' })
       yPosition += 5
 
@@ -96,7 +96,7 @@ export function CanvasPdfExport({ teamName, contributions, teamDecisions }: Canv
           yPosition += 7
 
           pdf.setFontSize(10)
-          pdf.setTextColor(21, 128, 61)
+          pdf.setTextColor(20, 83, 45)
           const decisionLines = pdf.splitTextToSize(teamDecision.content, contentWidth - 4)
 
           const decisionHeight = decisionLines.length * 5 + 4
@@ -119,7 +119,7 @@ export function CanvasPdfExport({ teamName, contributions, teamDecisions }: Canv
         // Contributions
         if (sectionContributions.length > 0) {
           pdf.setFontSize(9)
-          pdf.setTextColor(107, 114, 128)
+          pdf.setTextColor(55, 65, 81)
           pdf.text(tPdf('teamContributions') + ':', margin + 2, yPosition + 3)
           yPosition += 6
 
@@ -136,12 +136,12 @@ export function CanvasPdfExport({ teamName, contributions, teamDecisions }: Canv
             pdf.roundedRect(margin + 2, yPosition, contentWidth - 4, contributionHeight, 1, 1, 'F')
 
             pdf.setFontSize(8)
-            pdf.setTextColor(75, 85, 99)
+            pdf.setTextColor(55, 65, 81)
             const authorText = (contrib.is_captain ? `${contrib.member_name} (${tPdf('captain')})` : contrib.member_name) || ''
             pdf.text(authorText, margin + 4, yPosition + 4)
 
             pdf.setFontSize(9)
-            pdf.setTextColor(31, 41, 55)
+            pdf.setTextColor(0, 0, 0)
             contentLines.forEach((line: string, index: number) => {
               pdf.text(line, margin + 4, yPosition + 8 + (index * 4))
             })
