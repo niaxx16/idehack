@@ -55,7 +55,7 @@ Bölüm bazlı `mentor_feedback` da RPC'ye **dahildir** (`section_feedback` dizi
 ### 2. Öğrenci ekranı: `app/student/page.tsx` + `components/student/report-card.tsx`
 
 - `page.tsx`'e `isCompleted` bayrağı eklenir ve faz dallanmasının **en başına** konur: `isCompleted ? <ReportCard …> : isWaiting ? …`
-- `ReportCard` props: `teamId`, `teamName`, `eventName`. Mount'ta iki sorgu: `rpc('get_team_report_card')` + `mentor_feedback` (mentör adıyla, `canvas_section`'a göre gruplanır).
+- `ReportCard` props: `teamId`, `teamName`, `eventName`. Mount'ta tek sorgu: `rpc('get_team_report_card')`; bölüm geribildirimleri RPC'nin `section_feedback` alanından `canvas_section`'a göre gruplanır.
 - Bölümler (verisi olmayan bölüm gizlenir):
   1. Başlık kartı: kutlama mesajı + etkinlik adı + PDF indir butonu
   2. **Jüri Değerlendirmesi:** kriter başına `ortalama / maksimum` (maksimumlar `JURY_CRITERION_MAX`) ve oran bazlı progress bar; altta büyük toplam ortalama (`x / 100`) ve "N jüri değerlendirdi" notu
