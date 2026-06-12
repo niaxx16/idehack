@@ -74,7 +74,9 @@ export function ReportCard({ teamId, teamName, eventName }: ReportCardProps) {
       if (rpcRes.error) throw rpcRes.error
       setReport((rpcRes.data as unknown as TeamReportCardData) ?? null)
 
-      if (!fbRes.error) {
+      if (fbRes.error) {
+        console.error('Failed to load mentor feedback:', fbRes.error)
+      } else {
         setFeedbacks((fbRes.data as unknown as MentorFeedbackWithMentor[]) || [])
       }
     } catch (error) {
@@ -117,7 +119,7 @@ export function ReportCard({ teamId, teamName, eventName }: ReportCardProps) {
       }
 
       const heading = (text: string) => {
-        ensureSpace(14)
+        ensureSpace(19) // heading block + at least one paragraph line, so headings never orphan
         pdf.setFillColor(243, 232, 255)
         pdf.roundedRect(margin, y, contentWidth, 8, 2, 2, 'F')
         pdf.setFontSize(12)
