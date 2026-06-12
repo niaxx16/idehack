@@ -25,6 +25,7 @@ DECLARE
   jury_comments JSONB;
   jury_paths JSONB;
   mentor_evals JSONB;
+  section_fb JSONB;
 BEGIN
   SELECT * INTO target_team FROM teams WHERE id = team_id_input;
   IF NOT FOUND THEN RETURN NULL; END IF;
@@ -82,11 +83,15 @@ BEGIN
   INTO jury_paths
   FROM (
     SELECT pe.path, COUNT(*) AS cnt
-    FROM jury_scores js,
-         jsonb_array_elements_text(js.scores->'project_paths') AS pe(path)
-    WHERE js.team_id = team_id_input
-      AND js.scores ? 'problem_understanding'
-      AND jsonb_typeof(js.scores->'project_paths') = 'array'
+    FROM (
+      -- filter before the set-returning function so it never sees non-arrays
+      SELECT js.scores->'project_paths' AS paths
+      FROM jury_scores js
+      WHERE js.team_id = team_id_input
+        AND js.scores ? 'problem_understanding'
+        AND jsonb_typeof(js.scores->'project_paths') = 'array'
+    ) src,
+    jsonb_array_elements_text(src.paths) AS pe(path)
     GROUP BY pe.path
   ) p;
 
@@ -103,6 +108,19 @@ BEGIN
   WHERE me.team_id = team_id_input
     AND (btrim(me.evaluation_text) <> '' OR COALESCE(array_length(me.project_paths, 1), 0) > 0);
 
+  -- Section-based mentor feedback with author names (profiles join runs as
+  -- definer, so names resolve even though students cannot read mentor profiles)
+  SELECT COALESCE(jsonb_agg(jsonb_build_object(
+    'mentor_name', COALESCE(pr.full_name, pr.display_name),
+    'canvas_section', mf.canvas_section,
+    'feedback_text', mf.feedback_text
+  ) ORDER BY mf.created_at), '[]'::jsonb)
+  INTO section_fb
+  FROM mentor_feedback mf
+  JOIN profiles pr ON pr.id = mf.mentor_id
+  WHERE mf.team_id = team_id_input
+    AND btrim(mf.feedback_text) <> '';
+
   RETURN jsonb_build_object(
     'team_name', target_team.name,
     'jury', jsonb_build_object(
@@ -112,7 +130,8 @@ BEGIN
       'comments', jury_comments,
       'project_paths', jury_paths
     ),
-    'mentor_evaluations', mentor_evals
+    'mentor_evaluations', mentor_evals,
+    'section_feedback', section_fb
   );
 END;
 $$;

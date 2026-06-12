@@ -254,8 +254,15 @@ export interface TeamReportCardMentorEvaluation {
   project_path_reasoning: string
 }
 
+export interface TeamReportCardSectionFeedback {
+  mentor_name: string | null
+  canvas_section: string
+  feedback_text: string
+}
+
 export interface TeamReportCard {
   team_name: string
   jury: TeamReportCardJury
   mentor_evaluations: TeamReportCardMentorEvaluation[]
+  section_feedback: TeamReportCardSectionFeedback[]
 }

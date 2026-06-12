@@ -8,7 +8,7 @@ import { createClient } from '@/lib/supabase/client'
 import {
   JURY_CRITERION_MAX,
   JuryScoreData,
-  MentorFeedbackWithMentor,
+  TeamReportCardSectionFeedback,
   TeamReportCard as TeamReportCardData,
 } from '@/types'
 import { registerTurkishFont } from '@/lib/utils/pdf-font'
@@ -50,7 +50,6 @@ export function ReportCard({ teamId, teamName, eventName }: ReportCardProps) {
   const tCriteria = useTranslations('jury.scoringForm')
   const tCanvas = useTranslations('student.canvas')
   const [report, setReport] = useState<TeamReportCardData | null>(null)
-  const [feedbacks, setFeedbacks] = useState<MentorFeedbackWithMentor[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [isExporting, setIsExporting] = useState(false)
   const supabase = createClient()
@@ -62,23 +61,12 @@ export function ReportCard({ teamId, teamName, eventName }: ReportCardProps) {
 
   const loadReport = async () => {
     try {
-      const [rpcRes, fbRes] = await Promise.all([
-        supabase.rpc('get_team_report_card', { team_id_input: teamId }),
-        supabase
-          .from('mentor_feedback')
-          .select('*, mentor:profiles(*)')
-          .eq('team_id', teamId)
-          .order('created_at', { ascending: true }),
-      ])
+      const { data, error } = await supabase.rpc('get_team_report_card', {
+        team_id_input: teamId,
+      })
 
-      if (rpcRes.error) throw rpcRes.error
-      setReport((rpcRes.data as unknown as TeamReportCardData) ?? null)
-
-      if (fbRes.error) {
-        console.error('Failed to load mentor feedback:', fbRes.error)
-      } else {
-        setFeedbacks((fbRes.data as unknown as MentorFeedbackWithMentor[]) || [])
-      }
+      if (error) throw error
+      setReport((data as unknown as TeamReportCardData) ?? null)
     } catch (error) {
       console.error('Failed to load report card:', error)
     } finally {
@@ -89,13 +77,12 @@ export function ReportCard({ teamId, teamName, eventName }: ReportCardProps) {
   const pathLabel = (path: string) =>
     KNOWN_PROJECT_PATHS.includes(path) ? tCriteria(`projectPaths.${path}`) : path
 
-  const feedbacksBySection = feedbacks.reduce<Record<string, MentorFeedbackWithMentor[]>>(
-    (acc, fb) => {
-      ;(acc[fb.canvas_section] = acc[fb.canvas_section] || []).push(fb)
-      return acc
-    },
-    {}
-  )
+  const feedbacksBySection = (report?.section_feedback ?? []).reduce<
+    Record<string, TeamReportCardSectionFeedback[]>
+  >((acc, fb) => {
+    ;(acc[fb.canvas_section] = acc[fb.canvas_section] || []).push(fb)
+    return acc
+  }, {})
 
   const exportPdf = async () => {
     if (!report) return
@@ -214,7 +201,7 @@ export function ReportCard({ teamId, teamName, eventName }: ReportCardProps) {
           paragraph(tCanvas(SECTION_TITLE_KEYS[section]), 10, 55, 65, 81)
           for (const fb of feedbacksBySection[section]) {
             paragraph(
-              `${fb.mentor?.full_name || ''}: ${fb.feedback_text}`,
+              `${fb.mentor_name || ''}: ${fb.feedback_text}`,
               10, 0, 0, 0
             )
           }
@@ -411,7 +398,7 @@ export function ReportCard({ teamId, teamName, eventName }: ReportCardProps) {
       )}
 
       {/* Section-based mentor feedback */}
-      {feedbacks.length > 0 && (
+      {report.section_feedback.length > 0 && (
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-lg">
@@ -428,10 +415,10 @@ export function ReportCard({ teamId, teamName, eventName }: ReportCardProps) {
                     {tCanvas(SECTION_TITLE_KEYS[section])}
                   </p>
                   <div className="space-y-2">
-                    {feedbacksBySection[section].map((fb) => (
-                      <div key={fb.id} className="p-3 bg-slate-50 rounded-lg border">
+                    {feedbacksBySection[section].map((fb, i) => (
+                      <div key={i} className="p-3 bg-slate-50 rounded-lg border">
                         <p className="text-xs font-medium text-muted-foreground mb-1">
-                          {fb.mentor?.full_name}
+                          {fb.mentor_name}
                         </p>
                         <p className="text-sm whitespace-pre-wrap">{fb.feedback_text}</p>
                       </div>
