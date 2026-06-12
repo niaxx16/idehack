@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { Event, Team, JuryScoreData } from '@/types'
+import { Event, Team, JuryScoreData, JURY_CRITERION_MAX } from '@/types'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
@@ -19,25 +19,25 @@ interface ScoringFormProps {
   onScoreSubmitted: () => void
 }
 
-// 5 criteria, each 1-20 points, total 100
+// 5 weighted criteria, maximums defined in JURY_CRITERION_MAX, total 100
 const SCORING_CRITERIA_KEYS = ['problem_understanding', 'innovation', 'value_impact', 'feasibility', 'presentation_teamwork'] as const
 type CriterionKey = typeof SCORING_CRITERIA_KEYS[number]
-const MAX_SCORE_PER_CRITERION = 20
 const TOTAL_MAX_SCORE = 100
 
+// Color bands as a fraction of the criterion's max score
 const SCORE_LEVELS = [
-  { min: 1, max: 4, color: 'text-red-600' },
-  { min: 5, max: 8, color: 'text-orange-600' },
-  { min: 9, max: 12, color: 'text-yellow-600' },
-  { min: 13, max: 16, color: 'text-blue-600' },
-  { min: 17, max: 20, color: 'text-green-600' },
+  { maxRatio: 0.2, color: 'text-red-600' },
+  { maxRatio: 0.4, color: 'text-orange-600' },
+  { maxRatio: 0.6, color: 'text-yellow-600' },
+  { maxRatio: 0.8, color: 'text-blue-600' },
+  { maxRatio: 1, color: 'text-green-600' },
 ] as const
 
 const PROJECT_PATH_KEYS = ['startup', 'tubitak2204', 'teknofest', 'socialApp'] as const
 type ProjectPath = typeof PROJECT_PATH_KEYS[number]
 
-function getScoreColor(value: number) {
-  return SCORE_LEVELS.find(l => value >= l.min && value <= l.max)?.color || ''
+function getScoreColor(value: number, max: number) {
+  return SCORE_LEVELS.find(l => value <= l.maxRatio * max)?.color || ''
 }
 
 // Empty string = criterion not scored yet
@@ -49,10 +49,10 @@ const emptyScoreInputs = (): Record<CriterionKey, string> => ({
   presentation_teamwork: '',
 })
 
-function parseScore(raw: string): number | null {
+function parseScore(raw: string, max: number): number | null {
   if (raw === '') return null
   const n = Number(raw)
-  return Number.isInteger(n) && n >= 1 && n <= MAX_SCORE_PER_CRITERION ? n : null
+  return Number.isInteger(n) && n >= 1 && n <= max ? n : null
 }
 
 export function ScoringForm({ event, team, juryId, onScoreSubmitted }: ScoringFormProps) {
@@ -117,18 +117,18 @@ export function ScoringForm({ event, team, juryId, onScoreSubmitted }: ScoringFo
     }))
   }
 
-  const allValid = SCORING_CRITERIA_KEYS.every((key) => parseScore(scoreInputs[key]) !== null)
-  const totalScore = SCORING_CRITERIA_KEYS.reduce((sum, key) => sum + (parseScore(scoreInputs[key]) ?? 0), 0)
+  const allValid = SCORING_CRITERIA_KEYS.every((key) => parseScore(scoreInputs[key], JURY_CRITERION_MAX[key]) !== null)
+  const totalScore = SCORING_CRITERIA_KEYS.reduce((sum, key) => sum + (parseScore(scoreInputs[key], JURY_CRITERION_MAX[key]) ?? 0), 0)
 
   const saveScore = async () => {
     if (!allValid) return
 
     const scores: JuryScoreData = {
-      problem_understanding: parseScore(scoreInputs.problem_understanding)!,
-      innovation: parseScore(scoreInputs.innovation)!,
-      value_impact: parseScore(scoreInputs.value_impact)!,
-      feasibility: parseScore(scoreInputs.feasibility)!,
-      presentation_teamwork: parseScore(scoreInputs.presentation_teamwork)!,
+      problem_understanding: parseScore(scoreInputs.problem_understanding, JURY_CRITERION_MAX.problem_understanding)!,
+      innovation: parseScore(scoreInputs.innovation, JURY_CRITERION_MAX.innovation)!,
+      value_impact: parseScore(scoreInputs.value_impact, JURY_CRITERION_MAX.value_impact)!,
+      feasibility: parseScore(scoreInputs.feasibility, JURY_CRITERION_MAX.feasibility)!,
+      presentation_teamwork: parseScore(scoreInputs.presentation_teamwork, JURY_CRITERION_MAX.presentation_teamwork)!,
     }
 
     setIsSaving(true)
@@ -180,25 +180,26 @@ export function ScoringForm({ event, team, juryId, onScoreSubmitted }: ScoringFo
             <span className="text-3xl font-bold">{totalScore}/{TOTAL_MAX_SCORE}</span>
           </div>
           <div className="flex flex-wrap gap-1.5 justify-center text-[10px] font-medium">
-            <span className="px-2 py-0.5 rounded bg-red-100 text-red-700">1–4</span>
-            <span className="px-2 py-0.5 rounded bg-orange-100 text-orange-700">5–8</span>
-            <span className="px-2 py-0.5 rounded bg-yellow-100 text-yellow-700">9–12</span>
-            <span className="px-2 py-0.5 rounded bg-blue-100 text-blue-700">13–16</span>
-            <span className="px-2 py-0.5 rounded bg-green-100 text-green-700">17–20</span>
+            <span className="px-2 py-0.5 rounded bg-red-100 text-red-700">{t('levels.beginner')}</span>
+            <span className="px-2 py-0.5 rounded bg-orange-100 text-orange-700">{t('levels.needsWork')}</span>
+            <span className="px-2 py-0.5 rounded bg-yellow-100 text-yellow-700">{t('levels.adequate')}</span>
+            <span className="px-2 py-0.5 rounded bg-blue-100 text-blue-700">{t('levels.good')}</span>
+            <span className="px-2 py-0.5 rounded bg-green-100 text-green-700">{t('levels.excellent')}</span>
           </div>
           <p className="text-[10px] text-center text-muted-foreground">{t('scaleLevels')}</p>
         </div>
 
         {SCORING_CRITERIA_KEYS.map((criterionKey) => {
+          const max = JURY_CRITERION_MAX[criterionKey]
           const raw = scoreInputs[criterionKey]
-          const parsed = parseScore(raw)
+          const parsed = parseScore(raw, max)
           const isInvalid = raw !== '' && parsed === null
           return (
             <div key={criterionKey} className="space-y-3">
               <div className="flex items-start justify-between gap-3">
                 <div className="space-y-1 flex-1 min-w-0">
                   <Label className="text-base font-semibold">
-                    {t(criterionKey)} <span className="text-muted-foreground font-normal">({MAX_SCORE_PER_CRITERION}p)</span>
+                    {t(criterionKey)} <span className="text-muted-foreground font-normal">({max}p)</span>
                   </Label>
                   <p className="text-xs text-muted-foreground">
                     {t(`${criterionKey}Desc`)}
@@ -212,7 +213,7 @@ export function ScoringForm({ event, team, juryId, onScoreSubmitted }: ScoringFo
                   inputMode="numeric"
                   autoComplete="off"
                   maxLength={2}
-                  placeholder="1-20"
+                  placeholder={`1-${max}`}
                   value={raw}
                   onChange={(e) => updateScoreInput(criterionKey, e.target.value)}
                   aria-invalid={isInvalid}
@@ -220,7 +221,7 @@ export function ScoringForm({ event, team, juryId, onScoreSubmitted }: ScoringFo
                     isInvalid
                       ? 'border-red-500 text-red-600 focus-visible:ring-red-500'
                       : parsed !== null
-                        ? getScoreColor(parsed)
+                        ? getScoreColor(parsed, max)
                         : ''
                   }`}
                 />

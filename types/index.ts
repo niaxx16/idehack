@@ -108,13 +108,22 @@ export interface MentorEvaluationWithMentor extends MentorEvaluation {
   mentor?: Profile
 }
 
-// Jury scoring structure (5 criteria, each 1-20 points, total 100)
+// Jury scoring structure (5 weighted criteria, total 100)
 export interface JuryScoreData {
   problem_understanding: number    // Problemi ve ihtiyacı anlama
   innovation: number               // Fikir ve yenilikçilik
   value_impact: number            // Değer ve etkisi
   feasibility: number             // Uygulanabilirlik ve planlama
   presentation_teamwork: number   // Sunum ve takım çalışması
+}
+
+// Per-criterion maximum scores (total 100)
+export const JURY_CRITERION_MAX: Record<keyof JuryScoreData, number> = {
+  problem_understanding: 20,
+  innovation: 30,
+  value_impact: 20,
+  feasibility: 20,
+  presentation_teamwork: 10,
 }
 
 // Portfolio vote structure

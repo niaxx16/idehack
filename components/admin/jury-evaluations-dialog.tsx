@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { Team, JuryScore, Profile } from '@/types'
+import { Team, JuryScore, Profile, JURY_CRITERION_MAX } from '@/types'
 import { DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog'
 import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
@@ -139,9 +139,9 @@ export function JuryEvaluationsDialog({ team }: JuryEvaluationsDialogProps) {
                 <div key={key} className="space-y-1">
                   <div className="flex justify-between text-sm">
                     <span>{tCriteria(key)}</span>
-                    <span className="font-medium">{averages[key]?.toFixed(1) || 0} / 20</span>
+                    <span className="font-medium">{averages[key]?.toFixed(1) || 0} / {JURY_CRITERION_MAX[key]}</span>
                   </div>
-                  <Progress value={(averages[key] || 0) * 5} className="h-2" />
+                  <Progress value={((averages[key] || 0) / JURY_CRITERION_MAX[key]) * 100} className="h-2" />
                 </div>
               ))}
             </div>

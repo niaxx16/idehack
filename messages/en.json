@@ -685,7 +685,7 @@
     },
     "scoringForm": {
       "title": "Scoring Form",
-      "description": "Rate this team on a scale of 1-20 for each criterion (Total 100 points)",
+      "description": "Rate each criterion out of its maximum score (Total 100 points)",
       "totalScore": "Total Score",
       "problem_understanding": "Problem & Need Understanding",
       "problem_understandingDesc": "How well the team understood and defined the problem",
@@ -702,7 +702,14 @@
       "presentation_teamwork": "Presentation & Teamwork",
       "presentation_teamworkDesc": "Quality of presentation and team coordination",
       "presentation_teamworkIndicators": "Is the message clear and within time? • Are team roles balanced with good coordination? • Are responses to questions consistent?",
-      "scaleLevels": "1–4 Beginner  •  5–8 Needs Work  •  9–12 Adequate  •  13–16 Good  •  17–20 Excellent",
+      "scaleLevels": "Color scale is relative to each criterion's maximum score",
+      "levels": {
+        "beginner": "Beginner",
+        "needsWork": "Needs Work",
+        "adequate": "Adequate",
+        "good": "Good",
+        "excellent": "Excellent"
+      },
       "projectPathTitle": "Suggested Project Path",
       "projectPathDesc": "Which path fits this idea best? (Multiple selections allowed)",
       "projectPaths": {
@@ -719,7 +726,7 @@
       "scoreSaved": "Score saved successfully!",
       "saveFailed": "Failed to save score",
       "alreadyScored": "You have already scored this team. Click to update.",
-      "fillAllCriteria": "Enter a score between 1-20 for all criteria to save"
+      "fillAllCriteria": "Enter a valid score for all criteria to save"
     },
     "myScores": {
       "title": "My Scores",
