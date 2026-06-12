@@ -17,6 +17,7 @@ import { FeedbackDialog } from '@/components/student/feedback-dialog'
 import { CollaborativeCanvasSection } from '@/components/student/collaborative-canvas-section'
 import { PresentationUpload } from '@/components/team/presentation-upload'
 import { CanvasPdfExport } from '@/components/student/canvas-pdf-export'
+import { ReportCard } from '@/components/student/report-card'
 import { CanvasContributionWithUser, TeamDecision } from '@/types'
 import { Loader2, Users, Crown, FileText, Upload, LogOut, AlertCircle, Lightbulb, Target, Star, Zap, Search, FlaskConical, BarChart3, ShieldAlert, Save, CheckCircle } from 'lucide-react'
 import { useLanguage } from '@/lib/i18n/language-provider'
@@ -430,6 +431,7 @@ export default function StudentPage() {
   const canVote = currentEvent?.status === 'VOTING'
   const isIdeation = currentEvent?.status === 'IDEATION'
   const isWaiting = currentEvent?.status === 'WAITING'
+  const isCompleted = currentEvent?.status === 'COMPLETED'
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 via-blue-50 to-indigo-100 p-4">
@@ -480,7 +482,13 @@ export default function StudentPage() {
         </div>
 
         {/* Phase-based content */}
-        {isWaiting ? (
+        {isCompleted && currentEvent ? (
+          <ReportCard
+            teamId={team.id}
+            teamName={team.name}
+            eventName={currentEvent.name}
+          />
+        ) : isWaiting ? (
           <Card>
             <CardHeader>
               <CardTitle>{t('welcome')} {team.name}!</CardTitle>
