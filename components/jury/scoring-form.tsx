@@ -5,8 +5,8 @@ import { Event, Team, JuryScoreData } from '@/types'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
+import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
-import { Slider } from '@/components/ui/slider'
 import { createClient } from '@/lib/supabase/client'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Loader2, Save, CheckCircle, Route } from 'lucide-react'
@@ -21,6 +21,7 @@ interface ScoringFormProps {
 
 // 5 criteria, each 1-20 points, total 100
 const SCORING_CRITERIA_KEYS = ['problem_understanding', 'innovation', 'value_impact', 'feasibility', 'presentation_teamwork'] as const
+type CriterionKey = typeof SCORING_CRITERIA_KEYS[number]
 const MAX_SCORE_PER_CRITERION = 20
 const TOTAL_MAX_SCORE = 100
 
@@ -39,15 +40,24 @@ function getScoreColor(value: number) {
   return SCORE_LEVELS.find(l => value >= l.min && value <= l.max)?.color || ''
 }
 
+// Empty string = criterion not scored yet
+const emptyScoreInputs = (): Record<CriterionKey, string> => ({
+  problem_understanding: '',
+  innovation: '',
+  value_impact: '',
+  feasibility: '',
+  presentation_teamwork: '',
+})
+
+function parseScore(raw: string): number | null {
+  if (raw === '') return null
+  const n = Number(raw)
+  return Number.isInteger(n) && n >= 1 && n <= MAX_SCORE_PER_CRITERION ? n : null
+}
+
 export function ScoringForm({ event, team, juryId, onScoreSubmitted }: ScoringFormProps) {
   const t = useTranslations('jury.scoringForm')
-  const [scores, setScores] = useState<JuryScoreData>({
-    problem_understanding: 10,
-    innovation: 10,
-    value_impact: 10,
-    feasibility: 10,
-    presentation_teamwork: 10,
-  })
+  const [scoreInputs, setScoreInputs] = useState<Record<CriterionKey, string>>(emptyScoreInputs())
   const [comments, setComments] = useState('')
   const [projectPaths, setProjectPaths] = useState<ProjectPath[]>([])
   const [isSaving, setIsSaving] = useState(false)
@@ -75,49 +85,52 @@ export function ScoringForm({ event, team, juryId, onScoreSubmitted }: ScoringFo
       const loadedScores = data.scores as any
       if (loadedScores.problem_understanding !== undefined) {
         // Only extract the 5 scoring criteria, exclude project_paths and other extra fields
-        setScores({
-          problem_understanding: loadedScores.problem_understanding,
-          innovation: loadedScores.innovation,
-          value_impact: loadedScores.value_impact,
-          feasibility: loadedScores.feasibility,
-          presentation_teamwork: loadedScores.presentation_teamwork,
+        setScoreInputs({
+          problem_understanding: String(loadedScores.problem_understanding),
+          innovation: String(loadedScores.innovation),
+          value_impact: String(loadedScores.value_impact),
+          feasibility: String(loadedScores.feasibility),
+          presentation_teamwork: String(loadedScores.presentation_teamwork),
         })
       } else {
-        // Old format - reset to new defaults
-        setScores({
-          problem_understanding: 10,
-          innovation: 10,
-          value_impact: 10,
-          feasibility: 10,
-          presentation_teamwork: 10,
-        })
+        // Old format - reset to empty inputs
+        setScoreInputs(emptyScoreInputs())
       }
       setComments(data.comments || '')
       setProjectPaths(loadedScores.project_paths || [])
       setHasExistingScore(true)
     } else {
       // Reset form for new team
-      setScores({
-        problem_understanding: 10,
-        innovation: 10,
-        value_impact: 10,
-        feasibility: 10,
-        presentation_teamwork: 10,
-      })
+      setScoreInputs(emptyScoreInputs())
       setComments('')
       setProjectPaths([])
       setHasExistingScore(false)
     }
   }
 
-  const updateScore = (criterion: keyof JuryScoreData, value: number) => {
-    setScores((prev) => ({
+  const updateScoreInput = (criterion: CriterionKey, raw: string) => {
+    // Digits only (also sanitizes pasted text), max 2 chars
+    const digits = raw.replace(/\D/g, '').slice(0, 2)
+    setScoreInputs((prev) => ({
       ...prev,
-      [criterion]: value,
+      [criterion]: digits,
     }))
   }
 
+  const allValid = SCORING_CRITERIA_KEYS.every((key) => parseScore(scoreInputs[key]) !== null)
+  const totalScore = SCORING_CRITERIA_KEYS.reduce((sum, key) => sum + (parseScore(scoreInputs[key]) ?? 0), 0)
+
   const saveScore = async () => {
+    if (!allValid) return
+
+    const scores: JuryScoreData = {
+      problem_understanding: parseScore(scoreInputs.problem_understanding)!,
+      innovation: parseScore(scoreInputs.innovation)!,
+      value_impact: parseScore(scoreInputs.value_impact)!,
+      feasibility: parseScore(scoreInputs.feasibility)!,
+      presentation_teamwork: parseScore(scoreInputs.presentation_teamwork)!,
+    }
+
     setIsSaving(true)
     setSaveMessage(null)
 
@@ -152,8 +165,6 @@ export function ScoringForm({ event, team, juryId, onScoreSubmitted }: ScoringFo
     )
   }
 
-  const totalScore = SCORING_CRITERIA_KEYS.reduce((sum, key) => sum + (scores[key as keyof JuryScoreData] || 0), 0)
-
   return (
     <Card>
       <CardHeader>
@@ -179,10 +190,12 @@ export function ScoringForm({ event, team, juryId, onScoreSubmitted }: ScoringFo
         </div>
 
         {SCORING_CRITERIA_KEYS.map((criterionKey) => {
-          const value = scores[criterionKey as keyof JuryScoreData]
+          const raw = scoreInputs[criterionKey]
+          const parsed = parseScore(raw)
+          const isInvalid = raw !== '' && parsed === null
           return (
             <div key={criterionKey} className="space-y-3">
-              <div className="flex items-start justify-between">
+              <div className="flex items-start justify-between gap-3">
                 <div className="space-y-1 flex-1 min-w-0">
                   <Label className="text-base font-semibold">
                     {t(criterionKey)} <span className="text-muted-foreground font-normal">({MAX_SCORE_PER_CRITERION}p)</span>
@@ -194,20 +207,24 @@ export function ScoringForm({ event, team, juryId, onScoreSubmitted }: ScoringFo
                     {t(`${criterionKey}Indicators`)}
                   </p>
                 </div>
-                <div className={`text-2xl font-bold w-12 text-right ${getScoreColor(value)}`}>
-                  {value}
-                </div>
+                <Input
+                  type="text"
+                  inputMode="numeric"
+                  autoComplete="off"
+                  maxLength={2}
+                  placeholder="1-20"
+                  value={raw}
+                  onChange={(e) => updateScoreInput(criterionKey, e.target.value)}
+                  aria-invalid={isInvalid}
+                  className={`h-12 w-20 shrink-0 text-center text-2xl font-bold ${
+                    isInvalid
+                      ? 'border-red-500 text-red-600 focus-visible:ring-red-500'
+                      : parsed !== null
+                        ? getScoreColor(parsed)
+                        : ''
+                  }`}
+                />
               </div>
-              <Slider
-                value={[value]}
-                onValueChange={(vals) =>
-                  updateScore(criterionKey as keyof JuryScoreData, vals[0])
-                }
-                min={1}
-                max={MAX_SCORE_PER_CRITERION}
-                step={1}
-                className="w-full"
-              />
             </div>
           )
         })}
@@ -265,7 +282,7 @@ export function ScoringForm({ event, team, juryId, onScoreSubmitted }: ScoringFo
           </div>
         )}
 
-        <Button onClick={saveScore} disabled={isSaving} className="w-full h-12 text-lg">
+        <Button onClick={saveScore} disabled={isSaving || !allValid} className="w-full h-12 text-lg">
           {isSaving ? (
             <>
               <Loader2 className="mr-2 h-5 w-5 animate-spin" />
@@ -278,6 +295,12 @@ export function ScoringForm({ event, team, juryId, onScoreSubmitted }: ScoringFo
             </>
           )}
         </Button>
+
+        {!allValid && (
+          <p className="text-xs text-center text-muted-foreground">
+            {t('fillAllCriteria')}
+          </p>
+        )}
 
         {hasExistingScore && (
           <p className="text-xs text-center text-muted-foreground">
