@@ -718,7 +718,8 @@
       "saveScore": "Puanı Kaydet",
       "scoreSaved": "Puan başarıyla kaydedildi!",
       "saveFailed": "Puan kaydedilemedi",
-      "alreadyScored": "Bu takımı zaten puanladınız. Güncellemek için tıklayın."
+      "alreadyScored": "Bu takımı zaten puanladınız. Güncellemek için tıklayın.",
+      "fillAllCriteria": "Kaydetmek için tüm kriterlere 1-20 arası puan girin"
     },
     "myScores": {
       "title": "Verdiğim Puanlar",

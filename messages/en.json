@@ -718,7 +718,8 @@
       "saveScore": "Save Score",
       "scoreSaved": "Score saved successfully!",
       "saveFailed": "Failed to save score",
-      "alreadyScored": "You have already scored this team. Click to update."
+      "alreadyScored": "You have already scored this team. Click to update.",
+      "fillAllCriteria": "Enter a score between 1-20 for all criteria to save"
     },
     "myScores": {
       "title": "My Scores",
