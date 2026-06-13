@@ -63,8 +63,10 @@ export function PitchControl({ event, teams, onUpdate }: PitchControlProps) {
   const [pitchedTeamIds, setPitchedTeamIds] = useState<Set<string>>(new Set())
 
   // Teams that already have at least one jury score = "pitched"
+  const teamIdsKey = teams.map((t) => t.id).join(',')
   useEffect(() => {
-    if (!event?.id || teams.length === 0) {
+    const ids = teamIdsKey ? teamIdsKey.split(',') : []
+    if (!event?.id || ids.length === 0) {
       setPitchedTeamIds(new Set())
       return
     }
@@ -74,7 +76,7 @@ export function PitchControl({ event, teams, onUpdate }: PitchControlProps) {
       const { data, error } = await supabase
         .from('jury_scores')
         .select('team_id')
-        .in('team_id', teams.map((t) => t.id))
+        .in('team_id', ids)
 
       if (!active) return
       if (error) {
@@ -88,7 +90,8 @@ export function PitchControl({ event, teams, onUpdate }: PitchControlProps) {
     return () => {
       active = false
     }
-  }, [event?.id, teams, supabase])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [event?.id, teamIdsKey])
 
   // Load stream URL from event
   useEffect(() => {
