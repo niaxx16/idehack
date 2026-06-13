@@ -229,6 +229,16 @@
       "timeRemaining": "Time Remaining",
       "openPresentation": "Open Presentation",
       "stopPitch": "Stop Pitch",
+      "callNextTeam": "Call Next Team",
+      "alreadyPitched": "pitched",
+      "juryStatus": {
+        "title": "Jury Scoring Status",
+        "counter": "{done}/{total} juries done",
+        "scored": "Scored",
+        "pending": "Pending",
+        "allDone": "All juries have scored",
+        "noJuries": "No juries assigned to this event"
+      },
       "projectDetails": "Project Details",
       "projectDetailsDesc": "Team decisions are highlighted",
       "problem": "Problem",

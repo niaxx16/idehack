@@ -229,6 +229,16 @@
       "timeRemaining": "Kalan Süre",
       "openPresentation": "Sunumu Aç",
       "stopPitch": "Sunumu Durdur",
+      "callNextTeam": "Sonraki Takımı Çağır",
+      "alreadyPitched": "sundu",
+      "juryStatus": {
+        "title": "Jüri Puanlama Durumu",
+        "counter": "{done}/{total} jüri tamamladı",
+        "scored": "Puanladı",
+        "pending": "Bekleniyor",
+        "allDone": "Tüm jüriler puanladı",
+        "noJuries": "Bu etkinliğe atanmış jüri yok"
+      },
       "projectDetails": "Proje Detayları",
       "projectDetailsDesc": "Takım kararları vurgulanmıştır",
       "problem": "Problem",
