@@ -56,7 +56,7 @@ export function useJuryScoringStatus(
         return
       }
 
-      const mapped = (data || []).map((p: { id: string; display_name?: string; full_name?: string }) => ({
+      const mapped = (data || []).map((p: { id: string; display_name: string | null; full_name: string | null }) => ({
         id: p.id,
         name: p.display_name || p.full_name || 'Jüri',
       }))
