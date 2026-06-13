@@ -373,12 +373,12 @@ export function PitchControl({ event, teams, onUpdate }: PitchControlProps) {
     }
   }
 
-  const downloadPresentation = async () => {
-    if (!currentTeam?.presentation_url) return
+  const downloadPresentation = async (team: Team) => {
+    if (!team.presentation_url) return
 
     try {
       // Fetch the file
-      const response = await fetch(currentTeam.presentation_url)
+      const response = await fetch(team.presentation_url)
       if (!response.ok) throw new Error('Failed to fetch file')
 
       // Get the content type from response
@@ -394,7 +394,7 @@ export function PitchControl({ event, teams, onUpdate }: PitchControlProps) {
       a.href = url
 
       // Extract filename from URL
-      const urlParts = currentTeam.presentation_url.split('/')
+      const urlParts = team.presentation_url.split('/')
       let filename = urlParts[urlParts.length - 1]
 
       // If filename doesn't have extension, add it based on content type
@@ -402,7 +402,7 @@ export function PitchControl({ event, teams, onUpdate }: PitchControlProps) {
         const extension = contentType.includes('pdf') ? '.pdf' :
                          contentType.includes('powerpoint') || contentType.includes('presentation') ? '.pptx' :
                          contentType.includes('msword') || contentType.includes('document') ? '.docx' : ''
-        filename = `${currentTeam.name}-presentation${extension}`
+        filename = `${team.name}-presentation${extension}`
       }
 
       // Decode URL-encoded filename
@@ -420,7 +420,7 @@ export function PitchControl({ event, teams, onUpdate }: PitchControlProps) {
     } catch (error) {
       console.error('Failed to download presentation:', error)
       // Fallback to opening in new tab
-      window.open(currentTeam.presentation_url, '_blank')
+      window.open(team.presentation_url, '_blank')
     }
   }
 
@@ -548,6 +548,25 @@ export function PitchControl({ event, teams, onUpdate }: PitchControlProps) {
                 </Select>
               </div>
 
+              {selectedTeamId && (() => {
+                const selected = teams.find((tm) => tm.id === selectedTeamId)
+                if (!selected) return null
+                return selected.presentation_url ? (
+                  <Button
+                    variant="outline"
+                    className="w-full"
+                    onClick={() => downloadPresentation(selected)}
+                  >
+                    <Download className="mr-2 h-4 w-4" />
+                    {t('downloadPresentation')}
+                  </Button>
+                ) : (
+                  <p className="text-sm text-muted-foreground text-center">
+                    {t('noPresentation')}
+                  </p>
+                )
+              })()}
+
               <Button
                 onClick={startPitch}
                 disabled={!selectedTeamId || isStarting}
@@ -593,7 +612,7 @@ export function PitchControl({ event, teams, onUpdate }: PitchControlProps) {
 
               <div className="grid grid-cols-2 gap-3">
                 {currentTeam.presentation_url && (
-                  <Button onClick={downloadPresentation} variant="outline">
+                  <Button onClick={() => downloadPresentation(currentTeam)} variant="outline">
                     <Download className="mr-2 h-4 w-4" />
                     {t('downloadPresentation')}
                   </Button>
