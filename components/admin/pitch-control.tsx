@@ -13,6 +13,8 @@ import { useHype } from '@/hooks/use-hype'
 import { useTranslations } from 'next-intl'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { useJuryScoringStatus } from '@/hooks/use-jury-scoring-status'
+import { JuryScoringStatusCard } from '@/components/admin/jury-scoring-status'
 
 interface PitchControlProps {
   event: Event | null
@@ -56,6 +58,37 @@ export function PitchControl({ event, teams, onUpdate }: PitchControlProps) {
   const { hypeEvents } = useHype(event?.id || null)
 
   const currentTeam = teams.find((t) => t.id === event?.current_team_id)
+
+  const juryStatus = useJuryScoringStatus(event?.id ?? null, currentTeam?.id ?? null)
+  const [pitchedTeamIds, setPitchedTeamIds] = useState<Set<string>>(new Set())
+
+  // Teams that already have at least one jury score = "pitched"
+  useEffect(() => {
+    if (!event?.id || teams.length === 0) {
+      setPitchedTeamIds(new Set())
+      return
+    }
+
+    let active = true
+    const loadPitched = async () => {
+      const { data, error } = await supabase
+        .from('jury_scores')
+        .select('team_id')
+        .in('team_id', teams.map((t) => t.id))
+
+      if (!active) return
+      if (error) {
+        console.error('Failed to load pitched teams:', error)
+        return
+      }
+      setPitchedTeamIds(new Set((data || []).map((row: { team_id: string }) => row.team_id)))
+    }
+
+    loadPitched()
+    return () => {
+      active = false
+    }
+  }, [event?.id, teams, supabase])
 
   // Load stream URL from event
   useEffect(() => {
@@ -497,11 +530,17 @@ export function PitchControl({ event, teams, onUpdate }: PitchControlProps) {
                     <SelectValue placeholder={t('chooseTeam')} />
                   </SelectTrigger>
                   <SelectContent>
-                    {teams.map((team) => (
-                      <SelectItem key={team.id} value={team.id}>
-                        {team.name} ({t('table')} {team.table_number})
-                      </SelectItem>
-                    ))}
+                    {teams.map((team) => {
+                      const pitched = pitchedTeamIds.has(team.id)
+                      return (
+                        <SelectItem key={team.id} value={team.id}>
+                          <span className={pitched ? 'text-muted-foreground' : ''}>
+                            {team.name} ({t('table')} {team.table_number})
+                            {pitched ? ` · ${t('alreadyPitched')}` : ''}
+                          </span>
+                        </SelectItem>
+                      )
+                    })}
                   </SelectContent>
                 </Select>
               </div>
@@ -547,6 +586,8 @@ export function PitchControl({ event, teams, onUpdate }: PitchControlProps) {
                 <Progress value={progressPercentage} className="h-3" />
               </div>
 
+              <JuryScoringStatusCard status={juryStatus} />
+
               <div className="grid grid-cols-2 gap-3">
                 {currentTeam.presentation_url && (
                   <Button onClick={downloadPresentation} variant="outline">
@@ -556,11 +597,16 @@ export function PitchControl({ event, teams, onUpdate }: PitchControlProps) {
                 )}
                 <Button
                   onClick={stopPitch}
-                  variant="destructive"
+                  variant={juryStatus.allScored ? 'default' : 'destructive'}
                   disabled={isStarting}
+                  className={!currentTeam.presentation_url ? 'col-span-2' : undefined}
                 >
-                  <Pause className="mr-2 h-4 w-4" />
-                  {t('stopPitch')}
+                  {juryStatus.allScored ? (
+                    <CheckCircle className="mr-2 h-4 w-4" />
+                  ) : (
+                    <Pause className="mr-2 h-4 w-4" />
+                  )}
+                  {t('callNextTeam')}
                 </Button>
               </div>
             </div>
