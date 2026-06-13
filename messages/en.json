@@ -253,6 +253,7 @@
       "notSpecified": "Not specified",
       "teamDecision": "Team Decision",
       "downloadPresentation": "Download Presentation",
+      "noPresentation": "This team hasn't uploaded a presentation",
       "streamConfig": {
         "title": "Stream Configuration",
         "description": "Set the live stream URL for jury members to watch presentations",

@@ -253,6 +253,7 @@
       "notSpecified": "Belirtilmedi",
       "teamDecision": "Takım Kararı",
       "downloadPresentation": "Sunumu İndir",
+      "noPresentation": "Bu takım sunum yüklemedi",
       "streamConfig": {
         "title": "Yayın Ayarları",
         "description": "Jüri üyelerinin sunumları izlemesi için canlı yayın URL'sini ayarlayın",
