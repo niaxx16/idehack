@@ -33,6 +33,55 @@ export async function createUser(params: CreateUserParams): Promise<CreateUserRe
   const { email, password, fullName, role, eventId } = params
 
   try {
+    // If this email already belongs to a mentor/jury account (e.g. from a
+    // previous event), move that account to this event instead of failing
+    // with "already been registered". Past feedback/scores stay attached to
+    // the same user id; the password is reset to the newly generated one so
+    // the credentials shown to the admin are valid.
+    const emailPattern = email.trim().replace(/[\\%_]/g, '\\$&')
+    const { data: existingProfiles, error: lookupError } = await supabaseAdmin
+      .from('profiles')
+      .select('id, role')
+      .ilike('email', emailPattern)
+      .limit(1)
+
+    if (lookupError) {
+      console.error('Profile lookup error:', lookupError)
+      return { success: false, error: lookupError.message }
+    }
+
+    const existing = existingProfiles?.[0]
+    if (existing) {
+      if (existing.role !== role) {
+        return {
+          success: false,
+          error: `Bu e-posta zaten "${existing.role}" rolüyle kayıtlı; ${role} olarak tanımlanamaz.`
+        }
+      }
+
+      const { error: authUpdateError } = await supabaseAdmin.auth.admin.updateUserById(existing.id, {
+        password,
+        user_metadata: { full_name: fullName, role }
+      })
+
+      if (authUpdateError) {
+        console.error('Auth update error:', authUpdateError)
+        return { success: false, error: authUpdateError.message }
+      }
+
+      const { error: moveError } = await supabaseAdmin
+        .from('profiles')
+        .update({ event_id: eventId, full_name: fullName, display_name: fullName })
+        .eq('id', existing.id)
+
+      if (moveError) {
+        console.error('Profile move error:', moveError)
+        return { success: false, error: moveError.message }
+      }
+
+      return { success: true, email, password }
+    }
+
     // Create auth user using admin API
     const { data: authData, error: authError } = await supabaseAdmin.auth.admin.createUser({
       email,
