@@ -445,9 +445,15 @@ export function MentorManagement({ event, teams, onUpdate }: MentorManagementPro
                                   ? unassignMentorFromTeam(mentor.id, team.id)
                                   : assignMentorToTeam(mentor.id, team.id)
                               }
-                              className="justify-start"
+                              className="h-auto justify-start py-2 text-left whitespace-normal"
                             >
-                              {team.name}
+                              <span className="flex min-w-0 flex-col items-start">
+                                <span className="font-medium break-words">{team.name}</span>
+                                <span className="text-xs font-normal opacity-80 break-words">
+                                  {t('table')} {team.table_number}
+                                  {team.school_name ? ` · ${team.school_name}` : ''}
+                                </span>
+                              </span>
                             </Button>
                           )
                         })}

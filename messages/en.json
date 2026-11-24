@@ -294,6 +294,7 @@
       "teams": "teams",
       "assignedTeams": "Assigned Teams",
       "noTeamsAvailable": "No teams available. Create teams first.",
+      "table": "Table",
       "credentialsTitle": "Mentor Created Successfully!",
       "credentialsDescription": "Save these credentials and share them with the mentor securely.",
       "password": "Password (Save this!)",
