@@ -432,6 +432,7 @@ export default function StudentPage() {
   const isIdeation = currentEvent?.status === 'IDEATION'
   const isWaiting = currentEvent?.status === 'WAITING'
   const isCompleted = currentEvent?.status === 'COMPLETED'
+  const isLocked = currentEvent?.status === 'LOCKED'
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 via-blue-50 to-indigo-100 p-4">
@@ -804,6 +805,20 @@ export default function StudentPage() {
           </Tabs>
         ) : canVote ? (
           <PortfolioVoting event={currentEvent} profile={profile} />
+        ) : isLocked ? (
+          <Card>
+            <CardHeader>
+              <CardTitle>{t('lockedTitle')}</CardTitle>
+              <CardDescription>
+                {t('lockedMessage')}
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="text-center py-8">
+                <Loader2 className="h-12 w-12 mx-auto mb-4 animate-spin text-purple-600" />
+              </div>
+            </CardContent>
+          </Card>
         ) : (
           <Card>
             <CardHeader>

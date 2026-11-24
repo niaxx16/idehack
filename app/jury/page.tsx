@@ -190,7 +190,6 @@ export default function JuryPage() {
                   team={currentTeam}
                   juryId={profile.id}
                   onScoreSubmitted={() => {
-                    loadEventData()
                     setScoreRefresh(n => n + 1)
                   }}
                 />

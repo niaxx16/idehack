@@ -1,6 +1,7 @@
 'use server'
 
 import { createClient } from '@supabase/supabase-js'
+import { requireAdmin } from '@/lib/supabase/require-admin'
 
 // Create admin client with service role key
 const supabaseAdmin = createClient(
@@ -33,6 +34,9 @@ export async function createUser(params: CreateUserParams): Promise<CreateUserRe
   const { email, password, fullName, role, eventId } = params
 
   try {
+    const denied = await requireAdmin()
+    if (denied) return { success: false, error: denied }
+
     // If this email already belongs to a mentor/jury account (e.g. from a
     // previous event), move that account to this event instead of failing
     // with "already been registered". Past feedback/scores stay attached to
@@ -71,7 +75,7 @@ export async function createUser(params: CreateUserParams): Promise<CreateUserRe
 
       const { error: moveError } = await supabaseAdmin
         .from('profiles')
-        .update({ event_id: eventId, full_name: fullName, display_name: fullName })
+        .update({ event_id: eventId, full_name: fullName, display_name: fullName, display_password: password })
         .eq('id', existing.id)
 
       if (moveError) {
@@ -112,7 +116,8 @@ export async function createUser(params: CreateUserParams): Promise<CreateUserRe
         email: email,
         display_name: fullName,
         wallet_balance: 1000,
-        event_id: eventId
+        event_id: eventId,
+        display_password: password
       })
 
     if (profileError) {

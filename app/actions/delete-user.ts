@@ -1,6 +1,7 @@
 'use server'
 
 import { createClient } from '@supabase/supabase-js'
+import { requireAdmin } from '@/lib/supabase/require-admin'
 
 // Create admin client with service role key
 const supabaseAdmin = createClient(
@@ -28,6 +29,9 @@ export async function deleteUser(params: DeleteUserParams): Promise<DeleteUserRe
   const { userId, role } = params
 
   try {
+    const denied = await requireAdmin()
+    if (denied) return { success: false, error: denied }
+
     // If mentor, delete their assignments first
     if (role === 'mentor') {
       const { error: assignmentError } = await supabaseAdmin

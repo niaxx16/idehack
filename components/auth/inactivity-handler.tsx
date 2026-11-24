@@ -35,6 +35,14 @@ export function InactivityHandler({ children }: { children: React.ReactNode }) {
 
   const handleSignOut = useCallback(async () => {
     try {
+      // Anonymous students cannot log back in (their identity is the session),
+      // so never sign them out for inactivity - just restart the clock.
+      const { data: { session } } = await supabase.auth.getSession()
+      if (session?.user?.is_anonymous) {
+        localStorage.setItem(LAST_ACTIVITY_KEY, Date.now().toString())
+        return
+      }
+
       // Clear activity tracking on sign out
       localStorage.removeItem(LAST_ACTIVITY_KEY)
       localStorage.removeItem(SESSION_ID_KEY)

@@ -99,7 +99,7 @@ export function NotesManager({ event }: NotesManagerProps) {
           target_team_id: teamId,
           note_text: noteData.text,
           temp_rating: noteData.rating,
-        })
+        }, { onConflict: 'user_id,target_team_id' })
 
       if (error) throw error
     } catch (error) {

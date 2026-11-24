@@ -437,6 +437,8 @@
     "currentPitch": "Mevcut Sunum",
     "myNotes": "Notlarım",
     "noTeamFound": "Takım bulunamadı. Yönlendiriliyor...",
+    "lockedTitle": "Fikir Geliştirme Tamamlandı",
+    "lockedMessage": "Çalışmalarınız kaydedildi. Sunumlar birazdan başlayacak, lütfen bekleyin.",
     "eventEnded": "Etkinlik Sona Erdi",
     "thankYouParticipation": "Katılımınız için teşekkürler! Sonuçlar yakında açıklanacak.",
     "portfolioVoting": {

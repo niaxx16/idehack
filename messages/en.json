@@ -437,6 +437,8 @@
     "currentPitch": "Current Pitch",
     "myNotes": "My Notes",
     "noTeamFound": "No team found. Redirecting...",
+    "lockedTitle": "Ideation Complete",
+    "lockedMessage": "Your work has been saved. Pitches will start shortly, please wait.",
     "eventEnded": "Event Ended",
     "thankYouParticipation": "Thank you for participating! Results will be announced soon.",
     "portfolioVoting": {
