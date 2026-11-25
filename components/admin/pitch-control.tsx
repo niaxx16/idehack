@@ -447,7 +447,7 @@ export function PitchControl({ event, teams, onUpdate }: PitchControlProps) {
               animation: 'float 3s ease-out forwards',
             }}
           >
-            {hype.type === 'clap' ? 'ğŸ‘' : 'ğŸ”¥'}
+            {hype.type === 'clap' ? '👏' : '🔥'}
           </div>
         ))}
       </div>

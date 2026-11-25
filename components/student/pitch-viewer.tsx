@@ -613,7 +613,7 @@ export function PitchViewer({ event }: PitchViewerProps) {
               className={`h-20 text-lg ${hasUsedHype('clap') ? 'opacity-50' : ''}`}
             >
               <HandMetal className="mr-2 h-6 w-6" />
-              {hasUsedHype('clap') ? 'ğŸ‘' : t('clap')}
+              {hasUsedHype('clap') ? '👏' : t('clap')}
             </Button>
             <Button
               onClick={() => handleHype('fire')}
@@ -622,7 +622,7 @@ export function PitchViewer({ event }: PitchViewerProps) {
               className={`h-20 text-lg ${hasUsedHype('fire') ? 'opacity-50' : ''}`}
             >
               <Flame className="mr-2 h-6 w-6" />
-              {hasUsedHype('fire') ? 'ğŸ”¥' : t('fire')}
+              {hasUsedHype('fire') ? '🔥' : t('fire')}
             </Button>
           </div>
 
@@ -639,7 +639,7 @@ export function PitchViewer({ event }: PitchViewerProps) {
                   animation: 'float 3s ease-out forwards',
                 }}
               >
-                {hype.type === 'clap' ? 'ğŸ‘' : 'ğŸ”¥'}
+                {hype.type === 'clap' ? '👏' : '🔥'}
               </div>
             ))}
           </div>

@@ -715,7 +715,7 @@ export function TeamCanvasView({ team, onClose }: TeamCanvasViewProps) {
                                         <span className="text-xs text-muted-foreground italic">({t('edited')})</span>
                                       )}
                                       {fb.is_read && (
-                                        <span className="text-xs text-green-600">âœ“ {t('readByTeam')}</span>
+                                        <span className="text-xs text-green-600">✓ {t('readByTeam')}</span>
                                       )}
                                     </div>
                                   )}
@@ -816,7 +816,7 @@ export function TeamCanvasView({ team, onClose }: TeamCanvasViewProps) {
                           })}
                         </p>
                         {fb.is_read && (
-                          <p className="text-xs text-green-600 mt-1">âœ“ {t('read')}</p>
+                          <p className="text-xs text-green-600 mt-1">✓ {t('read')}</p>
                         )}
                       </div>
                     </div>
