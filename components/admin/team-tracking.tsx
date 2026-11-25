@@ -102,7 +102,9 @@ export function TeamTracking({ event, teams, onUpdate }: TeamTrackingProps) {
       // Merge teams with tracking data
       const merged: TeamTrackingData[] = teams.map(team => {
         const tracking = trackingRecords?.find(tr => tr.team_id === team.id) || null
-        const score = leaderboardData?.find((l: LeaderboardEntry) => l.team_id === team.id)?.final_score || null
+        // final_score is NULL when no investments exist; fall back to the jury score
+        const entry = leaderboardData?.find((l: LeaderboardEntry) => l.team_id === team.id)
+        const score = entry?.final_score ?? entry?.jury_avg_score ?? null
         return {
           ...team,
           tracking,

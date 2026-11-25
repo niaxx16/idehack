@@ -37,7 +37,15 @@ export function Leaderboard({ event }: LeaderboardProps) {
       })
 
       if (error) throw error
-      setEntries(data || [])
+      // get_leaderboard returns a NULL final_score when no team has received
+      // any investment (voting skipped). In that case rank by jury score alone.
+      const ranked = ((data || []) as LeaderboardEntry[])
+        .map((entry) => ({
+          ...entry,
+          final_score: entry.final_score ?? entry.jury_avg_score ?? 0,
+        }))
+        .sort((a, b) => b.final_score - a.final_score)
+      setEntries(ranked)
     } catch (error) {
       console.error('Failed to load leaderboard:', error)
     } finally {
